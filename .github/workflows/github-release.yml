@@ -39,6 +39,10 @@ jobs:
         run: |
           TAG="${{ github.event.release.tag_name }}"
           VERSION=${TAG#v}
+          if [[ -z "$VERSION" ]]; then
+            echo "Release tag name is empty" >&2
+            exit 1
+          fi
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Pack libraries
@@ -46,14 +50,15 @@ jobs:
           dotnet pack ./src/Dns/Dns.csproj --configuration Release --no-build --output ./artifacts -p:Version=$PACKAGE_VERSION
           dotnet pack ./src/Mdns/Mdns.csproj --configuration Release --no-build --output ./artifacts -p:Version=$PACKAGE_VERSION
 
-      - name: Publish to GitHub Packages
+      - name: Publish to nuget.org
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUGET_API_KEY: ${{ secrets.NUGET_PAT }}
+        shell: bash
         run: |
-          dotnet nuget add source \
-            --username "${{ github.repository_owner }}" \
-            --password "$GITHUB_TOKEN" \
-            --store-password-in-clear-text \
-            --name github \
-            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-          dotnet nuget push "./artifacts/*.nupkg" --source github --skip-duplicate
+          if [[ -z "$NUGET_API_KEY" ]]; then
+            echo "NUGET_PAT secret is not set" >&2
+            exit 1
+          fi
+          dotnet nuget push "./artifacts/*.nupkg" --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
