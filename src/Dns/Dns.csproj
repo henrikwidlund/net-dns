@@ -6,19 +6,30 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
 
-        <AssemblyName>Makaretu.Dns</AssemblyName>
-        <RootNamespace>Makaretu.Dns</RootNamespace>
-        <PackageId>Henrik.Makaretu.Dns</PackageId>
-
-        <AssemblyVersion>3.1.1</AssemblyVersion>
-        <Version>3.1.1</Version>
-
-        <Authors>Richard Schneider, jdomnitz, Henrik Widlund</Authors>
-        <Copyright>© 2018-2019 Richard Schneider, 2023+ additions jdomnitz, 2025+ additions by henrik.widlund</Copyright>
         <RuntimeIdentifier Condition="'$(BuildForLinuxArm)' == 'true'">linux-arm64</RuntimeIdentifier>
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         <IsTrimmable>true</IsTrimmable>
         <IsAotCompatible>true</IsAotCompatible>
+
+        <AssemblyName>Makaretu.Dns</AssemblyName>
+        <RootNamespace>Makaretu.Dns</RootNamespace>
+
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DebugType>full</DebugType>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <PackageId>Henrik.Makaretu.Dns</PackageId>
+        <Authors>Richard Schneider, jdomnitz, Henrik Widlund</Authors>
+        <Copyright>© 2018-2019 Richard Schneider, 2023+ additions jdomnitz, 2025+ additions by henrik.widlund</Copyright>
+        <Title>DNS Object Model</Title>
+        <Description>DNS data model with serializer/deserializer for the wire and master file format.</Description>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageReleaseNotes>https://github.com/henrikwidlund/net-dns/releases</PackageReleaseNotes>
+        <PackageTags>dns</PackageTags>
+        <IncludeSymbols>True</IncludeSymbols>
+        <PackageProjectUrl>https://github.com/henrikwidlund/net-dns</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     
     <ItemGroup>
@@ -30,5 +41,6 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Resolving/RootHints" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 </Project>
