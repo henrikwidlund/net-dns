@@ -2,6 +2,8 @@ version: "1.0"
 linter: jetbrains/qodana-cdnet:2025.1-eap
 profile:
   name: qodana.recommended
+dotnet:
+  solution: net-dns.sln
 include:
   - name: CheckDependencyLicenses
   - name: CompareNonConstrainedGenericWithNull
