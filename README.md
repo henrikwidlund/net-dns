@@ -1,3 +1,9 @@
+[![Release](https://img.shields.io/github/actions/workflow/status/henrikwidlund/unfoldedcircle-adbtv/github-release.yml?label=Release&logo=github)](https://github.com/henrikwidlund/net-dns/actions/workflows/github-release.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/henrikwidlund/net-dns/ci.yml?label=CI&logo=github)](https://github.com/henrikwidlund/net-dns/actions/workflows/ci.yml)
+![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/henrikwidlund_net-dns?server=https%3A%2F%2Fsonarcloud.io&label=Sonar%20Quality%20Gate&logo=sonarqube)
+[![Qodana](https://img.shields.io/github/actions/workflow/status/henrikwidlund/unfoldedcircle-adbtv/qodana_code_quality.yml?branch=main&label=Qodana&logo=github)](https://github.com/henrikwidlund/net-dns/actions/workflows/qodana_code_quality.yml)
+[![Version](https://img.shields.io/nuget/v/Theodicean.Makaretu.Dns.svg)](https://www.nuget.org/packages/Theodicean.Makaretu.Dns)
+
 Forks from the following, but modernized and made async:
 - [richardschneider/net-dns](https://github.com/richardschneider/net-dns)
 - [richardschneider/net-mdns](https://github.com/richardschneider/net-mdns)
@@ -41,9 +47,9 @@ DNS data model with serializer/deserializer for the wire and "master file" forma
 
 ## Getting started
 
-Published releases are available on [NuGet](https://www.nuget.org/packages/Henrik.Makaretu.Dns/).  To install, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console).
+Published releases are available on [NuGet](https://www.nuget.org/packages/Theodicean.Makaretu.Dns/).  To install, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console).
 
-    PM> Install-Package Henrik.Makaretu.Dns
+    PM> Install-Package Theodicean.Makaretu.Dns
 
 ## Usage
 
@@ -116,8 +122,6 @@ The package is licensed under the [MIT](http://www.opensource.org/licenses/mit-l
 
 # net-mdns
 
-[![CI](https://img.shields.io/github/actions/workflow/status/henrikwidlund/net-dns/ci.yml?label=CI&logo=github)](https://github.com/henrikwidlund/net-dns/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/nuget/v/Henrik.Makaretu.Dns.Multicast.svg)](https://www.nuget.org/packages/Henrik.Makaretu.Dns.Multicast)
 [![docs](https://cdn.rawgit.com/richardschneider/net-mdns/master/doc/images/docs-latest-green.svg)](https://richardschneider.github.io/net-mdns/articles/intro.html)
 
 A simple Multicast Domain Name Service based on [RFC 6762](https://tools.ietf.org/html/rfc6762).  Can be used
@@ -139,13 +143,13 @@ service or service instance.
 
 ## Getting started
 
-Published releases are available on [NuGet](https://www.nuget.org/packages/Henrik.Makaretu.Dns.Multicast/).  To install, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
+Published releases are available on [NuGet](https://www.nuget.org/packages/Theodicean.Makaretu.Dns.Multicast/).  To install, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
 
-    PM> Install-Package Henrik.Makaretu.Dns.Multicast
+    PM> Install-Package Theodicean.Makaretu.Dns.Multicast
 
 or using .NET CLI run the following command in the project folder
 
-    > dotnet add package Henrik.Makaretu.Dns.Multicast
+    > dotnet add package Theodicean.Makaretu.Dns.Multicast
 
 ## Usage Service Discovery
 
