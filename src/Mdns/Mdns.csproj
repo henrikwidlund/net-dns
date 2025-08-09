@@ -17,7 +17,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <DebugType>full</DebugType>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-        <PackageId>Henrik.Makaretu.Dns.Multicast</PackageId>
+        <PackageId>theodicean.Makaretu.Dns.Multicast</PackageId>
         <Authors>Richard Schneider, jdomnitz, Henrik Widlund</Authors>
         <Copyright>© 2018-2019 Richard Schneider, 2023+ additions jdomnitz, 2025+ additions by henrik.widlund</Copyright>
         <Title>Multicast DNS</Title>
