@@ -15,7 +15,6 @@
 
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DebugType>full</DebugType>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <PackageId>Theodicean.Makaretu.Dns</PackageId>
         <Authors>Richard Schneider, jdomnitz, Henrik Widlund</Authors>
@@ -27,6 +26,9 @@
         <PackageTags>dns</PackageTags>
         <IncludeSymbols>True</IncludeSymbols>
         <PackageProjectUrl>https://github.com/henrikwidlund/net-dns</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/henrikwidlund/net-dns.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
