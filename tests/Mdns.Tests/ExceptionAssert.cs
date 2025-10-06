@@ -34,6 +34,6 @@ public static class ExceptionAssert
                 Assert.AreEqual(expectedMessage, e.Message);
             return;
         }
-        Assert.Fail("Exception of type {0} should be thrown.", typeof(T));
+        Assert.Fail($"Exception of type {typeof(T)} should be thrown.");
     }
 }
