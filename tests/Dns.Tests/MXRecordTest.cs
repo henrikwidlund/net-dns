@@ -65,7 +65,7 @@ public class MXRecordTest
         };
         
         // ReSharper disable once EqualExpressionComparison
-        a.ShouldBe(a);
+        a.Equals(a).ShouldBeTrue();
         a.Equals(b).ShouldBeFalse();
         a.Equals(null).ShouldBeFalse();
     }

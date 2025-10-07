@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Makaretu.Mdns;
 
-public class ServiveProfileTest
+public class ServiceProfileTest
 {
     [Fact]
     public void Defaults()
