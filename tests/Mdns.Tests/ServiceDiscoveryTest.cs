@@ -12,14 +12,9 @@ using Xunit.Sdk;
 
 namespace Makaretu.Mdns;
 
-public class ServiceDiscoveryTest
+public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
+    private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
 
     [Fact]
     public async Task Disposable()
