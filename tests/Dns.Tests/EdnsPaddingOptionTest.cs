@@ -1,13 +1,12 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class EdnsPaddingOptionTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();
@@ -15,14 +14,13 @@ public class EdnsPaddingOptionTest
         {
             Padding = "\0\0\0"u8.ToArray()
         };
-        
-        Assert.AreEqual(EdnsOptionType.Padding, expected.Type);
-        
+
+        EdnsOptionType.Padding.ShouldBe(expected.Type);
         opt1.Options.Add(expected);
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (EdnsPaddingOption)opt2.Options[0];
-        
-        Assert.AreEqual(expected.Type, actual.Type);
-        CollectionAssert.AreEqual(expected.Padding, actual.Padding);
+
+        expected.Type.ShouldBe(actual.Type);
+        expected.Padding.ShouldBe(actual.Padding);
     }
 }

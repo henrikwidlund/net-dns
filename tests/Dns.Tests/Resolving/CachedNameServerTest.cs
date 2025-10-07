@@ -3,18 +3,16 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests.Resolving;
 
-[TestClass]
 public class CachedNameServerTest
 {
-    [TestMethod]
+    [Fact]
     public async Task Pruning()
     {
         var now = DateTime.Now;
@@ -26,26 +24,26 @@ public class CachedNameServerTest
         query.Questions.Add(new Question { Name = "b.foo.org", Type = DnsType.A });
 
         var response = await cache.ResolveAsync(query);
-        Assert.IsTrue(response.Answers.Any(static a => a.Name == "a.foo.org"));
-        Assert.IsTrue(response.Answers.Any(static a => a.Name == "b.foo.org"));
+        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeTrue();
+        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeTrue();
 
         cache.Prune(now);
         response = await cache.ResolveAsync(query);
-        Assert.IsTrue(response.Answers.Any(static a => a.Name == "a.foo.org"));
-        Assert.IsTrue(response.Answers.Any(static a => a.Name == "b.foo.org"));
+        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeTrue();
+        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeTrue();
 
         cache.Prune(now + TimeSpan.FromSeconds(31));
         response = await cache.ResolveAsync(query);
-        Assert.IsFalse(response.Answers.Any(static a => a.Name == "a.foo.org"));
-        Assert.IsTrue(response.Answers.Any(static a => a.Name == "b.foo.org"));
+        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeFalse();
+        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeTrue();
 
         cache.Prune(now + TimeSpan.FromSeconds(61));
         response = await cache.ResolveAsync(query);
-        Assert.IsFalse(response.Answers.Any(static a => a.Name == "a.foo.org"));
-        Assert.IsFalse(response.Answers.Any(static a => a.Name == "b.foo.org"));
+        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeFalse();
+        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeFalse();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AddingResponse()
     {
         var cache = new CachedNameServer { Catalog = new Catalog(), AnswerAllQuestions = true };
@@ -67,12 +65,12 @@ public class CachedNameServerTest
         };
         
         var res = await cache.ResolveAsync(query);
-        
-        Assert.IsTrue(res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.A));
-        Assert.IsTrue(res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA));
+
+        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.A).ShouldBeTrue();
+        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AddingResponse_TTL0()
     {
         var cache = new CachedNameServer { Catalog = new Catalog(), AnswerAllQuestions = true };
@@ -94,12 +92,12 @@ public class CachedNameServerTest
         };
         
         var res = await cache.ResolveAsync(query);
-        
-        Assert.IsFalse(res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.A));
-        Assert.IsTrue(res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA));
+
+        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.A).ShouldBeFalse();
+        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Pruning_Background()
     {
         var cache = new CachedNameServer { Catalog = new Catalog() };
@@ -119,13 +117,13 @@ public class CachedNameServerTest
         };
         
         var res = await cache.ResolveAsync(query);
-        Assert.AreEqual(1, res.Answers.Count);
+        res.Answers.Count.ShouldBe(1);
 
         var cts = cache.PruneContinuously(TimeSpan.FromMilliseconds(200));
         await Task.Delay(TimeSpan.FromSeconds(1), CancellationToken.None);
         await cts.CancelAsync();
         await Task.Delay(TimeSpan.FromMilliseconds(40), CancellationToken.None);
         res = await cache.ResolveAsync(query, CancellationToken.None);
-        Assert.AreEqual(0, res.Answers.Count);
+        res.Answers.Count.ShouldBe(0);
     }
 }

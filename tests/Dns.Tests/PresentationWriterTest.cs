@@ -1,50 +1,48 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class PresentationWriterTest
 {
-    [TestMethod]
+    [Fact]
     public void WriteByte()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteByte(byte.MaxValue);
         writer.WriteByte(1, appendSpace: false);
-        
-        Assert.AreEqual("255 1", text.ToString());
+
+        text.ToString().ShouldBe("255 1");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteUInt16()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteUInt16(ushort.MaxValue);
         writer.WriteUInt16(1, appendSpace: false);
-        
-        Assert.AreEqual("65535 1", text.ToString());
+
+        text.ToString().ShouldBe("65535 1");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteUInt32()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteUInt32(int.MaxValue);
         writer.WriteUInt32(1, appendSpace: false);
-        
-        Assert.AreEqual("2147483647 1", text.ToString());
+
+        text.ToString().ShouldBe("2147483647 1");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteString()
     {
         using var text = new StringWriter();
@@ -57,131 +55,131 @@ public class PresentationWriterTest
         writer.WriteString("a\\b");
         writer.WriteString("a\"b");
         writer.WriteString("end", appendSpace: false);
-        
-        Assert.AreEqual("alpha \"a b\" \"\" \"\" \" \" a\\\\b a\\\"b end", text.ToString());
+
+        text.ToString().ShouldBe("alpha \"a b\" \"\" \"\" \" \" a\\\\b a\\\"b end");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteStringUnencoded()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteStringUnencoded("\\a");
         writer.WriteStringUnencoded("\\b", appendSpace: false);
-        
-        Assert.AreEqual(@"\a \b", text.ToString());
+
+        text.ToString().ShouldBe(@"\a \b");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteDomainName()
     {
         using var text1 = new StringWriter();
         var writer = new PresentationWriter(text1);
         writer.WriteString("alpha.com");
         writer.WriteString("omega.com", appendSpace: false);
-        Assert.AreEqual("alpha.com omega.com", text1.ToString());
+        text1.ToString().ShouldBe("alpha.com omega.com");
 
         using var text2 = new StringWriter();
         writer = new PresentationWriter(text2);
         writer.WriteDomainName(new DomainName("alpha.com"), false);
-        Assert.AreEqual("alpha.com", text2.ToString());
+        text2.ToString().ShouldBe("alpha.com");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteDomainName_Escaped()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDomainName(new DomainName(@"dr\. smith.com"), false);
-        
-        Assert.AreEqual(@"dr\.\032smith.com", text.ToString());
+
+        text.ToString().ShouldBe(@"dr\.\032smith.com");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteBase16String()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteBase16String([1, 2, 3]);
         writer.WriteBase16String([1, 2, 3], appendSpace: false);
-        
-        Assert.AreEqual("010203 010203", text.ToString());
+
+        text.ToString().ShouldBe("010203 010203");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteBase64String()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteBase64String([1, 2, 3]);
         writer.WriteBase64String([1, 2, 3], appendSpace: false);
-        
-        Assert.AreEqual("AQID AQID", text.ToString());
+
+        text.ToString().ShouldBe("AQID AQID");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteTimeSpan16()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteTimeSpan16(TimeSpan.FromSeconds(ushort.MaxValue));
         writer.WriteTimeSpan16(TimeSpan.Zero, appendSpace: false);
-        
-        Assert.AreEqual("65535 0", text.ToString());
+
+        text.ToString().ShouldBe("65535 0");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteTimeSpan32()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteTimeSpan32(TimeSpan.FromSeconds(int.MaxValue));
         writer.WriteTimeSpan32(TimeSpan.Zero, appendSpace: false);
-        
-        Assert.AreEqual("2147483647 0", text.ToString());
+
+        text.ToString().ShouldBe("2147483647 0");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteDateTime()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDateTime(DateTime.UnixEpoch);
         writer.WriteDateTime(DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc), appendSpace: false);
-        
-        Assert.AreEqual("19700101000000 99991231235959", text.ToString());
+
+        text.ToString().ShouldBe("19700101000000 99991231235959");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteIPAddress()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteIPAddress(IPAddress.Loopback);
         writer.WriteIPAddress(IPAddress.IPv6Loopback, appendSpace: false);
-        
-        Assert.AreEqual("127.0.0.1 ::1", text.ToString());
+
+        text.ToString().ShouldBe("127.0.0.1 ::1");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteDnsType()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDnsType(DnsType.ANY);
         writer.WriteDnsType((DnsType)1234, appendSpace: false);
-        
-        Assert.AreEqual("ANY TYPE1234", text.ToString());
+
+        text.ToString().ShouldBe("ANY TYPE1234");
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteDnsClass()
     {
         using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDnsClass(DnsClass.IN);
         writer.WriteDnsClass((DnsClass)1234, appendSpace: false);
-        
-        Assert.AreEqual("IN CLASS1234", text.ToString());
+
+        text.ToString().ShouldBe("IN CLASS1234");
     }
 }

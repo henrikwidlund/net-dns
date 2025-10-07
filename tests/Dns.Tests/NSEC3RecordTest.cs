@@ -1,17 +1,14 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Shouldly;
+using Xunit;
 using SimpleBase;
 
 namespace DnsTests;
 
-[TestClass]
 public class NSEC3RecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new NSEC3Record
@@ -25,22 +22,22 @@ public class NSEC3RecordTest
             NextHashedOwnerName = Base32.ExtendedHex.Decode("2vptu5timamqttgl4luu9kg21e0aor3s"),
             Types = { DnsType.A, DnsType.RRSIG }
         };
-        
+
         var b = (NSEC3Record)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Iterations, b.Iterations);
-        CollectionAssert.AreEqual(a.Salt, b.Salt);
-        CollectionAssert.AreEqual(a.NextHashedOwnerName, b.NextHashedOwnerName);
-        CollectionAssert.AreEqual(a.Types, b.Types);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Flags.ShouldBe(b.Flags);
+        a.Iterations.ShouldBe(b.Iterations);
+        a.Salt.ShouldBe(b.Salt);
+        a.NextHashedOwnerName.ShouldBe(b.NextHashedOwnerName);
+        a.Types.ShouldBe(b.Types);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new NSEC3Record
@@ -54,19 +51,19 @@ public class NSEC3RecordTest
             NextHashedOwnerName = Base32.ExtendedHex.Decode("2vptu5timamqttgl4luu9kg21e0aor3s"),
             Types = { DnsType.A, DnsType.RRSIG }
         };
-        
+
         var b = (NSEC3Record)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Iterations, b.Iterations);
-        CollectionAssert.AreEqual(a.Salt, b.Salt);
-        CollectionAssert.AreEqual(a.NextHashedOwnerName, b.NextHashedOwnerName);
-        CollectionAssert.AreEqual(a.Types, b.Types);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Flags.ShouldBe(b.Flags);
+        a.Iterations.ShouldBe(b.Iterations);
+        a.Salt.ShouldBe(b.Salt);
+        a.NextHashedOwnerName.ShouldBe(b.NextHashedOwnerName);
+        a.Types.ShouldBe(b.Types);
     }
 }

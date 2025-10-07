@@ -1,13 +1,12 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class UnknownRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new UnknownRecord
@@ -18,14 +17,14 @@ public class UnknownRecordTest
         
         var b = (UnknownRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        CollectionAssert.AreEqual(a.Data, b.Data);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Data.ShouldBe(b.Data);
     }
 
-    [TestMethod]
+    [Fact]
     public void Equality()
     {
         var a = new UnknownRecord
@@ -41,12 +40,12 @@ public class UnknownRecordTest
         };
         
         // ReSharper disable once EqualExpressionComparison
-        Assert.IsTrue(a.Equals(a));
-        Assert.IsFalse(a.Equals(b));
-        Assert.IsFalse(a.Equals(null));
+        a.Equals(a).ShouldBeTrue();
+        a.Equals(b).ShouldBeFalse();
+        a.Equals(null).ShouldBeFalse();
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new UnknownRecord
@@ -59,11 +58,11 @@ public class UnknownRecordTest
         
         var b = (UnknownRecord)new ResourceRecord().Read(a.ToString());
         
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        CollectionAssert.AreEqual(a.Data, b.Data);
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Data.ShouldBe(b.Data);
     }
 }

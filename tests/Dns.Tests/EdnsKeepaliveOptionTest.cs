@@ -1,15 +1,13 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class EdnsKeepaliveOptionTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();
@@ -18,31 +16,31 @@ public class EdnsKeepaliveOptionTest
             Timeout = TimeSpan.FromSeconds(3)
         };
         
-        Assert.AreEqual(EdnsOptionType.Keepalive, expected.Type);
-        
+        expected.Type.ShouldBe(EdnsOptionType.Keepalive);
+
         opt1.Options.Add(expected);
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (EdnsKeepaliveOption)opt2.Options[0];
         
-        Assert.AreEqual(expected.Type, actual.Type);
-        Assert.IsTrue(actual.Timeout.HasValue);
-        Assert.AreEqual(expected.Timeout.Value, actual.Timeout.Value);
+        actual.Type.ShouldBe(expected.Type);
+        actual.Timeout.HasValue.ShouldBeTrue();
+        actual.Timeout.Value.ShouldBe(expected.Timeout.Value);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Empty()
     {
         var opt1 = new OPTRecord();
         var expected = new EdnsKeepaliveOption();
         
-        Assert.AreEqual(EdnsOptionType.Keepalive, expected.Type);
-        Assert.IsFalse(expected.Timeout.HasValue);
-        
+        expected.Type.ShouldBe(EdnsOptionType.Keepalive);
+        expected.Timeout.HasValue.ShouldBeFalse();
+
         opt1.Options.Add(expected);
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (EdnsKeepaliveOption)opt2.Options[0];
         
-        Assert.AreEqual(expected.Type, actual.Type);
-        Assert.AreEqual(expected.Timeout.HasValue, actual.Timeout.HasValue);
+        actual.Type.ShouldBe(expected.Type);
+        actual.Timeout.HasValue.ShouldBe(expected.Timeout.HasValue);
     }
 }

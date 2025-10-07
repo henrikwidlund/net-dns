@@ -1,15 +1,13 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class RRSIGRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
@@ -27,25 +25,25 @@ public class RRSIGRecordTest
             SignerName = "example.com",
             Signature = [1, 2, 3]
         };
-        
+
         var b = (RRSIGRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.TypeCovered, b.TypeCovered);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.Labels, b.Labels);
-        Assert.AreEqual(a.OriginalTTL, b.OriginalTTL);
-        Assert.AreEqual(a.SignatureExpiration.ToUniversalTime(), b.SignatureExpiration);
-        Assert.AreEqual(a.SignatureInception.ToUniversalTime(), b.SignatureInception);
-        Assert.AreEqual(a.KeyTag, b.KeyTag);
-        Assert.AreEqual(a.SignerName, b.SignerName);
-        CollectionAssert.AreEqual(a.Signature, b.Signature);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.TypeCovered.ShouldBe(b.TypeCovered);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.Labels.ShouldBe(b.Labels);
+        a.OriginalTTL.ShouldBe(b.OriginalTTL);
+        a.SignatureExpiration.ToUniversalTime().ShouldBe(b.SignatureExpiration);
+        a.SignatureInception.ToUniversalTime().ShouldBe(b.SignatureInception);
+        a.KeyTag.ShouldBe(b.KeyTag);
+        a.SignerName.ShouldBe(b.SignerName);
+        a.Signature.ShouldBe(b.Signature);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
@@ -63,22 +61,22 @@ public class RRSIGRecordTest
             SignerName = "example.com",
             Signature = [1, 2, 3]
         };
-        
+
         var b = (RRSIGRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.TypeCovered, b.TypeCovered);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.Labels, b.Labels);
-        Assert.AreEqual(a.OriginalTTL, b.OriginalTTL);
-        Assert.AreEqual(a.SignatureExpiration.ToUniversalTime(), b.SignatureExpiration);
-        Assert.AreEqual(a.SignatureInception.ToUniversalTime(), b.SignatureInception);
-        Assert.AreEqual(a.KeyTag, b.KeyTag);
-        Assert.AreEqual(a.SignerName, b.SignerName);
-        CollectionAssert.AreEqual(a.Signature, b.Signature);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.TypeCovered.ShouldBe(b.TypeCovered);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.Labels.ShouldBe(b.Labels);
+        a.OriginalTTL.ShouldBe(b.OriginalTTL);
+        a.SignatureExpiration.ToUniversalTime().ShouldBe(b.SignatureExpiration);
+        a.SignatureInception.ToUniversalTime().ShouldBe(b.SignatureInception);
+        a.KeyTag.ShouldBe(b.KeyTag);
+        a.SignerName.ShouldBe(b.SignerName);
+        a.Signature.ShouldBe(b.Signature);
     }
 }

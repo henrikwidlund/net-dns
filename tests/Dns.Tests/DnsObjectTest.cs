@@ -1,20 +1,19 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class DnsObjectTest
 {
-    [TestMethod]
+    [Fact]
     public void Length_EmptyMessage()
     {
         var message = new Message();
-        Assert.AreEqual(Message.MinLength, message.Length());
+        message.Length().ShouldBe(Message.MinLength);
     }
 
-    [TestMethod]
+    [Fact]
     public void Clone()
     {
         var m1 = new Message
@@ -23,20 +22,20 @@ public class DnsObjectTest
         };
         
         var m2 = (Message)m1.Clone();
-        
-        CollectionAssert.AreEqual(m1.ToByteArray(), m2.ToByteArray());
+
+        m1.ToByteArray().ShouldBe(m2.ToByteArray());
     }
 
-    [TestMethod]
+    [Fact]
     public void Clone_Typed()
     {
         var m1 = new Message
         {
             Questions = { new Question { Name = "example.com" } }
         };
-        
+
         var m2 = m1.Clone<Message>();
-        
-        CollectionAssert.AreEqual(m1.ToByteArray(), m2.ToByteArray());
+
+        m1.ToByteArray().ShouldBe(m2.ToByteArray());
     }
 }

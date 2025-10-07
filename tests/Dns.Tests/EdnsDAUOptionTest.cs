@@ -1,15 +1,13 @@
 ﻿using System.Linq;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class EdnsDAUOptionTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();
@@ -18,22 +16,22 @@ public class EdnsDAUOptionTest
             Algorithms = { SecurityAlgorithm.ED25519, SecurityAlgorithm.ECCGOST }
         };
         
-        Assert.AreEqual(EdnsOptionType.DAU, expected.Type);
-        
+        expected.Type.ShouldBe(EdnsOptionType.DAU);
+
         opt1.Options.Add(expected);
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (EdnsDAUOption)opt2.Options[0];
         
-        Assert.AreEqual(expected.Type, actual.Type);
-        CollectionAssert.AreEqual(expected.Algorithms, actual.Algorithms);
+        actual.Type.ShouldBe(expected.Type);
+        actual.Algorithms.ShouldBe(expected.Algorithms);
     }
 
-    [TestMethod]
+    [Fact]
     public void Create()
     {
         var option = EdnsDAUOption.Create();
         
-        Assert.AreEqual(EdnsOptionType.DAU, option.Type);
-        CollectionAssert.AreEqual(SecurityAlgorithmRegistry.Algorithms.Keys.ToList(), option.Algorithms);
+        option.Type.ShouldBe(EdnsOptionType.DAU);
+        option.Algorithms.ShouldBe(SecurityAlgorithmRegistry.Algorithms.Keys.ToList());
     }
 }

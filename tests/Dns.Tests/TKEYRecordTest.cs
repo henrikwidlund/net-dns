@@ -1,25 +1,23 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class TKEYRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Defaults()
     {
         var tsig = new TKEYRecord();
-        
-        Assert.AreEqual(DnsType.TKEY, tsig.Type);
-        Assert.AreEqual(DnsClass.ANY, tsig.Class);
-        Assert.AreEqual(TimeSpan.Zero, tsig.TTL);
+
+        tsig.Type.ShouldBe(DnsType.TKEY);
+        tsig.Class.ShouldBe(DnsClass.ANY);
+        tsig.TTL.ShouldBe(TimeSpan.Zero);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
@@ -34,23 +32,23 @@ public class TKEYRecordTest
             Error = MessageStatus.BadTime,
             OtherData = [5, 6]
         };
-        
+
         var b = (TKEYRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.Inception, b.Inception);
-        Assert.AreEqual(a.Expiration, b.Expiration);
-        Assert.AreEqual(a.Mode, b.Mode);
-        CollectionAssert.AreEqual(a.Key, b.Key);
-        Assert.AreEqual(a.Error, b.Error);
-        CollectionAssert.AreEqual(a.OtherData, b.OtherData);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.Inception.ShouldBe(b.Inception);
+        a.Expiration.ShouldBe(b.Expiration);
+        a.Mode.ShouldBe(b.Mode);
+        a.Key.ShouldBe(b.Key);
+        a.Error.ShouldBe(b.Error);
+        a.OtherData.ShouldBe(b.OtherData);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
@@ -65,20 +63,20 @@ public class TKEYRecordTest
             Error = MessageStatus.BadTime,
             OtherData = [5, 6]
         };
-        
+
         var b = (TKEYRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.Inception, b.Inception);
-        Assert.AreEqual(a.Expiration, b.Expiration);
-        Assert.AreEqual(a.Mode, b.Mode);
-        CollectionAssert.AreEqual(a.Key, b.Key);
-        Assert.AreEqual(a.Error, b.Error);
-        CollectionAssert.AreEqual(a.OtherData, b.OtherData);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.Inception.ShouldBe(b.Inception);
+        a.Expiration.ShouldBe(b.Expiration);
+        a.Mode.ShouldBe(b.Mode);
+        a.Key.ShouldBe(b.Key);
+        a.Error.ShouldBe(b.Error);
+        a.OtherData.ShouldBe(b.OtherData);
     }
 }

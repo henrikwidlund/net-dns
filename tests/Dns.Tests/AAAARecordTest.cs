@@ -1,15 +1,13 @@
 ﻿using System.Net;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class AAAARecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new AAAARecord
@@ -19,14 +17,14 @@ public class AAAARecordTest
         };
         var b = (AAAARecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Address, b.Address);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Address.ShouldBe(b.Address);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_ScopeId()
     {
         var a = new AAAARecord
@@ -36,14 +34,14 @@ public class AAAARecordTest
         };
         var b = (AAAARecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(IPAddress.Parse("fe80::7573:b0a8:46b0:bfea"), b.Address);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        IPAddress.Parse("fe80::7573:b0a8:46b0:bfea").ShouldBe(b.Address);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new AAAARecord
@@ -53,15 +51,15 @@ public class AAAARecordTest
         };
         var b = (AAAARecord)new ResourceRecord().Read(a.ToString());
         
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Address, b.Address);
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Address.ShouldBe(b.Address);
     }
 
-    [TestMethod]
+    [Fact]
     public void Equality()
     {
         var a = new AAAARecord
@@ -76,8 +74,8 @@ public class AAAARecordTest
         };
         
         // ReSharper disable once EqualExpressionComparison
-        Assert.IsTrue(a.Equals(a));
-        Assert.IsFalse(a.Equals(b));
-        Assert.IsFalse(a.Equals(null));
+        a.Equals(a).ShouldBeTrue();
+        a.Equals(b).ShouldBeFalse();
+        a.Equals(null).ShouldBeFalse();
     }
 }

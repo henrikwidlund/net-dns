@@ -1,24 +1,22 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class SecurityAlgorithmRegistryTest
 {
-    [TestMethod]
-    public void Exists() => Assert.AreNotEqual(0, SecurityAlgorithmRegistry.Algorithms.Count);
+    [Fact]
+    public void Exists() => SecurityAlgorithmRegistry.Algorithms.Count.ShouldNotBe(0);
 
-    [TestMethod]
+    [Fact]
     public void RSASHA1()
     {
         var metadata = SecurityAlgorithmRegistry.GetMetadata(SecurityAlgorithm.RSASHA1);
-        Assert.IsNotNull(metadata);
+        metadata.ShouldNotBeNull();
     }
 
-    [TestMethod]
-    public void UnknownAlgorithm() => Assert.ThrowsExactly<NotImplementedException>(static () => SecurityAlgorithmRegistry.GetMetadata((SecurityAlgorithm)0xBA));
+    [Fact]
+    public void UnknownAlgorithm() => Should.Throw<NotImplementedException>(static () => SecurityAlgorithmRegistry.GetMetadata((SecurityAlgorithm)0xBA));
 }

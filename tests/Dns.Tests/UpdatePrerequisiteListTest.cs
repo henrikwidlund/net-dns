@@ -1,62 +1,60 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class UpdatePrerequisiteListTest
 {
-    [TestMethod]
+    [Fact]
     public void MustExist_Name()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist("www.example.org");
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(DnsClass.ANY, p.Class);
-        Assert.AreEqual("www.example.org", p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(DnsType.ANY, p.Type);
-        Assert.AreEqual(0, p.GetDataLength());
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(DnsClass.ANY);
+        p.Name.ShouldBe("www.example.org");
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(DnsType.ANY);
+        p.GetDataLength().ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void MustExist_Name_Type()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist("www.example.org", DnsType.A);
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(DnsClass.ANY, p.Class);
-        Assert.AreEqual("www.example.org", p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(DnsType.A, p.Type);
-        Assert.AreEqual(0, p.GetDataLength());
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(DnsClass.ANY);
+        p.Name.ShouldBe("www.example.org");
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(DnsType.A);
+        p.GetDataLength().ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void MustExist_Name_Typename()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist<ARecord>("www.example.org");
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(DnsClass.ANY, p.Class);
-        Assert.AreEqual("www.example.org", p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(DnsType.A, p.Type);
-        Assert.AreEqual(0, p.GetDataLength());
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(DnsClass.ANY);
+        p.Name.ShouldBe("www.example.org");
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(DnsType.A);
+        p.GetDataLength().ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void MustExist_ResourceRecord()
     {
         var rr = new ARecord
@@ -65,63 +63,62 @@ public class UpdatePrerequisiteListTest
             Class = DnsClass.IN,
             Address = IPAddress.Parse("127.0.0.0")
         };
-        
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist(rr);
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(rr.Class, p.Class);
-        Assert.AreEqual(rr.Name, p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(rr.Type, p.Type);
-        Assert.AreEqual(rr.GetDataLength(), p.GetDataLength());
-        Assert.IsTrue(rr.GetData().SequenceEqual(p.GetData()));
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(rr.Class);
+        p.Name.ShouldBe(rr.Name);
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(rr.Type);
+        p.GetDataLength().ShouldBe(rr.GetDataLength());
+        rr.GetData().SequenceEqual(p.GetData()).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public void MustNotExist_Name()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist("www.example.org");
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(DnsClass.None, p.Class);
-        Assert.AreEqual("www.example.org", p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(DnsType.ANY, p.Type);
-        Assert.AreEqual(0, p.GetDataLength());
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(DnsClass.None);
+        p.Name.ShouldBe("www.example.org");
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(DnsType.ANY);
+        p.GetDataLength().ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void MustNotExist_Name_Type()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist("www.example.org", DnsType.A);
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(DnsClass.None, p.Class);
-        Assert.AreEqual("www.example.org", p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(DnsType.A, p.Type);
-        Assert.AreEqual(0, p.GetDataLength());
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(DnsClass.None);
+        p.Name.ShouldBe("www.example.org");
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(DnsType.A);
+        p.GetDataLength().ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void MustNotExist_Name_Typename()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist<ARecord>("www.example.org");
         var p = prerequisites[0];
-        
-        Assert.IsNotNull(p);
-        Assert.AreEqual(DnsClass.None, p.Class);
-        Assert.AreEqual("www.example.org", p.Name);
-        Assert.AreEqual(TimeSpan.Zero, p.TTL);
-        Assert.AreEqual(DnsType.A, p.Type);
-        Assert.AreEqual(0, p.GetDataLength());
+
+        p.ShouldNotBeNull();
+        p.Class.ShouldBe(DnsClass.None);
+        p.Name.ShouldBe("www.example.org");
+        p.TTL.ShouldBe(TimeSpan.Zero);
+        p.Type.ShouldBe(DnsType.A);
+        p.GetDataLength().ShouldBe(0);
     }
 
 }

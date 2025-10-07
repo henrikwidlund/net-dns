@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class MessageTest
 {
     /// <summary>
     ///   From https://en.wikipedia.org/wiki/Multicast_DNS
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DecodeQuery()
     {
         var bytes = new byte[]
@@ -34,23 +32,23 @@ public class MessageTest
         
         var msg = new Message();
         msg.Read(bytes, 0, bytes.Length);
-        
-        Assert.AreEqual(0, msg.Id);
-        Assert.AreEqual(1, msg.Questions.Count);
-        Assert.AreEqual(0, msg.Answers.Count);
-        Assert.AreEqual(0, msg.AuthorityRecords.Count);
-        Assert.AreEqual(0, msg.AdditionalRecords.Count);
-        
+
+        msg.Id.ShouldBe((ushort)0);
+        msg.Questions.Count.ShouldBe(1);
+        msg.Answers.Count.ShouldBe(0);
+        msg.AuthorityRecords.Count.ShouldBe(0);
+        msg.AdditionalRecords.Count.ShouldBe(0);
+
         var question = msg.Questions[0];
-        Assert.AreEqual("appletv.local", question.Name);
-        Assert.AreEqual(DnsType.A, question.Type);
-        Assert.AreEqual(DnsClass.IN, question.Class);
+        question.Name.ShouldBe("appletv.local");
+        question.Type.ShouldBe(DnsType.A);
+        question.Class.ShouldBe(DnsClass.IN);
     }
 
     /// <summary>
     ///   From https://en.wikipedia.org/wiki/Multicast_DNS
     /// </summary>
-    [TestMethod]
+    [Fact]
     public void DecodeResponse()
     {
         var bytes = new byte[]
@@ -65,36 +63,36 @@ public class MessageTest
         var msg = new Message();
         msg.Read(bytes, 0, bytes.Length);
 
-        Assert.IsTrue(msg.IsResponse);
-        Assert.IsTrue(msg.AA);
-        Assert.AreEqual(0, msg.Questions.Count);
-        Assert.AreEqual(1, msg.Answers.Count);
-        Assert.AreEqual(0, msg.AuthorityRecords.Count);
-        Assert.AreEqual(2, msg.AdditionalRecords.Count);
+        msg.IsResponse.ShouldBeTrue();
+        msg.AA.ShouldBeTrue();
+        msg.Questions.Count.ShouldBe(0);
+        msg.Answers.Count.ShouldBe(1);
+        msg.AuthorityRecords.Count.ShouldBe(0);
+        msg.AdditionalRecords.Count.ShouldBe(2);
 
-        Assert.AreEqual("appletv.local", msg.Answers[0].Name);
-        Assert.AreEqual(DnsType.A, msg.Answers[0].Type);
-        Assert.AreEqual(0x8001, (ushort)msg.Answers[0].Class);
-        Assert.AreEqual(TimeSpan.FromSeconds(30720), msg.Answers[0].TTL);
-        Assert.IsInstanceOfType<ARecord>(msg.Answers[0]);
-        Assert.AreEqual(IPAddress.Parse("153.109.7.90"), ((ARecord)msg.Answers[0]).Address);
+        msg.Answers[0].Name.ShouldBe("appletv.local");
+        msg.Answers[0].Type.ShouldBe(DnsType.A);
+        ((ushort)msg.Answers[0].Class).ShouldBe((ushort)0x8001);
+        msg.Answers[0].TTL.ShouldBe(TimeSpan.FromSeconds(30720));
+        msg.Answers[0].ShouldBeOfType<ARecord>();
+        ((ARecord)msg.Answers[0]).Address.ShouldBe(IPAddress.Parse("153.109.7.90"));
 
         var aaaa = (AAAARecord)msg.AdditionalRecords[0];
-        Assert.AreEqual("appletv.local", aaaa.Name);
-        Assert.AreEqual(DnsType.AAAA, aaaa.Type);
-        Assert.AreEqual(0x8001, (ushort)aaaa.Class);
-        Assert.AreEqual(TimeSpan.FromSeconds(30720), aaaa.TTL);
-        Assert.AreEqual(IPAddress.Parse("fe80::223:32ff:feb1:2152"), aaaa.Address);
+        aaaa.Name.ShouldBe("appletv.local");
+        aaaa.Type.ShouldBe(DnsType.AAAA);
+        ((ushort)aaaa.Class).ShouldBe((ushort)0x8001);
+        aaaa.TTL.ShouldBe(TimeSpan.FromSeconds(30720));
+        aaaa.Address.ShouldBe(IPAddress.Parse("fe80::223:32ff:feb1:2152"));
 
         var nsec = (NSECRecord)msg.AdditionalRecords[1];
-        Assert.AreEqual("appletv.local", nsec.Name);
-        Assert.AreEqual(DnsType.NSEC, nsec.Type);
-        Assert.AreEqual(0x8001, (ushort)nsec.Class);
-        Assert.AreEqual(TimeSpan.FromSeconds(30720), nsec.TTL);
-        Assert.AreEqual("appletv.local", nsec.NextOwnerName);
+        nsec.Name.ShouldBe("appletv.local");
+        nsec.Type.ShouldBe(DnsType.NSEC);
+        ((ushort)nsec.Class).ShouldBe((ushort)0x8001);
+        nsec.TTL.ShouldBe(TimeSpan.FromSeconds(30720));
+        nsec.NextOwnerName.ShouldBe("appletv.local");
     }
 
-    [TestMethod]
+    [Fact]
     public void Flags()
     {
         var expected = new Message
@@ -114,33 +112,33 @@ public class MessageTest
         var actual = new Message();
         actual.Read(expected.ToByteArray());
         
-        Assert.AreEqual(expected.QR, actual.QR);
-        Assert.AreEqual(expected.Opcode, actual.Opcode);
-        Assert.AreEqual(expected.AA, actual.AA);
-        Assert.AreEqual(expected.TC, actual.TC);
-        Assert.AreEqual(expected.RD, actual.RD);
-        Assert.AreEqual(expected.RA, actual.RA);
-        Assert.AreEqual(expected.Z, actual.Z);
-        Assert.AreEqual(expected.AD, actual.AD);
-        Assert.AreEqual(expected.CD, actual.CD);
-        Assert.AreEqual(expected.Status, actual.Status);
+        expected.QR.ShouldBe(actual.QR);
+        expected.Opcode.ShouldBe(actual.Opcode);
+        expected.AA.ShouldBe(actual.AA);
+        expected.TC.ShouldBe(actual.TC);
+        expected.RD.ShouldBe(actual.RD);
+        expected.RA.ShouldBe(actual.RA);
+        expected.Z.ShouldBe(actual.Z);
+        expected.AD.ShouldBe(actual.AD);
+        expected.CD.ShouldBe(actual.CD);
+        expected.Status.ShouldBe(actual.Status);
     }
 
-    [TestMethod]
+    [Fact]
     public void Response()
     {
         var query = new Message { Id = 1234, Opcode = MessageOperation.InverseQuery };
         query.Questions.Add(new Question { Name = "foo.org", Type = DnsType.A });
         var response = query.CreateResponse();
         
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(query.Id, response.Id);
-        Assert.AreEqual(query.Opcode, response.Opcode);
-        Assert.AreEqual(1, response.Questions.Count);
-        Assert.AreEqual(query.Questions[0], response.Questions[0]);
+        response.IsResponse.ShouldBeTrue();
+        response.Id.ShouldBe(query.Id);
+        response.Opcode.ShouldBe(query.Opcode);
+        response.Questions.Count.ShouldBe(1);
+        response.Questions[0].ShouldBe(query.Questions[0]);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var expected = new Message
@@ -162,64 +160,64 @@ public class MessageTest
         expected.AdditionalRecords.Add(new ARecord { Name = "erehwon", Address = IPAddress.Parse("127.0.0.1") });
         var actual = (Message)new Message().Read(expected.ToByteArray());
         
-        Assert.AreEqual(expected.AA, actual.AA);
-        Assert.AreEqual(expected.Id, actual.Id);
-        Assert.AreEqual(expected.IsQuery, actual.IsQuery);
-        Assert.AreEqual(expected.IsResponse, actual.IsResponse);
-        Assert.AreEqual(1, actual.Questions.Count);
-        Assert.AreEqual(1, actual.Answers.Count);
-        Assert.AreEqual(1, actual.AuthorityRecords.Count);
-        Assert.AreEqual(1, actual.AdditionalRecords.Count);
+        actual.AA.ShouldBe(expected.AA);
+        actual.Id.ShouldBe(expected.Id);
+        actual.IsQuery.ShouldBe(expected.IsQuery);
+        actual.IsResponse.ShouldBe(expected.IsResponse);
+        actual.Questions.Count.ShouldBe(1);
+        actual.Answers.Count.ShouldBe(1);
+        actual.AuthorityRecords.Count.ShouldBe(1);
+        actual.AdditionalRecords.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public void ExtendedOpcode()
     {
         var expected = new Message { Opcode = (MessageOperation)0xfff };
-        Assert.AreEqual((MessageOperation)0xfff, expected.Opcode);
-        Assert.AreEqual(1, expected.AdditionalRecords.OfType<OPTRecord>().Count());
+        expected.Opcode.ShouldBe((MessageOperation)0xfff);
+        expected.AdditionalRecords.OfType<OPTRecord>().Count().ShouldBe(1);
 
         var actual = (Message)new Message().Read(expected.ToByteArray());
-        Assert.AreEqual(expected.Opcode, actual.Opcode);
+        actual.Opcode.ShouldBe(expected.Opcode);
     }
 
-    [TestMethod]
+    [Fact]
     public void Issue_11()
     {
         var bytes = Convert.FromBase64String("EjSBgAABAAEAAAAABGlwZnMCaW8AABAAAcAMABAAAQAAADwAPTxkbnNsaW5rPS9pcGZzL1FtWU5RSm9LR05IVHBQeENCUGg5S2tEcGFFeGdkMmR1TWEzYUY2eXRNcEhkYW8=");
-        Assert.IsInstanceOfType<Message>(new Message().Read(bytes));
+        new Message().Read(bytes).ShouldBeOfType<Message>();
     }
 
-    [TestMethod]
+    [Fact]
     public void Issue_12()
     {
         var bytes = Convert.FromBase64String("AASBgAABAAQAAAABA3d3dwxvcGluaW9uc3RhZ2UDY29tAAABAAHADAAFAAEAAAA8AALAEMAQAAEAAQAAADwABCLAkCrANAABAAEAAAA8AAQ0NgUNwDQAAQABAAAAPAAEaxUAqgAAKQYAAAAAAAFlAAwBYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        Assert.IsInstanceOfType<Message>(new Message().Read(bytes));
+        new Message().Read(bytes).ShouldBeOfType<Message>();
     }
 
-    [TestMethod]
+    [Fact]
     public void Truncation_NotRequired()
     {
         var msg = new Message();
         var originalLength = msg.Length();
         msg.Truncate(int.MaxValue);
         
-        Assert.AreEqual(originalLength, msg.Length());
-        Assert.IsFalse(msg.TC);
+        originalLength.ShouldBe(msg.Length());
+        msg.TC.ShouldBeFalse();
     }
 
-    [TestMethod]
+    [Fact]
     public void Truncation_Fails()
     {
         var msg = new Message();
         var originalLength = msg.Length();
         msg.Truncate(originalLength - 1);
         
-        Assert.AreEqual(originalLength, msg.Length());
-        Assert.IsTrue(msg.TC);
+        originalLength.ShouldBe(msg.Length());
+        msg.TC.ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public void Truncation_AdditionalRecords()
     {
         var msg = new Message();
@@ -232,13 +230,13 @@ public class MessageTest
 
         msg.Truncate(originalLength);
         
-        Assert.AreEqual(originalLength, msg.Length());
-        Assert.AreEqual(1, msg.AdditionalRecords.Count);
-        Assert.AreEqual(1, msg.AuthorityRecords.Count);
-        Assert.IsFalse(msg.TC);
+        originalLength.ShouldBe(msg.Length());
+        msg.AdditionalRecords.Count.ShouldBe(1);
+        msg.AuthorityRecords.Count.ShouldBe(1);
+        msg.TC.ShouldBeFalse();
     }
 
-    [TestMethod]
+    [Fact]
     public void AuthorityRecords()
     {
         var msg = new Message();
@@ -250,22 +248,22 @@ public class MessageTest
 
         msg.Truncate(originalLength);
         
-        Assert.AreEqual(originalLength, msg.Length());
-        Assert.AreEqual(0, msg.AdditionalRecords.Count);
-        Assert.AreEqual(1, msg.AuthorityRecords.Count);
-        Assert.IsFalse(msg.TC);
+        originalLength.ShouldBe(msg.Length());
+        msg.AdditionalRecords.Count.ShouldBe(0);
+        msg.AuthorityRecords.Count.ShouldBe(1);
+        msg.TC.ShouldBeFalse();
     }
 
-    [TestMethod]
+    [Fact]
     public void UseDnsSecurity()
     {
         var expected = new Message().UseDnsSecurity();
         var opt = expected.AdditionalRecords.OfType<OPTRecord>().Single();
         
-        Assert.IsTrue(opt.DO, "dnssec ok");
+        opt.DO.ShouldBeTrue("dnssec ok");
     }
 
-    [TestMethod]
+    [Fact]
     public void UseDnsSecurity_OPT_Exists()
     {
         var expected = new Message();
@@ -273,26 +271,26 @@ public class MessageTest
         expected.UseDnsSecurity();
         var opt = expected.AdditionalRecords.OfType<OPTRecord>().Single();
         
-        Assert.IsTrue(opt.DO, "dnssec ok");
+        opt.DO.ShouldBeTrue("dnssec ok");
     }
 
-    [TestMethod]
+    [Fact]
     public void Dnssec_Bit()
     {
         var message = new Message();
-        Assert.IsFalse(message.DO);
-        Assert.AreEqual(0, message.AdditionalRecords.OfType<OPTRecord>().Count());
+        message.DO.ShouldBeFalse();
+        message.AdditionalRecords.OfType<OPTRecord>().Count().ShouldBe(0);
 
         message.DO = false;
-        Assert.IsFalse(message.DO);
-        Assert.AreEqual(1, message.AdditionalRecords.OfType<OPTRecord>().Count());
+        message.DO.ShouldBeFalse();
+        message.AdditionalRecords.OfType<OPTRecord>().Count().ShouldBe(1);
 
         message.DO = true;
-        Assert.IsTrue(message.DO);
-        Assert.AreEqual(1, message.AdditionalRecords.OfType<OPTRecord>().Count());
+        message.DO.ShouldBeTrue();
+        message.AdditionalRecords.OfType<OPTRecord>().Count().ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public void Stringify()
     {
         var m = new Message
@@ -328,10 +326,10 @@ public class MessageTest
                                  ;;  (empty)
 
                                  """;
-        Assert.AreEqual(expected, text);
+        text.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void Stringify_Edns()
     {
         const string sample = "AH6FDwEAAAEAAAAAAAEEaXBmcwJpbwAAEAABAAApBQAAAAAAAFoACwAC1MAADABQ8bbi5IwN3llzr84N11j2dG7+7lE5aBzanfc1yvO3LcgvS0TuT3Xvz6yVWcVBa8YnFwehfSyT6YiaCEaV2BNlvIIG3YwUCCX4Dh6kpA9WmDI=";
@@ -361,10 +359,10 @@ public class MessageTest
 
 
                                  """;
-        Assert.AreEqual(expected, text);
+        text.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void AppleMessage()
     {
         // A MDNS query from an Apple Host.  It contains a UTF8 domain name
@@ -374,8 +372,8 @@ public class MessageTest
         var m = new Message();
         m.Read(buffer1);
 
-        Assert.IsNotNull(m.Questions[4].Name);
-        Assert.AreEqual("Christopher’s MacBook Pro", m.Questions[4].Name.Labels[0]);
-        Assert.AreEqual("_homekit._tcp.local CLASS32769 PTR", m.Questions[0].ToString());
+        m.Questions[4].Name.ShouldNotBeNull();
+        m.Questions[4].Name.Labels[0].ShouldBe("Christopher’s MacBook Pro");
+        m.Questions[0].ToString().ShouldBe("_homekit._tcp.local CLASS32769 PTR");
     }
 }

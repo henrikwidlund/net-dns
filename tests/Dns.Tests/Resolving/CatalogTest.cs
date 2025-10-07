@@ -6,11 +6,11 @@ using System.Net;
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests.Resolving;
 
-[TestClass]
 public class CatalogTest
 {
     public const string ExampleDotOrgZoneText = """
@@ -54,167 +54,167 @@ public class CatalogTest
 
                                                 """;
     
-    [TestMethod]
+    [Fact]
     public void IncludeZone()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         var zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example.com", zone.Name);
-        Assert.IsTrue(zone.Authoritative);
+        zone.Name.ShouldBe("example.com");
+        zone.Authoritative.ShouldBeTrue();
 
-        Assert.IsTrue(catalog.ContainsKey("example.com"));
-        Assert.IsTrue(catalog.ContainsKey("ns.example.com"));
-        Assert.IsTrue(catalog.ContainsKey("www.example.com"));
-        Assert.IsTrue(catalog.ContainsKey("wwwtest.example.com"));
-        Assert.IsTrue(catalog.ContainsKey("mail.example.com"));
-        Assert.IsTrue(catalog.ContainsKey("mail2.example.com"));
-        Assert.IsTrue(catalog.ContainsKey("mail3.example.com"));
+        catalog.ContainsKey("example.com").ShouldBeTrue();
+        catalog.ContainsKey("ns.example.com").ShouldBeTrue();
+        catalog.ContainsKey("www.example.com").ShouldBeTrue();
+        catalog.ContainsKey("wwwtest.example.com").ShouldBeTrue();
+        catalog.ContainsKey("mail.example.com").ShouldBeTrue();
+        catalog.ContainsKey("mail2.example.com").ShouldBeTrue();
+        catalog.ContainsKey("mail3.example.com").ShouldBeTrue();
 
-        Assert.IsTrue(catalog["mail.example.com"].Authoritative);
+        catalog["mail.example.com"].Authoritative.ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public void IncludeZone_AlreadyExists()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         var zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example.com", zone.Name);
+        zone.Name.ShouldBe("example.com");
 
         reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
-        ExceptionAssert.Throws<InvalidDataException>(() => catalog.IncludeZone(reader));
+        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
     }
 
-    [TestMethod]
+    [Fact]
     public void IncludeZone_NoResources()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(""));
-        ExceptionAssert.Throws<InvalidDataException>(() => catalog.IncludeZone(reader));
+        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
     }
 
-    [TestMethod]
+    [Fact]
     public void IncludeZone_MissingSOA()
     {
         const string text = "foo.org A 127.0.0.1";
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(text));
-        ExceptionAssert.Throws<InvalidDataException>(() => catalog.IncludeZone(reader));
+        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
     }
 
-    [TestMethod]
+    [Fact]
     public void IncludeZone_InvalidName()
     {
         // Missing a new line
         const string text = ExampleDotOrgZoneText + " not.in.zone. A 127.0.0.1 ; bad";
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(text));
-        ExceptionAssert.Throws<InvalidDataException>(() => catalog.IncludeZone(reader));
+        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
     }
 
-    [TestMethod]
+    [Fact]
     public void MultipleZones()
     {
         var catalog = new Catalog();
 
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         var zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example.com", zone.Name);
+        zone.Name.ShouldBe("example.com");
 
         reader = new PresentationReader(new StringReader(ExampleDotOrgZoneText));
         zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example.org", zone.Name);
+        zone.Name.ShouldBe("example.org");
     }
 
-    [TestMethod]
+    [Fact]
     public void RemoveZone()
     {
         var catalog = new Catalog();
         
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         var zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example.com", zone.Name);
-        Assert.AreEqual(7, catalog.Count);
+        zone.Name.ShouldBe("example.com");
+        catalog.Count.ShouldBe(7);
 
         reader = new PresentationReader(new StringReader(ExampleDotOrgZoneText));
         zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example.org", zone.Name);
-        Assert.AreEqual(7 + 7, catalog.Count);
+        zone.Name.ShouldBe("example.org");
+        catalog.Count.ShouldBe(14);
 
         catalog.RemoveZone("example.org");
-        Assert.AreEqual(7, catalog.Count);
+        catalog.Count.ShouldBe(7);
 
         catalog.RemoveZone("example.com");
-        Assert.AreEqual(0, catalog.Count);
+        catalog.Count.ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void NamesAreCaseInsenstive()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         catalog.IncludeZone(reader);
 
-        Assert.IsTrue(catalog.ContainsKey("EXAMPLE.COM"));
-        Assert.IsTrue(catalog.ContainsKey("NS.EXAMPLE.COM"));
-        Assert.IsTrue(catalog.ContainsKey("WWW.EXAMPLE.COM"));
-        Assert.IsTrue(catalog.ContainsKey("WWWTEST.EXAMPLE.COM"));
-        Assert.IsTrue(catalog.ContainsKey("MAIL.EXAMPLE.COM"));
-        Assert.IsTrue(catalog.ContainsKey("MAIL2.EXAMPLE.COM"));
-        Assert.IsTrue(catalog.ContainsKey("MAIL3.EXAMPLE.COM"));
+        catalog.ContainsKey("EXAMPLE.COM").ShouldBeTrue();
+        catalog.ContainsKey("NS.EXAMPLE.COM").ShouldBeTrue();
+        catalog.ContainsKey("WWW.EXAMPLE.COM").ShouldBeTrue();
+        catalog.ContainsKey("WWWTEST.EXAMPLE.COM").ShouldBeTrue();
+        catalog.ContainsKey("MAIL.EXAMPLE.COM").ShouldBeTrue();
+        catalog.ContainsKey("MAIL2.EXAMPLE.COM").ShouldBeTrue();
+        catalog.ContainsKey("MAIL3.EXAMPLE.COM").ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public void AddResource()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var aaaa = AddressRecord.Create("foo", IPAddress.IPv6Loopback);
         var catalog = new Catalog();
         var n1 = catalog.Add(a, true);
-        Assert.IsTrue(n1.Authoritative);
-        Assert.IsTrue(n1.Resources.Contains(a));
+        n1.Authoritative.ShouldBeTrue();
+        n1.Resources.Contains(a).ShouldBeTrue();
 
         var n2 = catalog.Add(aaaa);
-        Assert.AreSame(n1, n2);
-        Assert.IsTrue(n1.Authoritative);
-        Assert.IsTrue(n1.Resources.Contains(a));
-        Assert.IsTrue(n1.Resources.Contains(aaaa));
+        n1.ShouldBeSameAs(n2);
+        n1.Authoritative.ShouldBeTrue();
+        n1.Resources.Contains(a).ShouldBeTrue();
+        n1.Resources.Contains(aaaa).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public void AddResource_Same()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
-        Assert.IsTrue(n1.Resources.Contains(a));
+        n1.Resources.Contains(a).ShouldBeTrue();
 
         var n2 = catalog.Add(a);
-        Assert.AreSame(n1, n2);
-        Assert.IsTrue(n1.Resources.Contains(a));
-        Assert.AreEqual(1, n1.Resources.Count);
+        n1.ShouldBeSameAs(n2);
+        n1.Resources.Contains(a).ShouldBeTrue();
+        n1.Resources.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public void AddResource_Duplicate()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var b = AddressRecord.Create("foo", IPAddress.Loopback);
-        Assert.AreEqual(a, b);
-        
+        a.ShouldBe(b);
+
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
-        Assert.IsTrue(n1.Resources.Contains(a));
+        n1.Resources.Contains(a).ShouldBeTrue();
 
         var n2 = catalog.Add(b);
-        Assert.AreSame(n1, n2);
-        Assert.IsTrue(n1.Resources.Contains(a));
-        Assert.IsTrue(n1.Resources.Contains(b));
-        Assert.AreEqual(1, n1.Resources.Count);
+        n1.ShouldBeSameAs(n2);
+        n1.Resources.Contains(a).ShouldBeTrue();
+        n1.Resources.Contains(b).ShouldBeTrue();
+        n1.Resources.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public void AddResource_Latest()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
@@ -222,32 +222,32 @@ public class CatalogTest
         a.TTL = TimeSpan.FromHours(2);
         b.CreationTime = a.CreationTime + TimeSpan.FromHours(1);
         b.TTL = TimeSpan.FromHours(3);
-        Assert.AreEqual(a, b);
-        
+        a.ShouldBe(b);
+
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
-        Assert.IsTrue(n1.Resources.Contains(a));
+        n1.Resources.Contains(a).ShouldBeTrue();
 
         var n2 = catalog.Add(b);
-        Assert.AreSame(n1, n2);
-        Assert.IsTrue(n1.Resources.Contains(a));
-        Assert.IsTrue(n1.Resources.Contains(b));
-        Assert.AreEqual(1, n1.Resources.Count);
-        Assert.AreEqual(b.CreationTime, n1.Resources.First().CreationTime);
-        Assert.AreEqual(b.TTL, n1.Resources.First().TTL);
+        n1.ShouldBeSameAs(n2);
+        n1.Resources.Contains(a).ShouldBeTrue();
+        n1.Resources.Contains(b).ShouldBeTrue();
+        n1.Resources.Count.ShouldBe(1);
+        n1.Resources.First().CreationTime.ShouldBe(b.CreationTime);
+        n1.Resources.First().TTL.ShouldBe(b.TTL);
     }
 
-    [TestMethod]
+    [Fact]
     public void RootHints()
     {
         var catalog = new Catalog();
         var root = catalog.IncludeRootHints();
-        Assert.AreEqual("", root.Name);
-        Assert.IsTrue(root.Authoritative);
-        Assert.IsTrue(root.Resources.OfType<NSRecord>().Any());
+        root.Name.ShouldBe("");
+        root.Authoritative.ShouldBeTrue();
+        root.Resources.OfType<NSRecord>().Any().ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public void CanonicalOrder()
     {
         var catalog = new Catalog
@@ -273,10 +273,10 @@ public class CatalogTest
             .NodesInCanonicalOrder()
             .Select(static node => node.Name)
             .ToArray();
-        CollectionAssert.AreEqual(expected, actual);
+        actual.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void Include()
     {
         const string dig = """
@@ -307,13 +307,13 @@ public class CatalogTest
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(dig));
         catalog.Include(reader);
-        Assert.IsTrue(catalog.ContainsKey("com"));
-        
+        catalog.ContainsKey("com").ShouldBeTrue();
+
         var node = catalog["COM"];
-        Assert.AreEqual(3, node.Resources.Count);
+        node.Resources.Count.ShouldBe(3);
     }
 
-    [TestMethod]
+    [Fact]
     public void IncludeReverseLookupRecords()
     {
         var catalog = new Catalog();
@@ -321,10 +321,10 @@ public class CatalogTest
         _ = catalog.IncludeZone(reader);
         catalog.IncludeReverseLookupRecords();
 
-        Assert.IsTrue(catalog.ContainsKey("1.2.0.192.in-addr.arpa"));
-        Assert.IsTrue(catalog.ContainsKey("2.2.0.192.in-addr.arpa"));
-        Assert.IsTrue(catalog.ContainsKey("3.2.0.192.in-addr.arpa"));
+        catalog.ContainsKey("1.2.0.192.in-addr.arpa").ShouldBeTrue();
+        catalog.ContainsKey("2.2.0.192.in-addr.arpa").ShouldBeTrue();
+        catalog.ContainsKey("3.2.0.192.in-addr.arpa").ShouldBeTrue();
 
-        Assert.IsTrue(catalog["1.2.0.192.in-addr.arpa"].Authoritative);
+        catalog["1.2.0.192.in-addr.arpa"].Authoritative.ShouldBeTrue();
     }
 }

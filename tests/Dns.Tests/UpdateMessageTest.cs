@@ -1,36 +1,34 @@
 ﻿using System.Linq;
 using System.Net;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class UpdateMessageTest
 {
-    [TestMethod]
+    [Fact]
     public void Defaults()
     {
         var m = new UpdateMessage();
         
-        Assert.AreEqual(0, m.AdditionalResources.Count);
-        Assert.AreEqual(0, m.Id);
-        Assert.IsFalse(m.IsResponse);
-        Assert.IsTrue(m.IsUpdate);
-        Assert.AreEqual(MessageOperation.Update, m.Opcode);
-        Assert.AreEqual(0, m.Prerequisites.Count);
-        Assert.IsFalse(m.QR);
-        Assert.AreEqual(MessageStatus.NoError, m.Status);
-        Assert.AreEqual(0, m.Updates.Count);
-        Assert.AreEqual(0, m.Z);
-        Assert.IsNotNull(m.Zone);
-        Assert.AreEqual(DnsType.SOA, m.Zone.Type, "must be SOA");
-        Assert.AreEqual(DnsClass.IN, m.Zone.Class);
+        m.AdditionalResources.Count.ShouldBe(0);
+        m.Id.ShouldBe((ushort)0);
+        m.IsResponse.ShouldBeFalse();
+        m.IsUpdate.ShouldBeTrue();
+        m.Opcode.ShouldBe(MessageOperation.Update);
+        m.Prerequisites.Count.ShouldBe(0);
+        m.QR.ShouldBeFalse();
+        m.Status.ShouldBe(MessageStatus.NoError);
+        m.Updates.Count.ShouldBe(0);
+        m.Z.ShouldBe(0);
+        m.Zone.ShouldNotBeNull();
+        m.Zone.Type.ShouldBe(DnsType.SOA);
+        m.Zone.Class.ShouldBe(DnsClass.IN);
     }
 
-    [TestMethod]
+    [Fact]
     public void Flags()
     {
         var expected = new UpdateMessage
@@ -45,28 +43,28 @@ public class UpdateMessageTest
         var actual = new UpdateMessage();
         actual.Read(expected.ToByteArray());
         
-        Assert.AreEqual(expected.Id, actual.Id);
-        Assert.AreEqual(expected.QR, actual.QR);
-        Assert.AreEqual(expected.Opcode, actual.Opcode);
-        Assert.AreEqual(expected.Z, actual.Z);
-        Assert.AreEqual(expected.Status, actual.Status);
-        Assert.AreEqual(expected.Zone.Name, actual.Zone.Name);
-        Assert.AreEqual(expected.Zone.Class, actual.Zone.Class);
-        Assert.AreEqual(expected.Zone.Type, actual.Zone.Type);
+        actual.Id.ShouldBe(expected.Id);
+        actual.QR.ShouldBe(expected.QR);
+        actual.Opcode.ShouldBe(expected.Opcode);
+        actual.Z.ShouldBe(expected.Z);
+        actual.Status.ShouldBe(expected.Status);
+        actual.Zone.Name.ShouldBe(expected.Zone.Name);
+        actual.Zone.Class.ShouldBe(expected.Zone.Class);
+        actual.Zone.Type.ShouldBe(expected.Zone.Type);
     }
 
-    [TestMethod]
+    [Fact]
     public void Response()
     {
         var update = new UpdateMessage { Id = 1234 };
         var response = update.CreateResponse();
         
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(update.Id, response.Id);
-        Assert.AreEqual(update.Opcode, response.Opcode);
+        response.IsResponse.ShouldBeTrue();
+        response.Id.ShouldBe(update.Id);
+        response.Opcode.ShouldBe(update.Opcode);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var expected = new UpdateMessage
@@ -88,17 +86,17 @@ public class UpdateMessageTest
         
         var actual = (UpdateMessage)new UpdateMessage().Read(expected.ToByteArray());
         
-        Assert.AreEqual(expected.Id, actual.Id);
-        Assert.AreEqual(expected.IsUpdate, actual.IsUpdate);
-        Assert.AreEqual(expected.IsResponse, actual.IsResponse);
-        Assert.AreEqual(expected.Opcode, actual.Opcode);
-        Assert.AreEqual(expected.QR, actual.QR);
-        Assert.AreEqual(expected.Status, actual.Status);
-        Assert.AreEqual(expected.Zone.Name, actual.Zone.Name);
-        Assert.AreEqual(expected.Zone.Class, actual.Zone.Class);
-        Assert.AreEqual(expected.Zone.Type, actual.Zone.Type);
-        Assert.IsTrue(expected.Prerequisites.SequenceEqual(actual.Prerequisites));
-        Assert.IsTrue(expected.Updates.SequenceEqual(actual.Updates));
-        Assert.IsTrue(expected.AdditionalResources.SequenceEqual(actual.AdditionalResources));
+        actual.Id.ShouldBe(expected.Id);
+        actual.IsUpdate.ShouldBe(expected.IsUpdate);
+        actual.IsResponse.ShouldBe(expected.IsResponse);
+        actual.Opcode.ShouldBe(expected.Opcode);
+        actual.QR.ShouldBe(expected.QR);
+        actual.Status.ShouldBe(expected.Status);
+        actual.Zone.Name.ShouldBe(expected.Zone.Name);
+        actual.Zone.Class.ShouldBe(expected.Zone.Class);
+        actual.Zone.Type.ShouldBe(expected.Zone.Type);
+        actual.Prerequisites.SequenceEqual(expected.Prerequisites).ShouldBeTrue();
+        actual.Updates.SequenceEqual(expected.Updates).ShouldBeTrue();
+        actual.AdditionalResources.SequenceEqual(expected.AdditionalResources).ShouldBeTrue();
     }
 }
