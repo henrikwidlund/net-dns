@@ -1,15 +1,13 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class NSECRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new NSECRecord
@@ -22,15 +20,15 @@ public class NSECRecordTest
         
         var b = (NSECRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.NextOwnerName, b.NextOwnerName);
-        CollectionAssert.AreEqual(a.Types, b.Types);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.NextOwnerName.ShouldBe(b.NextOwnerName);
+        a.Types.ShouldBe(b.Types);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new NSECRecord
@@ -43,12 +41,12 @@ public class NSECRecordTest
         
         var b = (NSECRecord)new ResourceRecord().Read(a.ToString());
         
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.NextOwnerName, b.NextOwnerName);
-        CollectionAssert.AreEqual(a.Types, b.Types);
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.NextOwnerName.ShouldBe(b.NextOwnerName);
+        a.Types.ShouldBe(b.Types);
     }
 }

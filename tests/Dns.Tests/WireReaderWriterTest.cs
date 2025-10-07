@@ -1,17 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class WireReaderWriterTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var someBytes = new byte[] { 1, 2, 3 };
@@ -35,22 +33,22 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        Assert.AreEqual("emanon.org", reader.ReadDomainName());
-        Assert.AreEqual("alpha", reader.ReadString());
-        Assert.AreEqual(TimeSpan.FromHours(3), reader.ReadTimeSpan32());
-        Assert.AreEqual(ushort.MaxValue, reader.ReadUInt16());
-        Assert.AreEqual(uint.MaxValue, reader.ReadUInt32());
-        Assert.AreEqual(0XFFFFFFFFFFFFul, reader.ReadUInt48());
-        CollectionAssert.AreEqual(someBytes, reader.ReadBytes(3));
-        CollectionAssert.AreEqual(someBytes, reader.ReadByteLengthPrefixedBytes());
-        CollectionAssert.AreEqual(Array.Empty<byte>(), reader.ReadByteLengthPrefixedBytes());
-        Assert.AreEqual(IPAddress.Parse("127.0.0.1"), reader.ReadIPAddress());
-        Assert.AreEqual(IPAddress.Parse("2406:e001:13c7:1:7173:ef8:852f:25cb"), reader.ReadIPAddress(16));
-        Assert.AreEqual(someDate, reader.ReadDateTime32());
-        Assert.AreEqual(someDate, reader.ReadDateTime48());
+        reader.ReadDomainName().ShouldBe("emanon.org");
+        reader.ReadString().ShouldBe("alpha");
+        reader.ReadTimeSpan32().ShouldBe(TimeSpan.FromHours(3));
+        reader.ReadUInt16().ShouldBe(ushort.MaxValue);
+        reader.ReadUInt32().ShouldBe(uint.MaxValue);
+        reader.ReadUInt48().ShouldBe(0XFFFFFFFFFFFFul);
+        reader.ReadBytes(3).ShouldBe(someBytes);
+        reader.ReadByteLengthPrefixedBytes().ShouldBe(someBytes);
+        reader.ReadByteLengthPrefixedBytes().ShouldBe([]);
+        reader.ReadIPAddress().ShouldBe(IPAddress.Parse("127.0.0.1"));
+        reader.ReadIPAddress(16).ShouldBe(IPAddress.Parse("2406:e001:13c7:1:7173:ef8:852f:25cb"));
+        reader.ReadDateTime32().ShouldBe(someDate);
+        reader.ReadDateTime48().ShouldBe(someDate);
     }
 
-    [TestMethod]
+    [Fact]
     public void Write_DomainName()
     {
         using var ms = new MemoryStream();
@@ -58,14 +56,14 @@ public class WireReaderWriterTest
         writer.WriteDomainName("a.b");
         ms.Position = 0;
         
-        Assert.AreEqual(1, ms.ReadByte(), "length of 'a'");
-        Assert.AreEqual('a', (char)ms.ReadByte());
-        Assert.AreEqual(1, ms.ReadByte(), "length of 'b'");
-        Assert.AreEqual('b', (char)ms.ReadByte());
-        Assert.AreEqual(0, ms.ReadByte(), "trailing nul");
+        ms.ReadByte().ShouldBe(1, customMessage: "length of 'a'");
+        ((char)ms.ReadByte()).ShouldBe('a');
+        ms.ReadByte().ShouldBe(1, customMessage: "length of 'b'");
+        ((char)ms.ReadByte()).ShouldBe('b');
+        ms.ReadByte().ShouldBe(0, customMessage: "trailing nul");
     }
 
-    [TestMethod]
+    [Fact]
     public void Write_EscapedDomainName()
     {
         using var ms = new MemoryStream();
@@ -73,59 +71,59 @@ public class WireReaderWriterTest
         writer.WriteDomainName(@"a\.b");
         ms.Position = 0;
         
-        Assert.AreEqual(3, ms.ReadByte(), "length of 'a.b'");
-        Assert.AreEqual('a', (char)ms.ReadByte());
-        Assert.AreEqual('.', (char)ms.ReadByte());
-        Assert.AreEqual('b', (char)ms.ReadByte());
-        Assert.AreEqual(0, ms.ReadByte(), "trailing nul");
+        ms.ReadByte().ShouldBe(3, customMessage: "length of 'a.b'");
+        ((char)ms.ReadByte()).ShouldBe('a');
+        ((char)ms.ReadByte()).ShouldBe('.');
+        ((char)ms.ReadByte()).ShouldBe('b');
+        ms.ReadByte().ShouldBe(0, customMessage: "trailing nul");
     }
 
-    [TestMethod]
+    [Fact]
     public void BufferOverflow_Byte()
     {
         using var ms = new MemoryStream([]);
         var reader = new WireReader(ms);
         
-        ExceptionAssert.Throws<EndOfStreamException>(() => reader.ReadByte());
+        Should.Throw<EndOfStreamException>(() => reader.ReadByte());
     }
 
-    [TestMethod]
+    [Fact]
     public void BufferOverflow_Bytes()
     {
         using var ms = new MemoryStream([1, 2]);
         var reader = new WireReader(ms);
         
-        ExceptionAssert.Throws<EndOfStreamException>(() => reader.ReadBytes(3));
+        Should.Throw<EndOfStreamException>(() => reader.ReadBytes(3));
     }
 
-    [TestMethod]
+    [Fact]
     public void BufferOverflow_DomainName()
     {
         using var ms = new MemoryStream([1, (byte)'a']);
         var reader = new WireReader(ms);
         
-        ExceptionAssert.Throws<EndOfStreamException>(() => reader.ReadDomainName());
+        Should.Throw<EndOfStreamException>(() => reader.ReadDomainName());
     }
 
-    [TestMethod]
+    [Fact]
     public void BufferOverflow_String()
     {
         using var ms = new MemoryStream([10, 1]);
         var reader = new WireReader(ms);
         
-        ExceptionAssert.Throws<EndOfStreamException>(() => reader.ReadString());
+        Should.Throw<EndOfStreamException>(() => reader.ReadString());
     }
 
-    [TestMethod]
+    [Fact]
     public void BytePrefixedArray_TooBig()
     {
         var bytes = new byte[byte.MaxValue + 1];
         var writer = new WireWriter(new MemoryStream());
         
-        ExceptionAssert.Throws<ArgumentException>(() => writer.WriteByteLengthPrefixedBytes(bytes));
+        Should.Throw<ArgumentException>(() => writer.WriteByteLengthPrefixedBytes(bytes));
     }
 
-    [TestMethod]
+    [Fact]
     public void LengthPrefixedScope()
     {
         using var ms = new MemoryStream();
@@ -139,13 +137,13 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        Assert.AreEqual("abc", reader.ReadString());
-        Assert.AreEqual(5, reader.ReadUInt16());
-        Assert.AreEqual("a", reader.ReadDomainName());
-        Assert.AreEqual("a", reader.ReadDomainName());
+        reader.ReadString().ShouldBe("abc");
+        reader.ReadUInt16().ShouldBe((ushort)5);
+        reader.ReadDomainName().ShouldBe("a");
+        reader.ReadDomainName().ShouldBe("a");
     }
 
-    [TestMethod]
+    [Fact]
     public void EmptyDomainName()
     {
         using var ms = new MemoryStream();
@@ -156,26 +154,26 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        Assert.AreEqual("", reader.ReadDomainName());
-        Assert.AreEqual("abc", reader.ReadString());
+        reader.ReadDomainName().ShouldBe("");
+        reader.ReadString().ShouldBe("abc");
     }
 
-    [TestMethod]
+    [Fact]
     public void CanonicalDomainName()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms) { CanonicalForm = true };
         writer.WriteDomainName("FOO");
         writer.WriteDomainName("FOO");
-        Assert.AreEqual(5 * 2, writer.Position);
+        writer.Position.ShouldBe(5 * 2);
 
         ms.Position = 0;
         var reader = new WireReader(ms);
-        Assert.AreEqual("foo", reader.ReadDomainName());
-        Assert.AreEqual("foo", reader.ReadDomainName());
+        reader.ReadDomainName().ShouldBe("foo");
+        reader.ReadDomainName().ShouldBe("foo");
     }
 
-    [TestMethod]
+    [Fact]
     public void NullDomainName_String()
     {
         using var ms = new MemoryStream();
@@ -186,11 +184,11 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        Assert.AreEqual("", reader.ReadDomainName());
-        Assert.AreEqual("abc", reader.ReadString());
+        reader.ReadDomainName().ShouldBe("");
+        reader.ReadString().ShouldBe("abc");
     }
 
-    [TestMethod]
+    [Fact]
     public void NullDomainName_Class()
     {
         using var ms = new MemoryStream();
@@ -201,11 +199,11 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        Assert.AreEqual("", reader.ReadDomainName());
-        Assert.AreEqual("abc", reader.ReadString());
+        reader.ReadDomainName().ShouldBe("");
+        reader.ReadString().ShouldBe("abc");
     }
 
-    [TestMethod]
+    [Fact]
     public void Read_EscapedDotDomainName()
     {
         const string domainName = @"a\.b";
@@ -217,10 +215,10 @@ public class WireReaderWriterTest
         var reader = new WireReader(ms);
         var name = reader.ReadDomainName();
         
-        Assert.AreEqual(domainName, name);
+        name.ShouldBe(domainName);
     }
 
-    [TestMethod]
+    [Fact]
     public void Bitmap()
     {
         // From https://tools.ietf.org/html/rfc3845#section-2.3
@@ -237,24 +235,24 @@ public class WireReaderWriterTest
         var reader = new WireReader(ms1);
         var first = new ushort[] { 1, 15, 46, 47 };
         var second = new ushort[] { 1234 };
-        CollectionAssert.AreEqual(first, reader.ReadBitmap());
-        CollectionAssert.AreEqual(second, reader.ReadBitmap());
+        reader.ReadBitmap().ShouldBe(first);
+        reader.ReadBitmap().ShouldBe(second);
 
         using var ms2 = new MemoryStream();
         var writer = new WireWriter(ms2);
         writer.WriteBitmap([1, 15, 46, 47, 1234]);
-        CollectionAssert.AreEqual(wire, ms2.ToArray());
+        ms2.ToArray().ShouldBe(wire);
     }
 
-    [TestMethod]
+    [Fact]
     public void Uint48TooBig()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
-        Assert.ThrowsExactly<ArgumentException>(() => writer.WriteUInt48(0X1FFFFFFFFFFFFul));
+        Should.Throw<ArgumentException>(() => writer.WriteUInt48(0X1FFFFFFFFFFFFul));
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadDateTime48()
     {
         // From https://tools.ietf.org/html/rfc2845 section 3.3
@@ -262,39 +260,39 @@ public class WireReaderWriterTest
         using var ms = new MemoryStream([0x00, 0x00, 0x32, 0xe4, 0x07, 0x00]);
         var reader = new WireReader(ms);
         
-        Assert.AreEqual(expected, reader.ReadDateTime48());
+        reader.ReadDateTime48().ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteString_NotAscii()
     {
         var writer = new WireWriter(Stream.Null);
-        Assert.ThrowsExactly<ArgumentException>(() => writer.WriteString("δοκιμή")); // test in Greek
+        Should.Throw<ArgumentException>(() => writer.WriteString("δοκιμή")); // test in Greek
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteString_TooBig()
     {
         var writer = new WireWriter(Stream.Null);
-        Assert.ThrowsExactly<ArgumentException>(() => writer.WriteString(new string('a', 0x100)));
+        Should.Throw<ArgumentException>(() => writer.WriteString(new string('a', 0x100)));
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadString_NotAscii()
     {
         using var ms = new MemoryStream([1, 0xFF]);
         var reader = new WireReader(ms);
-        Assert.ThrowsExactly<InvalidDataException>(() => reader.ReadString());
+        Should.Throw<InvalidDataException>(() => reader.ReadString());
     }
 
-    [TestMethod]
+    [Fact]
     public void WriteDateTime32_TooManySeconds()
     {
         var writer = new WireWriter(Stream.Null);
         writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime);
         writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime.AddSeconds(uint.MaxValue));
 
-        ExceptionAssert.Throws<OverflowException>(() =>
+        Should.Throw<OverflowException>(() =>
         {
             writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime.AddSeconds((long)(uint.MaxValue) + 1));
         });

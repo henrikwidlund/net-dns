@@ -1,27 +1,26 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class OPTRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Defaults()
     {
         var opt = new OPTRecord();
-        
-        Assert.AreEqual("", opt.Name);
-        Assert.AreEqual(1280, opt.RequestorPayloadSize);
-        Assert.AreEqual((ushort)opt.Class, opt.RequestorPayloadSize);
-        Assert.AreEqual(0, opt.Opcode8);
-        Assert.AreEqual(0, opt.Version);
-        Assert.IsFalse(opt.DO);
-        Assert.AreEqual(0, opt.Options.Count);
+
+        opt.Name.ShouldBe("");
+        opt.RequestorPayloadSize.ShouldBe((ushort)1280);
+        ((ushort)opt.Class).ShouldBe(opt.RequestorPayloadSize);
+        opt.Opcode8.ShouldBe((byte)0);
+        opt.Version.ShouldBe((byte)0);
+        opt.DO.ShouldBeFalse();
+        opt.Options.Count.ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new OPTRecord
@@ -31,44 +30,44 @@ public class OPTRecordTest
             Version = 3,
             DO = true
         };
-        
+
         var b = (OPTRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.RequestorPayloadSize, b.RequestorPayloadSize);
-        Assert.AreEqual(a.Opcode8, b.Opcode8);
-        Assert.AreEqual(a.Version, b.Version);
-        Assert.AreEqual(a.DO, b.DO);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.RequestorPayloadSize.ShouldBe(b.RequestorPayloadSize);
+        a.Opcode8.ShouldBe(b.Opcode8);
+        a.Version.ShouldBe(b.Version);
+        a.DO.ShouldBe(b.DO);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_NoOptions()
     {
         var a = new OPTRecord();
         var b = (OPTRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
     }
 
-    [TestMethod]
+    [Fact]
     public void Equality()
     {
         var a = new OPTRecord();
-        
+
         var b = new OPTRecord
         {
             RequestorPayloadSize = 512
         };
-        
+
         // ReSharper disable once EqualExpressionComparison
-        Assert.IsTrue(a.Equals(a));
-        Assert.IsFalse(a.Equals(b));
-        Assert.IsFalse(a.Equals(null));
+        a.Equals(a).ShouldBeTrue();
+        a.Equals(b).ShouldBeFalse();
+        a.Equals(null).ShouldBeFalse();
     }
 }

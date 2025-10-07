@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
 
 namespace DnsTests;
 
@@ -23,21 +22,21 @@ public static class ExceptionAssert
                 throw;
 
             if (expectedMessage != null)
-                Assert.AreEqual(expectedMessage, match.Message, "Wrong exception message.");
+                match.Message.ShouldBe(expectedMessage, "Wrong exception message.");
             return;
 
         }
         catch (T e)
         {
             if (expectedMessage != null)
-                Assert.AreEqual(expectedMessage, e.Message);
+                e.Message.ShouldBe(expectedMessage);
             return;
         }
         catch (Exception e)
         {
-            Assert.Fail("Exception of type {0} should be thrown not {1}.", typeof(T), e.GetType());
+            throw new Xunit.Sdk.XunitException($"Exception of type {typeof(T)} should be thrown not {e.GetType()}.");
         }
 
-        Assert.Fail("Expected Exception of type {0} but nothing was thrown.", typeof(T));
+        throw new Xunit.Sdk.XunitException($"Expected Exception of type {typeof(T)} but nothing was thrown.");
     }
 }

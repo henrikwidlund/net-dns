@@ -1,13 +1,12 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class QuestionTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new Question
@@ -16,11 +15,11 @@ public class QuestionTest
             Class = DnsClass.CH,
             Type = DnsType.MX
         };
-        
+
         var b = (Question)new Question().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
     }
 }

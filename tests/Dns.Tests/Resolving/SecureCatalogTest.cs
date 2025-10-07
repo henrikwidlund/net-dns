@@ -3,11 +3,11 @@
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests.Resolving;
 
-[TestClass]
 public class SecureCatalogTest
 {
     // From RFC 4035 Appendix A
@@ -259,17 +259,17 @@ public class SecureCatalogTest
                                                                        GghLahumFIpg4MO3LS/prgzVVWo= )
                                          """;
     
-    [TestMethod]
+    [Fact]
     public void IncludeZone()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleZoneText));
         var zone = catalog.IncludeZone(reader);
-        Assert.AreEqual("example", zone.Name);
-        Assert.IsTrue(zone.Authoritative);
+        zone.Name.ShouldBe("example");
+        zone.Authoritative.ShouldBeTrue();
 
-        Assert.IsTrue(catalog.ContainsKey("example"));
-        Assert.IsTrue(catalog.ContainsKey("ns1.example"));
-        Assert.IsTrue(catalog.ContainsKey("xx.example"));
+        catalog.ContainsKey("example").ShouldBeTrue();
+        catalog.ContainsKey("ns1.example").ShouldBeTrue();
+        catalog.ContainsKey("xx.example").ShouldBeTrue();
     }
 }

@@ -1,22 +1,21 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class ResourceRegistryTest
 {
-    [TestMethod]
-    public void Exists() => Assert.AreNotEqual(0, ResourceRegistry.Records.Count);
+    [Fact]
+    public void Exists() => ResourceRegistry.Records.Count.ShouldNotBe(0);
 
-    [TestMethod]
+    [Fact]
     public void Create()
     {
         var rr = ResourceRegistry.Create(DnsType.NS);
-        Assert.IsInstanceOfType<NSRecord>(rr);
+        rr.ShouldBeOfType<NSRecord>();
 
         rr = ResourceRegistry.Create((DnsType)1234);
-        Assert.IsInstanceOfType<UnknownRecord>(rr);
+        rr.ShouldBeOfType<UnknownRecord>();
     }
 }

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Security.Cryptography;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class DNSKEYRecordTest
 {
     private static readonly byte[] Key = Convert.FromBase64String("AQPSKmynfzW4kyBv015MUG2DeIQ3Cbl+BBZH4b/0PY1kxkmvHjcZc8nokfzj31GajIQKY+5CptLr3buXA10hWqTkF7H6RfoRqXQeogmMHfpftf6zMv1LyBUgia7za6ZEzOJBOztyvhjL742iU/TpPSEDhm2SNKLijfUppn1UaNvv4w==");
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new DNSKEYRecord
@@ -24,20 +22,20 @@ public class DNSKEYRecordTest
             Algorithm = SecurityAlgorithm.RSASHA1,
             PublicKey = Key
         };
-        
+
         var b = (DNSKEYRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Protocol, b.Protocol);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        CollectionAssert.AreEqual(a.PublicKey, b.PublicKey);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Flags.ShouldBe(b.Flags);
+        a.Protocol.ShouldBe(b.Protocol);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.PublicKey.ShouldBe(b.PublicKey);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new DNSKEYRecord
@@ -49,21 +47,21 @@ public class DNSKEYRecordTest
             Algorithm = SecurityAlgorithm.RSASHA1,
             PublicKey = Key
         };
-        
+
         var b = (DNSKEYRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Protocol, b.Protocol);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        CollectionAssert.AreEqual(a.PublicKey, b.PublicKey);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Flags.ShouldBe(b.Flags);
+        a.Protocol.ShouldBe(b.Protocol);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.PublicKey.ShouldBe(b.PublicKey);
     }
 
-    [TestMethod]
+    [Fact]
     public void KeyTag()
     {
         // From https://tools.ietf.org/html/rfc4034#section-5.4
@@ -85,11 +83,11 @@ public class DNSKEYRecordTest
                     ljwvFw==
                 """)
         };
-        
-        Assert.AreEqual(60485, a.KeyTag());
+
+        a.KeyTag().ShouldBe((ushort)60485);
     }
 
-    [TestMethod]
+    [Fact]
     public void FromRsaSha256()
     {
         // From https://tools.ietf.org/html/rfc5702#section-6.1
@@ -110,15 +108,15 @@ public class DNSKEYRecordTest
         {
             Flags = DnsKeys.ZoneKey
         };
-        
-        Assert.AreEqual(DnsKeys.ZoneKey, dnskey.Flags);
-        Assert.AreEqual(3, dnskey.Protocol);
-        Assert.AreEqual(SecurityAlgorithm.RSASHA256, dnskey.Algorithm);
-        CollectionAssert.AreEqual(dnsPublicKey, dnskey.PublicKey);
-        Assert.AreEqual(9033, dnskey.KeyTag());
+
+        dnskey.Flags.ShouldBe(DnsKeys.ZoneKey);
+        dnskey.Protocol.ShouldBe((byte)3);
+        dnskey.Algorithm.ShouldBe(SecurityAlgorithm.RSASHA256);
+        dnskey.PublicKey.ShouldBe(dnsPublicKey);
+        dnskey.KeyTag().ShouldBe((ushort)9033);
     }
 
-    [TestMethod]
+    [Fact]
     public void FromRsaSha256_BadAlgorithm()
     {
         // From https://tools.ietf.org/html/rfc5702#section-6.1
@@ -134,13 +132,13 @@ public class DNSKEYRecordTest
         var publicKey = RSA.Create();
         publicKey.ImportParameters(parameters);
 
-        ExceptionAssert.Throws<ArgumentException>(() =>
+        Should.Throw<ArgumentException>(() =>
         {
             _ = new DNSKEYRecord(publicKey, SecurityAlgorithm.ECDSAP256SHA256);
         });
     }
 
-    [TestMethod]
+    [Fact]
     public void FromRsaSha512()
     {
         // From https://tools.ietf.org/html/rfc5702#section-6.2
@@ -153,7 +151,7 @@ public class DNSKEYRecordTest
             Exponent = publicExponent,
             Modulus = modulus
         };
-        
+
         var publicKey = RSA.Create();
         publicKey.ImportParameters(parameters);
 
@@ -161,15 +159,15 @@ public class DNSKEYRecordTest
         {
             Flags = DnsKeys.ZoneKey
         };
-        
-        Assert.AreEqual(DnsKeys.ZoneKey, dnskey.Flags);
-        Assert.AreEqual(3, dnskey.Protocol);
-        Assert.AreEqual(SecurityAlgorithm.RSASHA512, dnskey.Algorithm);
-        CollectionAssert.AreEqual(dnsPublicKey, dnskey.PublicKey);
-        Assert.AreEqual(3740, dnskey.KeyTag());
+
+        dnskey.Flags.ShouldBe(DnsKeys.ZoneKey);
+        dnskey.Protocol.ShouldBe((byte)3);
+        dnskey.Algorithm.ShouldBe(SecurityAlgorithm.RSASHA512);
+        dnskey.PublicKey.ShouldBe(dnsPublicKey);
+        dnskey.KeyTag().ShouldBe((ushort)3740);
     }
 
-    [TestMethod]
+    [Fact]
     public void FromECDsaP256()
     {
         // From https://tools.ietf.org/html/rfc6605#section-6.1
@@ -197,7 +195,6 @@ public class DNSKEYRecordTest
         }
         catch (NotImplementedException)
         {
-            Assert.Inconclusive("Platform does not support nistP256");
             return;
         }
 
@@ -205,15 +202,15 @@ public class DNSKEYRecordTest
         {
             Flags = DnsKeys.ZoneKey | DnsKeys.SecureEntryPoint
         };
-        
-        Assert.AreEqual(DnsKeys.ZoneKey | DnsKeys.SecureEntryPoint, dnskey.Flags);
-        Assert.AreEqual(3, dnskey.Protocol);
-        Assert.AreEqual(SecurityAlgorithm.ECDSAP256SHA256, dnskey.Algorithm);
-        CollectionAssert.AreEqual(dnsPublicKey, dnskey.PublicKey);
-        Assert.AreEqual(55648, dnskey.KeyTag());
+
+        dnskey.Flags.ShouldBe(DnsKeys.ZoneKey | DnsKeys.SecureEntryPoint);
+        dnskey.Protocol.ShouldBe((byte)3);
+        dnskey.Algorithm.ShouldBe(SecurityAlgorithm.ECDSAP256SHA256);
+        dnskey.PublicKey.ShouldBe(dnsPublicKey);
+        dnskey.KeyTag().ShouldBe((ushort)55648);
     }
 
-    [TestMethod]
+    [Fact]
     public void FromECDsaP384()
     {
         // From https://tools.ietf.org/html/rfc6605#section-6.2
@@ -241,7 +238,6 @@ public class DNSKEYRecordTest
         }
         catch (NotImplementedException)
         {
-            Assert.Inconclusive("Platform does not support nistP384");
             return;
         }
 
@@ -249,11 +245,11 @@ public class DNSKEYRecordTest
         {
             Flags = DnsKeys.ZoneKey | DnsKeys.SecureEntryPoint
         };
-        
-        Assert.AreEqual(DnsKeys.ZoneKey | DnsKeys.SecureEntryPoint, dnskey.Flags);
-        Assert.AreEqual(3, dnskey.Protocol);
-        Assert.AreEqual(SecurityAlgorithm.ECDSAP384SHA384, dnskey.Algorithm);
-        CollectionAssert.AreEqual(dnsPublicKey, dnskey.PublicKey);
-        Assert.AreEqual(10771, dnskey.KeyTag());
+
+        dnskey.Flags.ShouldBe(DnsKeys.ZoneKey | DnsKeys.SecureEntryPoint);
+        dnskey.Protocol.ShouldBe((byte)3);
+        dnskey.Algorithm.ShouldBe(SecurityAlgorithm.ECDSAP384SHA384);
+        dnskey.PublicKey.ShouldBe(dnsPublicKey);
+        dnskey.KeyTag().ShouldBe((ushort)10771);
     }
 }

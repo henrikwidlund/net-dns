@@ -1,17 +1,14 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Shouldly;
+using Xunit;
 using SimpleBase;
 
 namespace DnsTests;
 
-[TestClass]
 public class DSRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new DSRecord
@@ -26,17 +23,17 @@ public class DSRecordTest
         
         var b = (DSRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.KeyTag, b.KeyTag);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        CollectionAssert.AreEqual(a.Digest, b.Digest);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.KeyTag.ShouldBe(b.KeyTag);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Digest.ShouldBe(b.Digest);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new DSRecord
@@ -51,18 +48,18 @@ public class DSRecordTest
         
         var b = (DSRecord)new ResourceRecord().Read(a.ToString());
         
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.KeyTag, b.KeyTag);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        CollectionAssert.AreEqual(a.Digest, b.Digest);
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.KeyTag.ShouldBe(b.KeyTag);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Digest.ShouldBe(b.Digest);
     }
 
-    [TestMethod]
+    [Fact]
     public void FromDNSKEY()
     {
         // From https://tools.ietf.org/html/rfc4034#section-5.4
@@ -87,17 +84,17 @@ public class DSRecordTest
         
         var ds = new DSRecord(key, force: true);
         
-        Assert.AreEqual(key.Name, ds.Name);
-        Assert.AreEqual(key.Class, ds.Class);
-        Assert.AreEqual(DnsType.DS, ds.Type);
-        Assert.AreEqual(key.TTL, ds.TTL);
-        Assert.AreEqual(60485, ds.KeyTag!.Value);
-        Assert.AreEqual(SecurityAlgorithm.RSASHA1, ds.Algorithm);
-        Assert.AreEqual(DigestType.Sha1, ds.HashAlgorithm);
-        CollectionAssert.AreEqual(Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray(), ds.Digest);
+        key.Name.ShouldBe(ds.Name);
+        key.Class.ShouldBe(ds.Class);
+        ds.Type.ShouldBe(DnsType.DS);
+        key.TTL.ShouldBe(ds.TTL);
+        ds.KeyTag!.Value.ShouldBe((ushort)60485);
+        ds.Algorithm.ShouldBe(SecurityAlgorithm.RSASHA1);
+        ds.HashAlgorithm.ShouldBe(DigestType.Sha1);
+        ds.Digest.ShouldBe(Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray());
     }
 
-    [TestMethod]
+    [Fact]
     public void FromDNSKEY_Missing_ZK()
     {
         var key = new DNSKEYRecord
@@ -124,7 +121,7 @@ public class DSRecordTest
         });
     }
 
-    [TestMethod]
+    [Fact]
     public void FromDNSKEY_Missing_SEP()
     {
         var key = new DNSKEYRecord

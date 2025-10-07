@@ -1,13 +1,12 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class TXTRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new TXTRecord
@@ -22,14 +21,14 @@ public class TXTRecordTest
         
         var b = (TXTRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        CollectionAssert.AreEqual(a.Strings, b.Strings);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Strings.ShouldBe(b.Strings);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new TXTRecord
@@ -47,15 +46,15 @@ public class TXTRecordTest
         
         var b = (TXTRecord)new ResourceRecord().Read(a.ToString());
         
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        CollectionAssert.AreEqual(a.Strings, b.Strings);
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Strings.ShouldBe(b.Strings);
     }
 
-    [TestMethod]
+    [Fact]
     public void NoStrings()
     {
         var a = new TXTRecord
@@ -65,14 +64,14 @@ public class TXTRecordTest
         
         var b = (TXTRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        CollectionAssert.AreEqual(a.Strings, b.Strings);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Strings.ShouldBe(b.Strings);
     }
 
-    [TestMethod]
+    [Fact]
     public void Equality()
     {
         var a = new TXTRecord
@@ -94,11 +93,11 @@ public class TXTRecordTest
                 "colour=true"
             ]
         };
-        
+
         // ReSharper disable once EqualExpressionComparison
-        Assert.IsTrue(a.Equals(a));
-        Assert.IsFalse(a.Equals(b));
-        Assert.IsFalse(a.Equals(null));
-        Assert.AreNotEqual(a.GetHashCode(), new TXTRecord().GetHashCode());
+        a.Equals(a).ShouldBeTrue();
+        a.Equals(b).ShouldBeFalse();
+        a.Equals(null).ShouldBeFalse();
+        a.GetHashCode().ShouldNotBe(new TXTRecord().GetHashCode());
     }
 }

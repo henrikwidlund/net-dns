@@ -1,13 +1,12 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class MXRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new MXRecord
@@ -16,18 +15,18 @@ public class MXRecordTest
             Preference = 10,
             Exchange = "mail.emanon.org"
         };
-        
+
         var b = (MXRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Preference, b.Preference);
-        Assert.AreEqual(a.Exchange, b.Exchange);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Preference.ShouldBe(b.Preference);
+        a.Exchange.ShouldBe(b.Exchange);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new MXRecord
@@ -36,19 +35,19 @@ public class MXRecordTest
             Preference = 10,
             Exchange = "mail.emanon.org"
         };
-        
+
         var b = (MXRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Preference, b.Preference);
-        Assert.AreEqual(a.Exchange, b.Exchange);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Preference.ShouldBe(b.Preference);
+        a.Exchange.ShouldBe(b.Exchange);
     }
 
-    [TestMethod]
+    [Fact]
     public void Equality()
     {
         var a = new MXRecord
@@ -66,8 +65,8 @@ public class MXRecordTest
         };
         
         // ReSharper disable once EqualExpressionComparison
-        Assert.IsTrue(a.Equals(a));
-        Assert.IsFalse(a.Equals(b));
-        Assert.IsFalse(a.Equals(null));
+        a.ShouldBe(a);
+        a.Equals(b).ShouldBeFalse();
+        a.Equals(null).ShouldBeFalse();
     }
 }

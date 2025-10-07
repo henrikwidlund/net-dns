@@ -2,15 +2,13 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests.Resolving;
 
-[TestClass]
 public class NameServerTest
 {
     private readonly Catalog _dotcom = new();
@@ -22,100 +20,100 @@ public class NameServerTest
         _dotorg.IncludeZone(new PresentationReader(new StringReader(CatalogTest.ExampleDotOrgZoneText)));
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Simple()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
-        Assert.AreEqual(DnsType.A, response.Answers[0].Type);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
+        response.Answers[0].Type.ShouldBe(DnsType.A);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Missing_Name()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "foo.bar.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NameError, response.Status);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NameError);
 
-        Assert.IsTrue(response.AuthorityRecords.Count > 0);
+        response.AuthorityRecords.Count.ShouldBeGreaterThan(0);
         var authority = response.AuthorityRecords.OfType<SOARecord>().First();
-        Assert.AreEqual("example.com", authority.Name);
+        authority.Name.ShouldBe("example.com");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Missing_Type()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.MX };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NameError, response.Status);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NameError);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Missing_Class()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.CH };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NameError, response.Status);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NameError);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AnyType()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.ANY };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(2, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(2);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AnyClass()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.ANY, Type = DnsType.A };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsFalse(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeFalse();
+        response.Answers.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Alias()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "www.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
+        response.IsResponse.ShouldBeTrue();
+        response.AA.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
 
-        Assert.AreEqual(2, response.Answers.Count);
-        Assert.AreEqual(DnsType.CNAME, response.Answers[0].Type);
-        Assert.AreEqual(DnsType.A, response.Answers[1].Type);
+        response.Answers.Count.ShouldBe(2);
+        response.Answers[0].Type.ShouldBe(DnsType.CNAME);
+        response.Answers[1].Type.ShouldBe(DnsType.A);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Alias_BadZoneTarget()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -125,19 +123,19 @@ public class NameServerTest
         var question = new Question { Name = "ftp.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(MessageStatus.NameError, response.Status);
+        response.IsResponse.ShouldBeTrue();
+        response.AA.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NameError);
 
-        Assert.AreEqual(1, response.Answers.Count);
-        Assert.AreEqual(DnsType.CNAME, response.Answers[0].Type);
+        response.Answers.Count.ShouldBe(1);
+        response.Answers[0].Type.ShouldBe(DnsType.CNAME);
 
-        Assert.AreEqual(1, response.AuthorityRecords.Count);
+        response.AuthorityRecords.Count.ShouldBe(1);
         var authority = response.AuthorityRecords.OfType<SOARecord>().First();
-        Assert.AreEqual("example.com", authority.Name);
+        authority.Name.ShouldBe("example.com");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task Alias_BadInterZoneTarget()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -147,17 +145,17 @@ public class NameServerTest
         var question = new Question { Name = "bad.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(MessageStatus.NameError, response.Status);
+        response.IsResponse.ShouldBeTrue();
+        response.AA.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NameError);
 
-        Assert.AreEqual(1, response.Answers.Count);
-        Assert.AreEqual(DnsType.CNAME, response.Answers[0].Type);
+        response.Answers.Count.ShouldBe(1);
+        response.Answers[0].Type.ShouldBe(DnsType.CNAME);
 
-        Assert.AreEqual(0, response.AuthorityRecords.Count);
+        response.AuthorityRecords.Count.ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MultipleQuestions_AnswerAny()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -165,13 +163,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request);
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MultipleQuestions_SomeQuestionNoAnswer_AnswerAny()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -182,13 +180,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MultipleQuestions_AnswerAll()
     {
         var resolver = new NameServer { Catalog = _dotcom, AnswerAllQuestions = true};
@@ -197,13 +195,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(2, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(2);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task MultipleQuestions_SomeQuestionNoAnswer_AnswerAll()
     {
         var resolver = new NameServer { Catalog = _dotcom, AnswerAllQuestions = true };
@@ -214,14 +212,14 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(2, response.Answers.Count);
-        Assert.AreEqual(3, response.AuthorityRecords.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(2);
+        response.AuthorityRecords.Count.ShouldBe(3);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_PTR_WithAddresses()
     {
         var resolver = new NameServer { Catalog = _dotorg };
@@ -229,17 +227,17 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "x.example.org", Type = DnsType.PTR });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
 
-        Assert.AreEqual(2, response.AdditionalRecords.Count);
-        Assert.AreEqual(DnsType.A, response.AdditionalRecords[0].Type);
-        Assert.AreEqual("ns1.example.org", response.AdditionalRecords[0].Name);
+        response.AdditionalRecords.Count.ShouldBe(2);
+        response.AdditionalRecords[0].Type.ShouldBe(DnsType.A);
+        response.AdditionalRecords[0].Name.ShouldBe("ns1.example.org");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_PTR_WithSRV()
     {
         var resolver = new NameServer { Catalog = _dotorg };
@@ -247,17 +245,17 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "_http._tcp.example.org", Type = DnsType.PTR });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
 
-        Assert.IsTrue(response.AdditionalRecords.Any(static a => a.Type == DnsType.SRV));
-        Assert.IsTrue(response.AdditionalRecords.Any(static a => a.Type == DnsType.TXT));
-        Assert.IsTrue(response.AdditionalRecords.Any(static a => a.Type == DnsType.A));
+        response.AdditionalRecords.Any(static a => a.Type == DnsType.SRV).ShouldBeTrue();
+        response.AdditionalRecords.Any(static a => a.Type == DnsType.TXT).ShouldBeTrue();
+        response.AdditionalRecords.Any(static a => a.Type == DnsType.A).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_NS()
     {
         var resolver = new NameServer { Catalog = _dotorg };
@@ -265,16 +263,16 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(2, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(2);
 
-        Assert.AreEqual(2, response.AdditionalRecords.Count);
-        Assert.IsTrue(response.AdditionalRecords.All(static r => r.Type == DnsType.A));
+        response.AdditionalRecords.Count.ShouldBe(2);
+        response.AdditionalRecords.All(static r => r.Type == DnsType.A).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_SOA()
     {
         var resolver = new NameServer { Catalog = _dotorg };
@@ -282,17 +280,17 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.SOA });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
 
-        Assert.AreEqual(2, response.AdditionalRecords.Count);
-        Assert.AreEqual(DnsType.A, response.AdditionalRecords[0].Type);
-        Assert.AreEqual("ns1.example.org", response.AdditionalRecords[0].Name);
+        response.AdditionalRecords.Count.ShouldBe(2);
+        response.AdditionalRecords[0].Type.ShouldBe(DnsType.A);
+        response.AdditionalRecords[0].Name.ShouldBe("ns1.example.org");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_SRV()
     {
         var resolver = new NameServer { Catalog = _dotorg };
@@ -300,16 +298,16 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "a._http._tcp.example.org", Type = DnsType.SRV });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
 
-        Assert.IsTrue(response.AdditionalRecords.OfType<TXTRecord>().Any());
-        Assert.IsTrue(response.AdditionalRecords.OfType<ARecord>().Any());
+        response.AdditionalRecords.OfType<TXTRecord>().Any().ShouldBeTrue();
+        response.AdditionalRecords.OfType<ARecord>().Any().ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_A()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -317,17 +315,17 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
-        Assert.IsTrue(response.Answers.All(static r => r.Type == DnsType.A));
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
+        response.Answers.All(static r => r.Type == DnsType.A).ShouldBeTrue();
 
-        Assert.IsTrue(response.AdditionalRecords.Any(static r => 
-            r.Name == "example.com" && r.Type == DnsType.AAAA));
+        response.AdditionalRecords.Any(static r =>
+            r.Name == "example.com" && r.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_AAAA()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -335,17 +333,17 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(1, response.Answers.Count);
-        Assert.IsTrue(response.Answers.All(static r => r.Type == DnsType.AAAA));
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(1);
+        response.Answers.All(static r => r.Type == DnsType.AAAA).ShouldBeTrue();
 
-        Assert.IsTrue(response.AdditionalRecords.Any(static r =>
-            r.Name == "example.com" && r.Type == DnsType.A));
+        response.AdditionalRecords.Any(static r =>
+            r.Name == "example.com" && r.Type == DnsType.A).ShouldBeTrue();
     }
 
-    [TestMethod]
+    [Fact]
     public async Task AdditionalRecords_NoDuplicates()
     {
         var resolver = new NameServer { Catalog = _dotorg,  AnswerAllQuestions = true };
@@ -355,15 +353,15 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns2.example.org", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request);
 
-        Assert.IsTrue(response.IsResponse);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
-        Assert.IsTrue(response.AA);
-        Assert.AreEqual(4, response.Answers.Count);
+        response.IsResponse.ShouldBeTrue();
+        response.Status.ShouldBe(MessageStatus.NoError);
+        response.AA.ShouldBeTrue();
+        response.Answers.Count.ShouldBe(4);
 
-        Assert.AreEqual(0, response.AdditionalRecords.Count);
+        response.AdditionalRecords.Count.ShouldBe(0);
     }
 
-    [TestMethod]
+    [Fact]
     public async Task EscapedDotDomainName()
     {
         var catalog = new Catalog
@@ -384,21 +382,21 @@ public class NameServerTest
         var request = new Message();
         request.Questions.Add(new Question { Name = "a.b", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
+        response.Status.ShouldBe(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
-        Assert.IsNotNull(answer.Address);
-        Assert.AreEqual("127.0.0.2", answer.Address.ToString());
+        answer.Address.ShouldNotBeNull();
+        answer.Address.ToString().ShouldBe("127.0.0.2");
 
         request = new Message();
         request.Questions.Add(new Question { Name = @"a\.b", Type = DnsType.A });
         response = await resolver.ResolveAsync(request);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
+        response.Status.ShouldBe(MessageStatus.NoError);
         answer = response.Answers.OfType<ARecord>().First();
-        Assert.IsNotNull(answer.Address);
-        Assert.AreEqual("127.0.0.3", answer.Address.ToString());
+        answer.Address.ShouldNotBeNull();
+        answer.Address.ToString().ShouldBe("127.0.0.3");
     }
 
-    [TestMethod]
+    [Fact]
     public async Task RoundTrip_EscapedDotDomainName()
     {
         var catalog = new Catalog
@@ -423,9 +421,9 @@ public class NameServerTest
         r1.Read(bin);
 
         var response = await resolver.ResolveAsync(r1);
-        Assert.AreEqual(MessageStatus.NoError, response.Status);
+        response.Status.ShouldBe(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
-        Assert.IsNotNull(answer.Address);
-        Assert.AreEqual("127.0.0.3", answer.Address.ToString());
+        answer.Address.ShouldNotBeNull();
+        answer.Address.ToString().ShouldBe("127.0.0.3");
     }
 }

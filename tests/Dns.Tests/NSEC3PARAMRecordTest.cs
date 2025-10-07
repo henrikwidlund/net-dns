@@ -1,15 +1,13 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class NSEC3PARAMRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new NSEC3PARAMRecord
@@ -21,20 +19,20 @@ public class NSEC3PARAMRecordTest
             Iterations = 12,
             Salt = [0xaa, 0xbb, 0xcc, 0xdd]
         };
-        
+
         var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Iterations, b.Iterations);
-        CollectionAssert.AreEqual(a.Salt, b.Salt);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Flags.ShouldBe(b.Flags);
+        a.Iterations.ShouldBe(b.Iterations);
+        a.Salt.ShouldBe(b.Salt);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new NSEC3PARAMRecord
@@ -46,21 +44,21 @@ public class NSEC3PARAMRecordTest
             Iterations = 12,
             Salt = [0xaa, 0xbb, 0xcc, 0xdd]
         };
-        
+
         var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Iterations, b.Iterations);
-        CollectionAssert.AreEqual(a.Salt, b.Salt);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Flags.ShouldBe(b.Flags);
+        a.Iterations.ShouldBe(b.Iterations);
+        a.Salt.ShouldBe(b.Salt);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master_NullSalt()
     {
         var a = new NSEC3PARAMRecord
@@ -71,21 +69,21 @@ public class NSEC3PARAMRecordTest
             Flags = 1,
             Iterations = 12
         };
-        
+
         var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Iterations, b.Iterations);
-        Assert.AreEqual(null, b.Salt);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Flags.ShouldBe(b.Flags);
+        a.Iterations.ShouldBe(b.Iterations);
+        b.Salt.ShouldBeNull();
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master_EmptySalt()
     {
         var a = new NSEC3PARAMRecord
@@ -97,17 +95,17 @@ public class NSEC3PARAMRecordTest
             Iterations = 12,
             Salt = []
         };
-        
+
         var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.HashAlgorithm, b.HashAlgorithm);
-        Assert.AreEqual(a.Flags, b.Flags);
-        Assert.AreEqual(a.Iterations, b.Iterations);
-        Assert.AreEqual(null, b.Salt);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
+        a.Flags.ShouldBe(b.Flags);
+        a.Iterations.ShouldBe(b.Iterations);
+        b.Salt.ShouldBeNull();
     }
 }

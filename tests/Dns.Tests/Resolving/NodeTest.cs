@@ -1,35 +1,34 @@
 ﻿using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests.Resolving;
 
-[TestClass]
 public class NodeTest
 {
-    [TestMethod]
+    [Fact]
     public void Defaults()
     {
         var node = new Node();
 
-        Assert.AreEqual(DomainName.Root, node.Name);
-        Assert.AreEqual(0, node.Resources.Count);
-        Assert.AreEqual("", node.ToString());
+        node.Name.ShouldBe(DomainName.Root);
+        node.Resources.Count.ShouldBe(0);
+        node.ToString().ShouldBe("");
     }
 
-    [TestMethod]
+    [Fact]
     public void DuplicateResources()
     {
         var node = new Node();
         var a = new PTRRecord { Name = "a", DomainName = "alpha" };
         var b = new PTRRecord { Name = "a", DomainName = "alpha" };
-        Assert.AreEqual(a, b);
+        a.ShouldBe(b);
 
         node.Resources.Add(a);
         node.Resources.Add(b);
         node.Resources.Add(a);
         node.Resources.Add(b);
-        Assert.AreEqual(1, node.Resources.Count);
+        node.Resources.Count.ShouldBe(1);
     }
 }

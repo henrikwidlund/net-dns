@@ -1,28 +1,26 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class TSIGRecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Defaults()
     {
         var tsig = new TSIGRecord();
-        
-        Assert.AreEqual(DnsType.TSIG, tsig.Type);
-        Assert.AreEqual(DnsClass.ANY, tsig.Class);
-        Assert.AreEqual(TimeSpan.Zero, tsig.TTL);
-        Assert.AreEqual(DateTimeKind.Utc, tsig.TimeSigned!.Kind);
-        Assert.AreEqual(0, tsig.TimeSigned!.Millisecond);
-        Assert.AreEqual(TimeSpan.FromSeconds(300), tsig.Fudge);
+
+        tsig.Type.ShouldBe(DnsType.TSIG);
+        tsig.Class.ShouldBe(DnsClass.ANY);
+        tsig.TTL.ShouldBe(TimeSpan.Zero);
+        tsig.TimeSigned!.Kind.ShouldBe(DateTimeKind.Utc);
+        tsig.TimeSigned!.Millisecond.ShouldBe(0);
+        tsig.Fudge.ShouldBe(TimeSpan.FromSeconds(300));
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new TSIGRecord
@@ -36,23 +34,23 @@ public class TSIGRecordTest
             Error = MessageStatus.BadTime,
             OtherData = [5, 6]
         };
-        
+
         var b = (TSIGRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.TimeSigned, b.TimeSigned);
-        Assert.AreEqual(a.Fudge, b.Fudge);
-        CollectionAssert.AreEqual(a.MAC, b.MAC);
-        Assert.AreEqual(a.OriginalMessageId, b.OriginalMessageId);
-        Assert.AreEqual(a.Error, b.Error);
-        CollectionAssert.AreEqual(a.OtherData, b.OtherData);
+
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.TimeSigned.ShouldBe(b.TimeSigned);
+        a.Fudge.ShouldBe(b.Fudge);
+        a.MAC.ShouldBe(b.MAC);
+        a.OriginalMessageId.ShouldBe(b.OriginalMessageId);
+        a.Error.ShouldBe(b.Error);
+        a.OtherData.ShouldBe(b.OtherData);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new TSIGRecord
@@ -65,19 +63,19 @@ public class TSIGRecordTest
             OriginalMessageId = 0xfbad,
             Error = MessageStatus.BadTime
         };
-        
+
         var b = (TSIGRecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.Algorithm, b.Algorithm);
-        Assert.AreEqual(a.TimeSigned, b.TimeSigned);
-        CollectionAssert.AreEqual(a.MAC, b.MAC);
-        Assert.AreEqual(a.OriginalMessageId, b.OriginalMessageId);
-        Assert.AreEqual(a.Error, b.Error);
-        CollectionAssert.AreEqual(a.OtherData, b.OtherData);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.Algorithm.ShouldBe(b.Algorithm);
+        a.TimeSigned.ShouldBe(b.TimeSigned);
+        a.MAC.ShouldBe(b.MAC);
+        a.OriginalMessageId.ShouldBe(b.OriginalMessageId);
+        a.Error.ShouldBe(b.Error);
+        a.OtherData.ShouldBe(b.OtherData);
     }
 }

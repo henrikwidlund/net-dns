@@ -1,15 +1,13 @@
 ﻿using System;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class SOARecordTest
 {
-    [TestMethod]
+    [Fact]
     public void Roundtrip()
     {
         var a = new SOARecord
@@ -23,23 +21,21 @@ public class SOARecordTest
             Expire = TimeSpan.FromDays(7 * 3),
             Minimum = TimeSpan.FromHours(2)
         };
-        
         var b = (SOARecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.PrimaryName, b.PrimaryName);
-        Assert.AreEqual(a.Mailbox, b.Mailbox);
-        Assert.AreEqual(a.SerialNumber, b.SerialNumber);
-        Assert.AreEqual(a.Retry, b.Retry);
-        Assert.AreEqual(a.Expire, b.Expire);
-        Assert.AreEqual(a.Refresh, b.Refresh);
-        Assert.AreEqual(a.Minimum, b.Minimum);
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.PrimaryName.ShouldBe(b.PrimaryName);
+        a.Mailbox.ShouldBe(b.Mailbox);
+        a.SerialNumber.ShouldBe(b.SerialNumber);
+        a.Retry.ShouldBe(b.Retry);
+        a.Expire.ShouldBe(b.Expire);
+        a.Refresh.ShouldBe(b.Refresh);
+        a.Minimum.ShouldBe(b.Minimum);
     }
 
-    [TestMethod]
+    [Fact]
     public void Roundtrip_Master()
     {
         var a = new SOARecord
@@ -53,24 +49,24 @@ public class SOARecordTest
             Expire = TimeSpan.FromDays(7 * 3),
             Minimum = TimeSpan.FromHours(2)
         };
-        
+
         var b = (SOARecord)new ResourceRecord().Read(a.ToString());
-        
-        Assert.IsNotNull(b);
-        Assert.AreEqual(a.Name, b.Name);
-        Assert.AreEqual(a.Class, b.Class);
-        Assert.AreEqual(a.Type, b.Type);
-        Assert.AreEqual(a.TTL, b.TTL);
-        Assert.AreEqual(a.PrimaryName, b.PrimaryName);
-        Assert.AreEqual(a.Mailbox, b.Mailbox);
-        Assert.AreEqual(a.SerialNumber, b.SerialNumber);
-        Assert.AreEqual(a.Retry, b.Retry);
-        Assert.AreEqual(a.Expire, b.Expire);
-        Assert.AreEqual(a.Refresh, b.Refresh);
-        Assert.AreEqual(a.Minimum, b.Minimum);
+
+        b.ShouldNotBeNull();
+        a.Name.ShouldBe(b.Name);
+        a.Class.ShouldBe(b.Class);
+        a.Type.ShouldBe(b.Type);
+        a.TTL.ShouldBe(b.TTL);
+        a.PrimaryName.ShouldBe(b.PrimaryName);
+        a.Mailbox.ShouldBe(b.Mailbox);
+        a.SerialNumber.ShouldBe(b.SerialNumber);
+        a.Retry.ShouldBe(b.Retry);
+        a.Expire.ShouldBe(b.Expire);
+        a.Refresh.ShouldBe(b.Refresh);
+        a.Minimum.ShouldBe(b.Minimum);
     }
 
-    [TestMethod]
+    [Fact]
     public void Equality()
     {
         var a = new SOARecord
@@ -84,7 +80,7 @@ public class SOARecordTest
             Expire = TimeSpan.FromDays(7 * 3),
             Minimum = TimeSpan.FromHours(2)
         };
-        
+
         var b = new SOARecord
         {
             Name = "owner-name",
@@ -96,10 +92,10 @@ public class SOARecordTest
             Expire = TimeSpan.FromDays(7 * 3),
             Minimum = TimeSpan.FromHours(2)
         };
-        
+
         // ReSharper disable once EqualExpressionComparison
-        Assert.IsTrue(a.Equals(a));
-        Assert.IsFalse(a.Equals(b));
-        Assert.IsFalse(a.Equals(null));
+        a.Equals(a).ShouldBeTrue();
+        a.Equals(b).ShouldBeFalse();
+        a.Equals(null).ShouldBeFalse();
     }
 }

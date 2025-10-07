@@ -1,166 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class PresentationReaderTest
 {
-    [TestMethod]
+    [Fact]
     public void ReadString()
     {
         var reader = new PresentationReader(new StringReader("  alpha   beta   omega"));
-        
-        Assert.AreEqual("alpha", reader.ReadString());
-        Assert.AreEqual("beta", reader.ReadString());
-        Assert.AreEqual("omega", reader.ReadString());
+
+        reader.ReadString().ShouldBe("alpha");
+        reader.ReadString().ShouldBe("beta");
+        reader.ReadString().ShouldBe("omega");
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadQuotedStrings()
     {
         var reader = new PresentationReader(new StringReader("  \"a b c\"  \"x y z\""));
-        
-        Assert.AreEqual("a b c", reader.ReadString());
-        Assert.AreEqual("x y z", reader.ReadString());
+
+        reader.ReadString().ShouldBe("a b c");
+        reader.ReadString().ShouldBe("x y z");
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadEscapedStrings()
     {
         var reader = new PresentationReader(new StringReader("  alpha\\ beta   omega"));
-        
-        Assert.AreEqual("alpha beta", reader.ReadString());
-        Assert.AreEqual("omega", reader.ReadString());
+
+        reader.ReadString().ShouldBe("alpha beta");
+        reader.ReadString().ShouldBe("omega");
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadDecimalEscapedString()
     {
         var reader = new PresentationReader(new StringReader("a\\098c"));
-        
-        Assert.AreEqual("abc", reader.ReadString());
+
+        reader.ReadString().ShouldBe("abc");
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadInvalidDecimalEscapedString()
     {
         var reader = new PresentationReader(new StringReader("a\\256c"));
-        
-        ExceptionAssert.Throws<FormatException>(() => reader.ReadString());
+
+        Should.Throw<FormatException>(() => reader.ReadString());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResource()
     {
         var reader = new PresentationReader(new StringReader("me A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("me", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.A, resource.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, resource.TTL);
-        Assert.IsInstanceOfType<ARecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("me");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.A);
+        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        resource.ShouldBeOfType<ARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithNameOfType()
     {
         var reader = new PresentationReader(new StringReader("A A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("A", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.A, resource.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, resource.TTL);
-        Assert.IsInstanceOfType<ARecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("A");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.A);
+        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        resource.ShouldBeOfType<ARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithNameOfClass()
     {
         var reader = new PresentationReader(new StringReader("CH A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("CH", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.A, resource.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, resource.TTL);
-        Assert.IsInstanceOfType<ARecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("CH");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.A);
+        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        resource.ShouldBeOfType<ARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithClassAndTTL()
     {
         var reader = new PresentationReader(new StringReader("me CH 63 A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("me", resource.Name);
-        Assert.AreEqual(DnsClass.CH, resource.Class);
-        Assert.AreEqual(DnsType.A, resource.Type);
-        Assert.AreEqual(TimeSpan.FromSeconds(63), resource.TTL);
-        Assert.IsInstanceOfType<ARecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("me");
+        resource.Class.ShouldBe(DnsClass.CH);
+        resource.Type.ShouldBe(DnsType.A);
+        resource.TTL.ShouldBe(TimeSpan.FromSeconds(63));
+        resource.ShouldBeOfType<ARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithUnknownClass()
     {
         var reader = new PresentationReader(new StringReader("me CLASS1234 A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("me", resource.Name);
-        Assert.AreEqual(1234, (int)resource.Class);
-        Assert.AreEqual(DnsType.A, resource.Type);
-        Assert.IsInstanceOfType<ARecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("me");
+        resource.Class.ShouldBe((DnsClass)1234);
+        resource.Type.ShouldBe(DnsType.A);
+        resource.ShouldBeOfType<ARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithUnknownType()
     {
         var reader = new PresentationReader(new StringReader("me CH TYPE1234 \\# 0"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("me", resource.Name);
-        Assert.AreEqual(DnsClass.CH, resource.Class);
-        Assert.AreEqual(1234, (int)resource.Type);
-        Assert.IsInstanceOfType<UnknownRecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("me");
+        resource.Class.ShouldBe(DnsClass.CH);
+        resource.Type.ShouldBe((DnsType)1234);
+        resource.ShouldBeOfType<UnknownRecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceMissingName()
     {
         var reader = new PresentationReader(new StringReader("  NS ns1"));
-        ExceptionAssert.Throws<InvalidDataException>(() => reader.ReadResourceRecord());
+        Should.Throw<InvalidDataException>(() => reader.ReadResourceRecord());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithComment()
     {
         var reader = new PresentationReader(new StringReader("; comment\r\nme A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("me", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.A, resource.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, resource.TTL);
-        Assert.IsInstanceOfType<ARecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("me");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.A);
+        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        resource.ShouldBeOfType<ARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithOrigin()
     {
         const string text = """
@@ -169,16 +165,16 @@ public class PresentationReaderTest
                             """;
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("emanon.org", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.PTR, resource.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, resource.TTL);
-        Assert.IsInstanceOfType<PTRRecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("emanon.org");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.PTR);
+        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        resource.ShouldBeOfType<PTRRecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithEscapedOrigin()
     {
         const string text = """
@@ -187,18 +183,18 @@ public class PresentationReaderTest
                             """;
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual(@"emanon\.org", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.PTR, resource.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, resource.TTL);
-        Assert.IsInstanceOfType<PTRRecord>(resource);
-        Assert.IsNotNull(resource.Name);
-        Assert.AreEqual(1, resource.Name.Labels.Count);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe(@"emanon\.org");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.PTR);
+        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        resource.ShouldBeOfType<PTRRecord>();
+        resource.Name.ShouldNotBeNull();
+        resource.Name.Labels.Count.ShouldBe(1);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithTTL()
     {
         const string text = """
@@ -207,16 +203,16 @@ public class PresentationReaderTest
                             """;
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(resource);
-        Assert.AreEqual("emanon.org", resource.Name);
-        Assert.AreEqual(DnsClass.IN, resource.Class);
-        Assert.AreEqual(DnsType.PTR, resource.Type);
-        Assert.AreEqual(TimeSpan.FromMinutes(2), resource.TTL);
-        Assert.IsInstanceOfType<PTRRecord>(resource);
+
+        resource.ShouldNotBeNull();
+        resource.Name.ShouldBe("emanon.org");
+        resource.Class.ShouldBe(DnsClass.IN);
+        resource.Type.ShouldBe(DnsType.PTR);
+        resource.TTL.ShouldBe(TimeSpan.FromMinutes(2));
+        resource.ShouldBeOfType<PTRRecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithPreviousDomain()
     {
         const string text = """
@@ -225,24 +221,24 @@ public class PresentationReaderTest
                             """;
         var reader = new PresentationReader(new StringReader(text));
         var a = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(a);
-        Assert.AreEqual("emanon.org", a.Name);
-        Assert.AreEqual(DnsClass.IN, a.Class);
-        Assert.AreEqual(DnsType.A, a.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, a.TTL);
-        Assert.IsInstanceOfType<ARecord>(a);
+
+        a.ShouldNotBeNull();
+        a.Name.ShouldBe("emanon.org");
+        a.Class.ShouldBe(DnsClass.IN);
+        a.Type.ShouldBe(DnsType.A);
+        a.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        a.ShouldBeOfType<ARecord>();
 
         var aaaa = reader.ReadResourceRecord();
-        Assert.IsNotNull(aaaa);
-        Assert.AreEqual("emanon.org", aaaa.Name);
-        Assert.AreEqual(DnsClass.IN, aaaa.Class);
-        Assert.AreEqual(DnsType.AAAA, aaaa.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, aaaa.TTL);
-        Assert.IsInstanceOfType<AAAARecord>(aaaa);
+        aaaa.ShouldNotBeNull();
+        aaaa.Name.ShouldBe("emanon.org");
+        aaaa.Class.ShouldBe(DnsClass.IN);
+        aaaa.Type.ShouldBe(DnsType.AAAA);
+        aaaa.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        aaaa.ShouldBeOfType<AAAARecord>();
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithPreviousEscapedDomain()
     {
         const string text = """
@@ -251,44 +247,44 @@ public class PresentationReaderTest
                             """;
         var reader = new PresentationReader(new StringReader(text));
         var a = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(a);
-        Assert.AreEqual("emanon~.org", a.Name);
-        Assert.AreEqual(DnsClass.IN, a.Class);
-        Assert.AreEqual(DnsType.A, a.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, a.TTL);
-        Assert.IsInstanceOfType<ARecord>(a);
-        Assert.IsNotNull(a.Name);
-        Assert.AreEqual(2, a.Name.Labels.Count);
+
+        a.ShouldNotBeNull();
+        a.Name.ShouldBe("emanon~.org");
+        a.Class.ShouldBe(DnsClass.IN);
+        a.Type.ShouldBe(DnsType.A);
+        a.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        a.ShouldBeOfType<ARecord>();
+        a.Name.ShouldNotBeNull();
+        a.Name.Labels.Count.ShouldBe(2);
 
         var aaaa = reader.ReadResourceRecord();
-        Assert.IsNotNull(aaaa);
-        Assert.AreEqual("emanon~.org", aaaa.Name);
-        Assert.AreEqual(DnsClass.IN, aaaa.Class);
-        Assert.AreEqual(DnsType.AAAA, aaaa.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, aaaa.TTL);
-        Assert.IsInstanceOfType<AAAARecord>(aaaa);
-        Assert.AreEqual(2, a.Name.Labels.Count);
+        aaaa.ShouldNotBeNull();
+        aaaa.Name.ShouldBe("emanon~.org");
+        aaaa.Class.ShouldBe(DnsClass.IN);
+        aaaa.Type.ShouldBe(DnsType.AAAA);
+        aaaa.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        aaaa.ShouldBeOfType<AAAARecord>();
+        aaaa.Name.Labels.Count.ShouldBe(2);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceWithLeadingEscapedDomainName()
     {
         const string text = @"\126emanon.org A 127.0.0.1";
         var reader = new PresentationReader(new StringReader(text));
         var a = reader.ReadResourceRecord();
-        
-        Assert.IsNotNull(a);
-        Assert.AreEqual("~emanon.org", a.Name);
-        Assert.AreEqual(DnsClass.IN, a.Class);
-        Assert.AreEqual(DnsType.A, a.Type);
-        Assert.AreEqual(ResourceRecord.DefaultTTL, a.TTL);
-        Assert.IsInstanceOfType<ARecord>(a);
-        Assert.IsNotNull(a.Name);
-        Assert.AreEqual(2, a.Name.Labels.Count);
+
+        a.ShouldNotBeNull();
+        a.Name.ShouldBe("~emanon.org");
+        a.Class.ShouldBe(DnsClass.IN);
+        a.Type.ShouldBe(DnsType.A);
+        a.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        a.ShouldBeOfType<ARecord>();
+        a.Name.ShouldNotBeNull();
+        a.Name.Labels.Count.ShouldBe(2);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadZoneFile()
     {
         const string text = """
@@ -311,10 +307,10 @@ public class PresentationReaderTest
                             mail2         IN  A     192.0.2.4             ; IPv4 address for mail2.example.com
                             mail3         IN  A     192.0.2.5             ; IPv4 address for mail3.example.com
                             """;
-        
+
         var reader = new PresentationReader(new StringReader(text));
         var resources = new List<ResourceRecord>();
-        
+
         while (true)
         {
             var r = reader.ReadResourceRecord();
@@ -322,82 +318,82 @@ public class PresentationReaderTest
                 break;
             resources.Add(r);
         }
-        
-        Assert.AreEqual(15, resources.Count);
+
+        resources.Count.ShouldBe(15);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceData()
     {
         var reader = new PresentationReader(new StringReader("\\# 0"));
         var rdata = reader.ReadResourceData();
-        Assert.AreEqual(0, rdata.Length);
+        rdata.Length.ShouldBe(0);
 
         reader = new PresentationReader(new StringReader("\\# 3 abcdef"));
         rdata = reader.ReadResourceData();
-        CollectionAssert.AreEqual(new byte[] { 0xab, 0xcd, 0xef }, rdata);
+        new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
 
         reader = new PresentationReader(new StringReader("\\# 3 ab cd ef"));
         rdata = reader.ReadResourceData();
-        CollectionAssert.AreEqual(new byte[] { 0xab, 0xcd, 0xef }, rdata);
+        new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
 
         reader = new PresentationReader(new StringReader("\\# 3 abcd (\r\n  ef )"));
         rdata = reader.ReadResourceData();
-        CollectionAssert.AreEqual(new byte[] { 0xab, 0xcd, 0xef }, rdata);
+        new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceData_MissingLeadin()
     {
         var reader = new PresentationReader(new StringReader("0"));
-        Assert.ThrowsExactly<FormatException>(() => _ = reader.ReadResourceData());
+        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceData_BadHex_BadDigit()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 ab cd ez"));
-        Assert.ThrowsExactly<FormatException>(() => _ = reader.ReadResourceData());
+        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceData_BadHex_NotEven()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 ab cd e"));
-        Assert.ThrowsExactly<FormatException>(() => _ = reader.ReadResourceData());
+        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadResourceData_BadHex_TooFew()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 abcd"));
-        Assert.ThrowsExactly<FormatException>(() => _ = reader.ReadResourceData());
+        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadType()
     {
         var reader = new PresentationReader(new StringReader("A TYPE1 MX"));
-        Assert.AreEqual(DnsType.A, reader.ReadDnsType());
-        Assert.AreEqual(DnsType.A, reader.ReadDnsType());
-        Assert.AreEqual(DnsType.MX, reader.ReadDnsType());
+        reader.ReadDnsType().ShouldBe(DnsType.A);
+        reader.ReadDnsType().ShouldBe(DnsType.A);
+        reader.ReadDnsType().ShouldBe(DnsType.MX);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadType_BadName()
     {
         var reader = new PresentationReader(new StringReader("BADNAME"));
         Should.Throw<Exception>(() => reader.ReadDnsType());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadType_BadDigit()
     {
         var reader = new PresentationReader(new StringReader("TYPEX"));
-        Assert.ThrowsExactly<FormatException>(() => reader.ReadDnsType());
+        Should.Throw<FormatException>(() => reader.ReadDnsType());
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadMultipleStrings()
     {
         var expected = new List<string> { "abc", "def", "ghi" };
@@ -405,23 +401,23 @@ public class PresentationReaderTest
         var actual = new List<string>();
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
-        
-        CollectionAssert.AreEqual(expected, actual);
+
+        actual.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadMultipleStrings2()
     {
-        var expected = new List<string> { "abc", "def", "ghi", "jkl"};
+        var expected = new List<string> { "abc", "def", "ghi", "jkl" };
         var reader = new PresentationReader(new StringReader("abc def (\r\nghi) jkl   \r\n"));
         var actual = new List<string>();
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
-        
-        CollectionAssert.AreEqual(expected, actual);
+
+        actual.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadMultipleStrings3()
     {
         var expected = new List<string> { "abc", "def", "ghi" };
@@ -429,11 +425,11 @@ public class PresentationReaderTest
         var actual = new List<string>();
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
-        
-        CollectionAssert.AreEqual(expected, actual);
+
+        actual.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadMultipleStrings_LF()
     {
         var expected = new List<string> { "abc", "def" };
@@ -441,11 +437,11 @@ public class PresentationReaderTest
         var actual = new List<string>();
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
-        
-        CollectionAssert.AreEqual(expected, actual);
+
+        actual.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadMultipleStrings_CRLF()
     {
         var expected = new List<string> { "abc", "def" };
@@ -453,43 +449,43 @@ public class PresentationReaderTest
         var actual = new List<string>();
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
-        
-        CollectionAssert.AreEqual(expected, actual);
+
+        actual.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadBase64String()
     {
         var expected = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
         var reader = new PresentationReader(new StringReader("AAECAwQFBgcICQoLDA0ODw=="));
-        CollectionAssert.AreEqual(expected, reader.ReadBase64String());
+        reader.ReadBase64String().ShouldBe(expected);
 
         reader = new PresentationReader(new StringReader("AAECAwQFBg  cICQoLDA0ODw=="));
-        CollectionAssert.AreEqual(expected, reader.ReadBase64String());
+        reader.ReadBase64String().ShouldBe(expected);
 
         reader = new PresentationReader(new StringReader("AAECAwQFBg  (\r\n  cICQo\r\n  LDA0ODw\r\n== )"));
-        CollectionAssert.AreEqual(expected, reader.ReadBase64String());
+        reader.ReadBase64String().ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadDateTime()
     {
         DateTime expected = new(2004, 9, 16, 0, 0, 0, DateTimeKind.Utc);
         var reader = new PresentationReader(new StringReader("1095292800 20040916000000"));
-        
-        Assert.AreEqual(expected, reader.ReadDateTime());
-        Assert.AreEqual(expected, reader.ReadDateTime());
+
+        reader.ReadDateTime().ShouldBe(expected);
+        reader.ReadDateTime().ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void ReadDomainName_Escaped()
     {
         var foo = new DomainName("foo.com");
         var drSmith = new DomainName(@"dr\. smith.com");
         var reader = new PresentationReader(new StringReader(@"dr\.\032smith.com foo.com"));
-        
-        Assert.AreEqual(drSmith, reader.ReadDomainName());
-        Assert.AreEqual(foo, reader.ReadDomainName());
+
+        reader.ReadDomainName().ShouldBe(drSmith);
+        reader.ReadDomainName().ShouldBe(foo);
     }
 }

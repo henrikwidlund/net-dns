@@ -1,15 +1,13 @@
 ﻿using System.IO;
-
 using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class NameCompressionTest
 {
-    [TestMethod]
+    [Fact]
     public void Writing()
     {
         using var ms = new MemoryStream();
@@ -26,10 +24,10 @@ public class NameCompressionTest
             0XC0, 3
         };
         
-        CollectionAssert.AreEqual(expected, bytes);
+        bytes.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void Writing_Labels()
     {
         using var ms = new MemoryStream();
@@ -49,10 +47,10 @@ public class NameCompressionTest
             0xC0, 0x04,
             0x01, (byte)'x', 0xC0, 0x02
         };
-        CollectionAssert.AreEqual(expected, bytes);
+        bytes.ShouldBe(expected);
     }
 
-    [TestMethod]
+    [Fact]
     public void Writing_Past_MaxPointer()
     {
         using var ms = new MemoryStream();
@@ -65,12 +63,12 @@ public class NameCompressionTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         reader.ReadBytes(0x4000);
-        Assert.AreEqual("a", reader.ReadDomainName());
-        Assert.AreEqual("b", reader.ReadDomainName());
-        Assert.AreEqual("b", reader.ReadDomainName());
+        reader.ReadDomainName().ShouldBe("a");
+        reader.ReadDomainName().ShouldBe("b");
+        reader.ReadDomainName().ShouldBe("b");
     }
 
-    [TestMethod]
+    [Fact]
     public void Reading_Labels()
     {
         var bytes = new byte[]
@@ -84,14 +82,14 @@ public class NameCompressionTest
         
         using var ms = new MemoryStream(bytes);
         var reader = new WireReader(ms);
-        Assert.AreEqual("a.b.c", reader.ReadDomainName());
-        Assert.AreEqual("a.b.c", reader.ReadDomainName());
-        Assert.AreEqual("b.c", reader.ReadDomainName());
-        Assert.AreEqual("c", reader.ReadDomainName());
-        Assert.AreEqual("x.b.c", reader.ReadDomainName());
+        reader.ReadDomainName().ShouldBe("a.b.c");
+        reader.ReadDomainName().ShouldBe("a.b.c");
+        reader.ReadDomainName().ShouldBe("b.c");
+        reader.ReadDomainName().ShouldBe("c");
+        reader.ReadDomainName().ShouldBe("x.b.c");
     }
 
-    [TestMethod]
+    [Fact]
     public void Reading()
     {
         var bytes = new byte[]
@@ -103,8 +101,8 @@ public class NameCompressionTest
         
         using var ms = new MemoryStream(bytes);
         var reader = new WireReader(ms);
-        Assert.AreEqual("a", reader.ReadDomainName());
-        Assert.AreEqual("b", reader.ReadDomainName());
-        Assert.AreEqual("b", reader.ReadDomainName());
+        reader.ReadDomainName().ShouldBe("a");
+        reader.ReadDomainName().ShouldBe("b");
+        reader.ReadDomainName().ShouldBe("b");
     }
 }

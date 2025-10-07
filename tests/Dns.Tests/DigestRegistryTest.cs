@@ -1,12 +1,11 @@
 ﻿using Makaretu.Dns;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shouldly;
+using Xunit;
 
 namespace DnsTests;
 
-[TestClass]
 public class DigestRegistryTest
 {
-    [TestMethod]
-    public void Exists() => Assert.AreNotEqual(0, DigestRegistry.Digests.Count);
+    [Fact]
+    public void Exists() => DigestRegistry.Digests.Count.ShouldNotBe(0);
 }
