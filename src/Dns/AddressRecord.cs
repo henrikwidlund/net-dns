@@ -45,14 +45,18 @@ public abstract class AddressRecord : ResourceRecord
     /// <inheritdoc />
     public override void WriteData(WireWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(Address);
+        if (Address == null)
+            throw new InvalidOperationException("Address is null.");
+
         writer.WriteIPAddress(Address);
     }
 
     /// <inheritdoc />
     public override void WriteData(PresentationWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(Address);
+        if (Address == null)
+            throw new InvalidOperationException("Address is null.");
+
         writer.WriteIPAddress(Address, appendSpace: false);
     }
 }
