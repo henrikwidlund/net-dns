@@ -50,7 +50,7 @@ public class RecentMessagesTest
         r.TryAdd(b).ShouldBeTrue();
         r.TryAdd(a).ShouldBeFalse();
 
-        await Task.Delay(200);
+        await Task.Delay(200, TestContext.Current.CancellationToken);
         r.TryAdd(a).ShouldBeTrue();
     }
 }

@@ -606,7 +606,7 @@ public class MulticastServiceTest
         mdns.NetworkInterfaceDiscovered += async _ =>
         {
             await mdns.SendQuery(service);
-            await Task.Delay(250);
+            await Task.Delay(250, TestContext.Current.CancellationToken);
             await mdns.SendQuery(service);
         };
         
@@ -635,7 +635,7 @@ public class MulticastServiceTest
         };
         
         await mdns.Start(CancellationToken.None);
-        await Task.Delay(1000);
+        await Task.Delay(1000, TestContext.Current.CancellationToken);
         
         answerCount.ShouldBe(1);
     }
@@ -650,7 +650,7 @@ public class MulticastServiceTest
         mdns.NetworkInterfaceDiscovered += async _ =>
         {
             await mdns.SendQuery(service);
-            await Task.Delay(250);
+            await Task.Delay(250, TestContext.Current.CancellationToken);
             await mdns.SendQuery(service);
         };
         
@@ -680,11 +680,11 @@ public class MulticastServiceTest
         };
         
         await mdns.Start(CancellationToken.None);
-        await Task.Delay(2000);
+        await Task.Delay(2000, TestContext.Current.CancellationToken);
         answerCount.ShouldBe(1);
 
         await mdns.SendQuery(service);
-        await Task.Delay(2000);
+        await Task.Delay(2000, TestContext.Current.CancellationToken);
         answerCount.ShouldBe(2);
     }
 
