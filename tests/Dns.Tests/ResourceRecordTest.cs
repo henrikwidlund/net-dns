@@ -179,7 +179,7 @@ public class ResourceRecordTest
         rr.CreationTime.Kind.ShouldBe(DateTimeKind.Local);
         rr.CreationTime.ShouldBeGreaterThanOrEqualTo(now);
 
-        await Task.Delay(50);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
         var clone = rr.Clone<ResourceRecord>();
         rr.CreationTime.ShouldBe(clone.CreationTime);
     }

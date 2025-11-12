@@ -25,7 +25,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -39,7 +39,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "foo.bar.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NameError);
@@ -54,7 +54,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.MX };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NameError);
@@ -65,7 +65,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.CH };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NameError);
@@ -76,7 +76,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.ANY };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -89,7 +89,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.ANY, Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -102,7 +102,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "www.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.AA.ShouldBeTrue();
@@ -121,7 +121,7 @@ public class NameServerTest
         ftp.Resources.Add(new CNAMERecord { Name = ftp.Name, Target = "ftp-server.example.com" });
         resolver.Catalog.TryAdd(ftp.Name, ftp);
         var question = new Question { Name = "ftp.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.AA.ShouldBeTrue();
@@ -143,7 +143,7 @@ public class NameServerTest
         bad.Resources.Add(new CNAMERecord { Name = bad.Name, Target = "somewhere-else.org" });
         resolver.Catalog.TryAdd(bad.Name, bad);
         var question = new Question { Name = "bad.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.AA.ShouldBeTrue();
@@ -162,7 +162,7 @@ public class NameServerTest
         var request = new Message();
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
         response.AA.ShouldBeTrue();
@@ -178,7 +178,7 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "unknown-name.example.com", Type = DnsType.AAAA });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -193,7 +193,7 @@ public class NameServerTest
         var request = new Message();
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -210,7 +210,7 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "unknown-name.example.com", Type = DnsType.AAAA });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -225,7 +225,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "x.example.org", Type = DnsType.PTR });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -243,7 +243,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "_http._tcp.example.org", Type = DnsType.PTR });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -261,7 +261,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -278,7 +278,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.SOA });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -296,7 +296,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "a._http._tcp.example.org", Type = DnsType.SRV });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -313,7 +313,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotcom };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -331,7 +331,7 @@ public class NameServerTest
         var resolver = new NameServer { Catalog = _dotcom };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -351,7 +351,7 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
         request.Questions.Add(new Question { Name = "ns1.example.org", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns2.example.org", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -381,7 +381,7 @@ public class NameServerTest
 
         var request = new Message();
         request.Questions.Add(new Question { Name = "a.b", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
         response.Status.ShouldBe(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
         answer.Address.ShouldNotBeNull();
@@ -389,7 +389,7 @@ public class NameServerTest
 
         request = new Message();
         request.Questions.Add(new Question { Name = @"a\.b", Type = DnsType.A });
-        response = await resolver.ResolveAsync(request);
+        response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
         response.Status.ShouldBe(MessageStatus.NoError);
         answer = response.Answers.OfType<ARecord>().First();
         answer.Address.ShouldNotBeNull();
@@ -420,7 +420,7 @@ public class NameServerTest
         var r1 = new Message();
         r1.Read(bin);
 
-        var response = await resolver.ResolveAsync(r1);
+        var response = await resolver.ResolveAsync(r1, TestContext.Current.CancellationToken);
         response.Status.ShouldBe(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
         answer.Address.ShouldNotBeNull();
