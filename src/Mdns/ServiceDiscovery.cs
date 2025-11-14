@@ -424,7 +424,7 @@ public class ServiceDiscovery : IServiceDiscovery
     {
         var msg = e.Message;
         if (_logger?.IsEnabled(LogLevel.Debug) is true)
-            _logger?.LogDebug("Answer from {RemoteEndPoint}", e.RemoteEndPoint);
+            _logger.LogDebug("Answer from {RemoteEndPoint}", e.RemoteEndPoint);
             
         if (_logger?.IsEnabled(LogLevel.Trace) is true)
             _logger.LogTrace("{@Message}", msg);

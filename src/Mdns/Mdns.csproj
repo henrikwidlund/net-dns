@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
@@ -34,15 +34,15 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="2.0.250">
+        <PackageReference Include="Meziantou.Analyzer" Version="2.0.252">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
     </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.10" />
+      <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="10.0.0" />
         <ProjectReference Include="..\Dns\Dns.csproj" />
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>

@@ -23,24 +23,24 @@ public class CachedNameServerTest
         query.Questions.Add(new Question { Name = "a.foo.org", Type = DnsType.A });
         query.Questions.Add(new Question { Name = "b.foo.org", Type = DnsType.A });
 
-        var response = await cache.ResolveAsync(query);
-        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeTrue();
-        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeTrue();
+        var response = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
+        response.Answers.Any(static a => a.Name == "a.foo.org").ShouldBeTrue();
+        response.Answers.Any(static a => a.Name == "b.foo.org").ShouldBeTrue();
 
         cache.Prune(now);
-        response = await cache.ResolveAsync(query);
-        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeTrue();
-        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeTrue();
+        response = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
+        response.Answers.Any(static a => a.Name == "a.foo.org").ShouldBeTrue();
+        response.Answers.Any(static a => a.Name == "b.foo.org").ShouldBeTrue();
 
         cache.Prune(now + TimeSpan.FromSeconds(31));
-        response = await cache.ResolveAsync(query);
-        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeFalse();
-        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeTrue();
+        response = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
+        response.Answers.Any(static a => a.Name == "a.foo.org").ShouldBeFalse();
+        response.Answers.Any(static a => a.Name == "b.foo.org").ShouldBeTrue();
 
         cache.Prune(now + TimeSpan.FromSeconds(61));
-        response = await cache.ResolveAsync(query);
-        response.Answers.Any(a => a.Name == "a.foo.org").ShouldBeFalse();
-        response.Answers.Any(a => a.Name == "b.foo.org").ShouldBeFalse();
+        response = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
+        response.Answers.Any(static a => a.Name == "a.foo.org").ShouldBeFalse();
+        response.Answers.Any(static a => a.Name == "b.foo.org").ShouldBeFalse();
     }
 
     [Fact]
@@ -64,10 +64,10 @@ public class CachedNameServerTest
             }
         };
         
-        var res = await cache.ResolveAsync(query);
+        var res = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
 
-        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.A).ShouldBeTrue();
-        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.AAAA).ShouldBeTrue();
+        res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.A).ShouldBeTrue();
+        res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
     [Fact]
@@ -91,10 +91,10 @@ public class CachedNameServerTest
             }
         };
         
-        var res = await cache.ResolveAsync(query);
+        var res = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
 
-        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.A).ShouldBeFalse();
-        res.Answers.Any(a => a.Name == "foo.org" && a.Type == DnsType.AAAA).ShouldBeTrue();
+        res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.A).ShouldBeFalse();
+        res.Answers.Any(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class CachedNameServerTest
             }
         };
         
-        var res = await cache.ResolveAsync(query);
+        var res = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
         res.Answers.Count.ShouldBe(1);
 
         var cts = cache.PruneContinuously(TimeSpan.FromMilliseconds(200));

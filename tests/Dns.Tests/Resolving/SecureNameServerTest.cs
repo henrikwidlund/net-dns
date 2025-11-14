@@ -21,11 +21,11 @@ public class SecureNameServerTest
         var request = new Message();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
 
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
         response.DO.ShouldBeFalse();
 
         request.UseDnsSecurity();
-        response = await resolver.ResolveAsync(request);
+        response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
         response.DO.ShouldBeTrue();
     }
 
@@ -35,7 +35,7 @@ public class SecureNameServerTest
         var resolver = new NameServer { Catalog = _example };
         var request = new Message();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -49,7 +49,7 @@ public class SecureNameServerTest
         var resolver = new NameServer { Catalog = _example };
         var request = new Message().UseDnsSecurity();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -65,7 +65,7 @@ public class SecureNameServerTest
         var resolver = new NameServer { Catalog = _example };
         var request = new Message().UseDnsSecurity();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
-        var response = await resolver.ResolveAsync(request);
+        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
