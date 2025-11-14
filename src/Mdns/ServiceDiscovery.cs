@@ -497,7 +497,7 @@ public class ServiceDiscovery : IServiceDiscovery
 
         // Many bonjour browsers don't like DNS-SD response
         // with additional records.
-        if (response.Answers.Exists(static a => a.Name == ServiceName))
+        if (response.Answers.Any(static a => a.Name == ServiceName))
         {
             response.AdditionalRecords.Clear();
         }

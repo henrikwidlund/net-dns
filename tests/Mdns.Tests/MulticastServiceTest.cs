@@ -127,7 +127,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Answers.Add(new ARecord
@@ -142,7 +142,7 @@ public class MulticastServiceTest
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(answer => answer.Name == service))
+            if (msg.Answers.Any(answer => answer.Name == service))
             {
                 response = msg;
                 done.Set();
@@ -188,7 +188,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Answers.Add(new ARecord
@@ -235,7 +235,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Answers.Add(new ARecord
@@ -250,7 +250,7 @@ public class MulticastServiceTest
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(answer => answer.Name == service))
+            if (msg.Answers.Any(answer => answer.Name == service))
             {
                 response = msg;
                 done.Set();
@@ -309,7 +309,7 @@ public class MulticastServiceTest
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(answer => answer.Name == service))
+            if (msg.Answers.Any(answer => answer.Name == service))
             {
                 response = msg;
                 done.Set();
@@ -340,7 +340,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Status = MessageStatus.Refused;
@@ -356,7 +356,7 @@ public class MulticastServiceTest
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(a => a.Name == service))
+            if (msg.Answers.Any(a => a.Name == service))
             {
                 done.Set();
             }
@@ -474,7 +474,7 @@ public class MulticastServiceTest
         a.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 var addresses = MulticastService.GetIPAddresses()
@@ -498,7 +498,7 @@ public class MulticastServiceTest
         b.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(ans => ans.Name == service))
+            if (msg.Answers.Any(ans => ans.Name == service))
             {
                 response = msg;
                 done.Set();
@@ -558,7 +558,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Answers.Add(new ARecord
@@ -613,7 +613,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Answers.Add(new ARecord
@@ -628,7 +628,7 @@ public class MulticastServiceTest
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(answer => answer.Name == service))
+            if (msg.Answers.Any(answer => answer.Name == service))
                 ++answerCount;
                 
             return Task.CompletedTask;
@@ -657,7 +657,7 @@ public class MulticastServiceTest
         mdns.QueryReceived += async e =>
         {
             var msg = e.Message;
-            if (msg.Questions.Exists(q => q.Name == service))
+            if (msg.Questions.Any(q => q.Name == service))
             {
                 var res = msg.CreateResponse();
                 res.Answers.Add(new ARecord
@@ -673,7 +673,7 @@ public class MulticastServiceTest
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
-            if (msg.Answers.Exists(answer => answer.Name == service))
+            if (msg.Answers.Any(answer => answer.Name == service))
                 ++answerCount;
             
             return Task.CompletedTask;

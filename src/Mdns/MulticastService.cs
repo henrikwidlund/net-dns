@@ -383,7 +383,7 @@ public class MulticastService : IMulticastService
         Task CheckResponse(MessageEventArgs e)
         {
             var response = e.Message;
-            if (request.Questions.TrueForAll(q => response.Answers.Exists(a => a.Name == q.Name)))
+            if (request.Questions.TrueForAll(q => response.Answers.Any(a => a.Name == q.Name)))
             {
                 AnswerReceived -= CheckResponse;
                 tsc.SetResult(response);

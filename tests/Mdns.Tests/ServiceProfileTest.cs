@@ -40,21 +40,21 @@ public class ServiceProfileTest
     public void Addresses_Default()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
-        service.Resources.Exists(static r => r.Type is DnsType.A or DnsType.AAAA).ShouldBeTrue();
+        service.Resources.Any(static r => r.Type is DnsType.A or DnsType.AAAA).ShouldBeTrue();
     }
 
     [Fact]
     public void Addresses_IPv4()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
-        service.Resources.Exists(static r => r.Type == DnsType.A).ShouldBeTrue();
+        service.Resources.Any(static r => r.Type == DnsType.A).ShouldBeTrue();
     }
 
     [Fact]
     public void Addresses_IPv6()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.IPv6Loopback]);
-        service.Resources.Exists(static r => r.Type == DnsType.AAAA).ShouldBeTrue();
+        service.Resources.Any(static r => r.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
     [Fact]
