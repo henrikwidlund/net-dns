@@ -29,7 +29,7 @@ public class MulticastServiceTest
         var action = static async () =>
         {
             var mdns = new MulticastService();
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             mdns.Stop();
         };
 
@@ -64,7 +64,7 @@ public class MulticastServiceTest
         
         try
         {
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             ready.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready timeout");
 
             await mdns.SendQuery("some-service.local");
@@ -101,7 +101,7 @@ public class MulticastServiceTest
         
         try
         {
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             ready.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready timeout");
 
             await mdns.SendUnicastQuery("some-service.local");
@@ -151,7 +151,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
         response.ShouldNotBeNull();
@@ -200,7 +200,7 @@ public class MulticastServiceTest
             }
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         ready.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready timeout");
         MulticastService.IncludeLoopbackInterfaces = false;
@@ -259,7 +259,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
         response.ShouldNotBeNull();
@@ -318,7 +318,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
         response.ShouldNotBeNull();
@@ -366,7 +366,7 @@ public class MulticastServiceTest
         
         try
         {
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             done.WaitOne(TimeSpan.FromSeconds(0.5)).ShouldBeFalse("answer was not ignored");
         }
         finally
@@ -389,7 +389,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         try
         {
@@ -413,7 +413,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         try
         {
@@ -444,7 +444,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         
         try
         {
@@ -509,8 +509,8 @@ public class MulticastServiceTest
         
         try
         {
-            await a.Start(CancellationToken.None);
-            await b.Start(CancellationToken.None);
+            await a.Start(TestContext.Current.CancellationToken);
+            await b.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
             response.ShouldNotBeNull();
@@ -542,7 +542,7 @@ public class MulticastServiceTest
         using (var mdns = new MulticastService())
         {
             mdns.ShouldNotBeNull();
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
         }
     }
 
@@ -570,7 +570,7 @@ public class MulticastServiceTest
             }
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         var response = await mdns.ResolveAsync(query, cancellation.Token);
         
         response.ShouldNotBeNull("no response");
@@ -590,7 +590,7 @@ public class MulticastServiceTest
         using var cancellation = new CancellationTokenSource(500);
 
         using var mdns = new MulticastService();
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         await ExceptionAssert.ThrowsAsync<TaskCanceledException>(async () =>
         {
             await mdns.ResolveAsync(query, cancellation.Token);
@@ -634,7 +634,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         await Task.Delay(1000, TestContext.Current.CancellationToken);
         
         answerCount.ShouldBe(1);
@@ -679,7 +679,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
         await Task.Delay(2000, TestContext.Current.CancellationToken);
         answerCount.ShouldBe(1);
 
@@ -701,7 +701,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns1.Start(CancellationToken.None);
+        await mdns1.Start(TestContext.Current.CancellationToken);
 
         mdns2.NetworkInterfaceDiscovered += _ =>
         {
@@ -709,7 +709,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns2.Start(CancellationToken.None);
+        await mdns2.Start(TestContext.Current.CancellationToken);
 
         ready1.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready1 timeout");
         ready2.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready2 timeout");

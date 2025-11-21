@@ -52,7 +52,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
         }
@@ -88,7 +88,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
         }
@@ -115,7 +115,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         try
         {
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(3)).ShouldBeTrue("Probe timeout");
         }
@@ -132,7 +132,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
 
         using var sd = await ServiceDiscovery.CreateInstance(cancellationToken: TestContext.Current.CancellationToken);
         sd.Advertise(service);
-        await sd.Mdns!.Start(CancellationToken.None);
+        await sd.Mdns!.Start(TestContext.Current.CancellationToken);
         
         var mdns = new MulticastService();
         using var sd2 = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
@@ -143,7 +143,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         
         try
         {
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
         }
         finally
         {
@@ -165,7 +165,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         
         try
         {
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
         }
         finally
         {
@@ -194,7 +194,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
         }
@@ -224,7 +224,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
         }
@@ -256,7 +256,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
         }
@@ -286,7 +286,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         try
         {
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("DNS-SD query timeout");
         }
@@ -315,7 +315,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         try
         {
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("DNS-SD query timeout");
         }
@@ -352,7 +352,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         try
         {
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("instance not found");
         }
@@ -392,7 +392,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             sd.Advertise(service1);
             sd.Advertise(service2);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("instance not found");
         }
@@ -429,7 +429,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         try
         {
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("instance not found");
         }
@@ -470,7 +470,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
 
         sd.Advertise(service);
 
-        await mdns.Start(CancellationToken.None);
+        await mdns.Start(TestContext.Current.CancellationToken);
 
         done.WaitOne(TimeSpan.FromSeconds(3)).ShouldBeTrue("instance not found");
 
@@ -505,7 +505,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         try
         {
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             await sd.Unadvertise(service);
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("goodbye timeout");
         }
@@ -541,7 +541,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current.CancellationToken);
             sd.Advertise(service);
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
             
@@ -604,7 +604,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
                 await sd.Announce(service);
             };
             
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(3)).ShouldBeTrue("announce timeout");
         }
@@ -647,7 +647,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
                     await sd.Announce(service);
                 };
             
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(3)).ShouldBeTrue("announce timeout");
         }
@@ -689,7 +689,7 @@ public class ServiceDiscoveryTest(ITestOutputHelper testOutputHelper)
                 await sd.Announce(service, 3);
             };
             
-            await mdns.Start(CancellationToken.None);
+            await mdns.Start(TestContext.Current.CancellationToken);
             
             done.WaitOne(TimeSpan.FromSeconds(4)).ShouldBeTrue("announce timeout");
             stopWatch.Stop();

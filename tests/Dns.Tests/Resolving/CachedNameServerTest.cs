@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
@@ -120,10 +119,10 @@ public class CachedNameServerTest
         res.Answers.Count.ShouldBe(1);
 
         var cts = cache.PruneContinuously(TimeSpan.FromMilliseconds(200));
-        await Task.Delay(TimeSpan.FromSeconds(1), CancellationToken.None);
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
         await cts.CancelAsync();
-        await Task.Delay(TimeSpan.FromMilliseconds(40), CancellationToken.None);
-        res = await cache.ResolveAsync(query, CancellationToken.None);
+        await Task.Delay(TimeSpan.FromMilliseconds(40), TestContext.Current.CancellationToken);
+        res = await cache.ResolveAsync(query, TestContext.Current.CancellationToken);
         res.Answers.Count.ShouldBe(0);
     }
 }
