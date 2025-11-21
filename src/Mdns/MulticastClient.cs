@@ -94,7 +94,7 @@ internal class MulticastClient : IDisposable
                 }
 
                 _receivers.Add(sender);
-                _logger?.LogDebug("Will send via {localEndpoint}", localEndpoint);
+                _logger?.WillSendVia(localEndpoint);
                 if (!_senders.TryAdd(address, sender)) // Should not fail
                 {
                     sender.Dispose();
@@ -107,7 +107,7 @@ internal class MulticastClient : IDisposable
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Cannot setup send socket for {Address}", address);
+                _logger?.SocketSetupFail(e, address);
                 sender.Dispose();
             }
         }
@@ -132,7 +132,7 @@ internal class MulticastClient : IDisposable
             }
             catch (Exception e)
             {
-                _logger?.LogInformation(e, "Sender {Key} failure.", sender.Key);
+                _logger?.SenderKeyFailure(e, sender.Key);
                 // eat it.
             }
         }
@@ -154,7 +154,7 @@ internal class MulticastClient : IDisposable
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Receiver failure.");
+            _logger?.ReceiverFailure(ex);
         }
     }
     
