@@ -423,11 +423,8 @@ public class ServiceDiscovery : IServiceDiscovery
     private async Task OnAnswer(MessageEventArgs e)
     {
         var msg = e.Message;
-        if (_logger?.IsEnabled(LogLevel.Debug) is true)
-            _logger.LogDebug("Answer from {RemoteEndPoint}", e.RemoteEndPoint);
-            
-        if (_logger?.IsEnabled(LogLevel.Trace) is true)
-            _logger.LogTrace("{@Message}", msg);
+        _logger?.AnswerFromRemoteEndpoint(e.RemoteEndPoint);
+        _logger?.AnswerMessageReceived(msg);
 
         // Any DNS-SD answers?
         var sd = msg.Answers
@@ -473,11 +470,8 @@ public class ServiceDiscovery : IServiceDiscovery
     {
         var request = e.Message;
 
-        if (_logger?.IsEnabled(LogLevel.Debug) is true)
-            _logger.LogDebug("Query from {RemoteEndPoint}", e.RemoteEndPoint);
-            
-        if (_logger?.IsEnabled(LogLevel.Trace) is true)
-            _logger.LogTrace("{@Message}", request);
+        _logger?.QueryFromRemoteEndpoint(e.RemoteEndPoint);
+        _logger?.QueryMessageReceived(request);
 
         // Determine if this query is requesting a unicast response
         // and normalise the Class.
@@ -518,11 +512,8 @@ public class ServiceDiscovery : IServiceDiscovery
             await Mdns.SendAnswer(response, e, !QU);
         }
 
-        _logger?.LogDebug("Sending answer");
-        if (_logger?.IsEnabled(LogLevel.Trace) is true)
-        {
-            _logger.LogTrace("{@Message}", response);
-        }
+        _logger?.SendingAnswer();
+        _logger?.SendingQueryAnswer(response);
     }
 
     #region IDisposable Support

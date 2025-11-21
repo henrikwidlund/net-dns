@@ -297,7 +297,7 @@ public class MulticastService : IMulticastService
 
     private async Task FindNetworkInterfaces(CancellationToken cancellationToken)
     {
-        _logger?.LogDebug("Finding network interfaces");
+        _logger?.FindingNetworkInterfaces();
 
         try
         {
@@ -310,20 +310,14 @@ public class MulticastService : IMulticastService
             {
                 oldNics.Add(nic);
 
-                if (_logger?.IsEnabled(LogLevel.Debug) is true)
-                {
-                    _logger.LogDebug("Removed nic '{NicName}'.", nic.Name);
-                }
+                _logger?.RemovedNic(nic.Name);
             }
 
             foreach (var nic in currentNics.Where(nic => _knownNics.TrueForAll(k => k.Id.Equals(nic.Id, StringComparison.Ordinal))))
             {
                 newNics.Add(nic);
 
-                if (_logger?.IsEnabled(LogLevel.Debug) is true)
-                {
-                    _logger.LogDebug("Found nic '{NicName}'.", nic.Name);
-                }
+                _logger?.FoundNic(nic.Name);
             }
 
             _knownNics = currentNics;
@@ -360,7 +354,7 @@ public class MulticastService : IMulticastService
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "FindNics failed");
+            _logger?.FindNicsFailed(e);
         }
     }
 
@@ -708,7 +702,7 @@ public class MulticastService : IMulticastService
         }
         catch (Exception e)
         {
-            _logger?.LogWarning(e, "Received malformed message");
+            _logger?.ReceivedMalformedMessage(e);
             if (MalformedMessage is not null)
                 await MalformedMessage(result.Buffer);
             
@@ -736,7 +730,7 @@ public class MulticastService : IMulticastService
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Receive handler failed");
+            _logger?.ReceiveHandlerFailed(e);
             // eat the exception
         }
     }
