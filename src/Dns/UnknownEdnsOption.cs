@@ -22,11 +22,5 @@ public class UnknownEdnsOption : EdnsOption
     public override void WriteData(WireWriter writer) => writer.WriteBytes(Data);
 
     /// <inheritdoc />
-    public override string ToString()
-    {
-        if (Data is null)
-            throw new InvalidOperationException("The Data property must be set.");
-        
-        return $";   Type = {Type}; Data = {Convert.ToBase64String(Data)}";
-    }
+    public override string ToString() => $";   Type = {Type}; Data = {(Data == null ? string.Empty : Convert.ToBase64String(Data))}";
 }

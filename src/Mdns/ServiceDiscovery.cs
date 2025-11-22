@@ -295,11 +295,10 @@ public class ServiceDiscovery : IServiceDiscovery
         if (profile.SharedProfile)
             throw new InvalidOperationException("Shared profiles should not be probed");
 
-        bool conflict = false;
-
         if (Mdns is null)
-            return conflict;
-        
+            return false;
+
+        bool conflict = false;
         Mdns.AnswerReceived += Handler;
 
         await Task.Delay(Random.Shared.Next(0, 250));

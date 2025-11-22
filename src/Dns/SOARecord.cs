@@ -26,7 +26,7 @@ public class SOARecord : ResourceRecord
     public SOARecord()
     {
         Type = DnsType.SOA;
-        TTL = TimeSpan.FromSeconds(0);
+        TTL = TimeSpan.Zero;
     }
 
     /// <summary>

@@ -270,7 +270,7 @@ public class MulticastServiceTest
         a.Address.ShouldBe(IPAddress.Parse("127.1.1.1"));
     }
 
-    [Fact(Skip = "IPv6 is not supported on this host")]
+    [Fact]
     public async Task ReceiveAnswer_IPv6()
     {
         if (!Socket.OSSupportsIPv6)

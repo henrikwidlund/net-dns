@@ -60,18 +60,8 @@ public class WireReader
     public byte[] ReadBytes(int length)
     {
         var buffer = new byte[length];
-        for (var offset = 0; length > 0; )
-        {
-            var n = _stream.Read(buffer, offset, length);
-            
-            if (n == 0)
-                throw new EndOfStreamException();
-            
-            offset += n;
-            length -= n;
-            Position += n;
-        }
-
+        _stream.ReadExactly(buffer);
+        Position += length;
         return buffer;
     }
 
