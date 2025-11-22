@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/gh-actions/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/dependency-review.yml" />
+    <File Path=".github/workflows/github-release.yml" />
+    <File Path=".github/workflows/qodana_code_quality.yml" />
+    <File Path=".github/workflows/sonarqube.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Dns/Dns.csproj" />
+    <Project Path="src/Mdns/Mdns.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Dns.Tests/Dns.Tests.csproj" />
+    <Project Path="tests/Mdns.Tests/Mdns.Tests.csproj" />
+  </Folder>
+</Solution>
