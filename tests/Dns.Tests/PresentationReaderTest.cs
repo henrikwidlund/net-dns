@@ -9,7 +9,7 @@ namespace DnsTests;
 
 public class PresentationReaderTest
 {
-    [Fact]
+    [Test]
     public void ReadString()
     {
         var reader = new PresentationReader(new StringReader("  alpha   beta   omega"));
@@ -19,7 +19,7 @@ public class PresentationReaderTest
         reader.ReadString().ShouldBe("omega");
     }
 
-    [Fact]
+    [Test]
     public void ReadQuotedStrings()
     {
         var reader = new PresentationReader(new StringReader("  \"a b c\"  \"x y z\""));
@@ -28,7 +28,7 @@ public class PresentationReaderTest
         reader.ReadString().ShouldBe("x y z");
     }
 
-    [Fact]
+    [Test]
     public void ReadEscapedStrings()
     {
         var reader = new PresentationReader(new StringReader("  alpha\\ beta   omega"));
@@ -37,7 +37,7 @@ public class PresentationReaderTest
         reader.ReadString().ShouldBe("omega");
     }
 
-    [Fact]
+    [Test]
     public void ReadDecimalEscapedString()
     {
         var reader = new PresentationReader(new StringReader("a\\098c"));
@@ -45,7 +45,7 @@ public class PresentationReaderTest
         reader.ReadString().ShouldBe("abc");
     }
 
-    [Fact]
+    [Test]
     public void ReadInvalidDecimalEscapedString()
     {
         var reader = new PresentationReader(new StringReader("a\\256c"));
@@ -53,7 +53,7 @@ public class PresentationReaderTest
         Should.Throw<FormatException>(() => reader.ReadString());
     }
 
-    [Fact]
+    [Test]
     public void ReadResource()
     {
         var reader = new PresentationReader(new StringReader("me A 127.0.0.1"));
@@ -67,7 +67,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<ARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithNameOfType()
     {
         var reader = new PresentationReader(new StringReader("A A 127.0.0.1"));
@@ -81,7 +81,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<ARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithNameOfClass()
     {
         var reader = new PresentationReader(new StringReader("CH A 127.0.0.1"));
@@ -95,7 +95,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<ARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithClassAndTTL()
     {
         var reader = new PresentationReader(new StringReader("me CH 63 A 127.0.0.1"));
@@ -109,7 +109,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<ARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithUnknownClass()
     {
         var reader = new PresentationReader(new StringReader("me CLASS1234 A 127.0.0.1"));
@@ -122,7 +122,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<ARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithUnknownType()
     {
         var reader = new PresentationReader(new StringReader("me CH TYPE1234 \\# 0"));
@@ -135,14 +135,14 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<UnknownRecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceMissingName()
     {
         var reader = new PresentationReader(new StringReader("  NS ns1"));
         Should.Throw<InvalidDataException>(() => reader.ReadResourceRecord());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithComment()
     {
         var reader = new PresentationReader(new StringReader("; comment\r\nme A 127.0.0.1"));
@@ -156,7 +156,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<ARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithOrigin()
     {
         const string text = """
@@ -174,7 +174,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<PTRRecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithEscapedOrigin()
     {
         const string text = """
@@ -194,7 +194,7 @@ public class PresentationReaderTest
         resource.Name.Labels.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithTTL()
     {
         const string text = """
@@ -212,7 +212,7 @@ public class PresentationReaderTest
         resource.ShouldBeOfType<PTRRecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithPreviousDomain()
     {
         const string text = """
@@ -238,7 +238,7 @@ public class PresentationReaderTest
         aaaa.ShouldBeOfType<AAAARecord>();
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithPreviousEscapedDomain()
     {
         const string text = """
@@ -267,7 +267,7 @@ public class PresentationReaderTest
         aaaa.Name.Labels.Count.ShouldBe(2);
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceWithLeadingEscapedDomainName()
     {
         const string text = @"\126emanon.org A 127.0.0.1";
@@ -284,7 +284,7 @@ public class PresentationReaderTest
         a.Name.Labels.Count.ShouldBe(2);
     }
 
-    [Fact]
+    [Test]
     public void ReadZoneFile()
     {
         const string text = """
@@ -322,7 +322,7 @@ public class PresentationReaderTest
         resources.Count.ShouldBe(15);
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData()
     {
         var reader = new PresentationReader(new StringReader("\\# 0"));
@@ -342,35 +342,35 @@ public class PresentationReaderTest
         new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_MissingLeadin()
     {
         var reader = new PresentationReader(new StringReader("0"));
         Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_BadHex_BadDigit()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 ab cd ez"));
         Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_BadHex_NotEven()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 ab cd e"));
         Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_BadHex_TooFew()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 abcd"));
         Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadType()
     {
         var reader = new PresentationReader(new StringReader("A TYPE1 MX"));
@@ -379,21 +379,21 @@ public class PresentationReaderTest
         reader.ReadDnsType().ShouldBe(DnsType.MX);
     }
 
-    [Fact]
+    [Test]
     public void ReadType_BadName()
     {
         var reader = new PresentationReader(new StringReader("BADNAME"));
         Should.Throw<Exception>(() => reader.ReadDnsType());
     }
 
-    [Fact]
+    [Test]
     public void ReadType_BadDigit()
     {
         var reader = new PresentationReader(new StringReader("TYPEX"));
         Should.Throw<FormatException>(() => reader.ReadDnsType());
     }
 
-    [Fact]
+    [Test]
     public void ReadMultipleStrings()
     {
         var expected = new List<string> { "abc", "def", "ghi" };
@@ -405,7 +405,7 @@ public class PresentationReaderTest
         actual.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadMultipleStrings2()
     {
         var expected = new List<string> { "abc", "def", "ghi", "jkl" };
@@ -417,7 +417,7 @@ public class PresentationReaderTest
         actual.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadMultipleStrings3()
     {
         var expected = new List<string> { "abc", "def", "ghi" };
@@ -429,7 +429,7 @@ public class PresentationReaderTest
         actual.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadMultipleStrings_LF()
     {
         var expected = new List<string> { "abc", "def" };
@@ -441,7 +441,7 @@ public class PresentationReaderTest
         actual.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadMultipleStrings_CRLF()
     {
         var expected = new List<string> { "abc", "def" };
@@ -453,7 +453,7 @@ public class PresentationReaderTest
         actual.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadBase64String()
     {
         var expected = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
@@ -468,7 +468,7 @@ public class PresentationReaderTest
         reader.ReadBase64String().ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadDateTime()
     {
         DateTime expected = new(2004, 9, 16, 0, 0, 0, DateTimeKind.Utc);
@@ -478,7 +478,7 @@ public class PresentationReaderTest
         reader.ReadDateTime().ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void ReadDomainName_Escaped()
     {
         var foo = new DomainName("foo.com");

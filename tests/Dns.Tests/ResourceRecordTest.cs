@@ -4,13 +4,12 @@ using System.Net;
 using System.Threading.Tasks;
 using Makaretu.Dns;
 using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class ResourceRecordTest
 {
-    [Fact]
+    [Test]
     public void Defaults()
     {
         var rr = new ResourceRecord();
@@ -19,7 +18,7 @@ public class ResourceRecordTest
         rr.TTL.ShouldBe(ResourceRecord.DefaultTTL);
     }
 
-    [Fact]
+    [Test]
     public void DataLength()
     {
         var rr = new ResourceRecord();
@@ -27,7 +26,7 @@ public class ResourceRecordTest
         rr.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void DataLength_DerivedClass()
     {
         var a = new ARecord { Address = IPAddress.Parse("127.0.0.1") };
@@ -35,7 +34,7 @@ public class ResourceRecordTest
         a.GetDataLength().ShouldBe(4);
     }
 
-    [Fact]
+    [Test]
     public void Data()
     {
         var rr = new ResourceRecord();
@@ -43,7 +42,7 @@ public class ResourceRecordTest
         rr.GetData().Length.ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void Data_DerivedClass()
     {
         var a = new ARecord { Address = IPAddress.Parse("127.0.0.1") };
@@ -51,7 +50,7 @@ public class ResourceRecordTest
         a.GetData().Length.ShouldNotBe(0);
     }
 
-    [Fact]
+    [Test]
     public void RoundTrip()
     {
         var a = new ResourceRecord
@@ -73,7 +72,7 @@ public class ResourceRecordTest
         b.ShouldBeAssignableTo<ResourceRecord>();
     }
 
-    [Fact]
+    [Test]
     public void Value_Equality()
     {
         var a0 = new ResourceRecord
@@ -144,7 +143,7 @@ public class ResourceRecordTest
         e.GetHashCode().ShouldBe(e.GetHashCode());
     }
 
-    [Fact]
+    [Test]
     public void Stringing()
     {
         var a = new ResourceRecord
@@ -171,7 +170,7 @@ public class ResourceRecordTest
         a.ToString().ShouldBe("x.emanon.org 123 IN A \\# 0");
     }
 
-    [Fact]
+    [Test]
     public async Task CreationTime()
     {
         var now = DateTime.Now;
@@ -179,12 +178,12 @@ public class ResourceRecordTest
         rr.CreationTime.Kind.ShouldBe(DateTimeKind.Local);
         rr.CreationTime.ShouldBeGreaterThanOrEqualTo(now);
 
-        await Task.Delay(50, TestContext.Current.CancellationToken);
+        await Task.Delay(50, TestContext.Current!.Execution.CancellationToken);
         var clone = rr.Clone<ResourceRecord>();
         rr.CreationTime.ShouldBe(clone.CreationTime);
     }
 
-    [Fact]
+    [Test]
     public void IsExpired()
     {
         var rr = new ResourceRecord { TTL = TimeSpan.FromSeconds(2) };
@@ -194,7 +193,7 @@ public class ResourceRecordTest
         rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(3)).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Stringing_UnknownClass()
     {
         var a = new ResourceRecord
@@ -207,7 +206,7 @@ public class ResourceRecordTest
         a.ToString().ShouldBe("x.emanon.org CLASS1234 A \\# 0");
     }
 
-    [Fact]
+    [Test]
     public void Stringing_UnknownType()
     {
         var a = new ResourceRecord
@@ -219,7 +218,7 @@ public class ResourceRecordTest
         a.ToString().ShouldBe("x.emanon.org IN TYPE1234 \\# 0");
     }
 
-    [Fact]
+    [Test]
     public void CanonicalName()
     {
         var rr = new ResourceRecord { Name = "x.EmAnOn.OrG" };
@@ -227,7 +226,7 @@ public class ResourceRecordTest
         rr.CanonicalName.ShouldBe("x.emanon.org");
     }
 
-    [Fact]
+    [Test]
     public void RDATA_Underflow()
     {
         var ms = new MemoryStream(Convert.FromBase64String("A2ZvbwAABQABAAFRgAAKB3Vua25vd24A/w=="))

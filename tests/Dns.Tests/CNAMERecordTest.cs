@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class CNAMERecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new CNAMERecord
@@ -24,7 +24,7 @@ public class CNAMERecordTest
         a.Target.ShouldBe(b.Target);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new CNAMERecord
@@ -43,7 +43,7 @@ public class CNAMERecordTest
         a.Target.ShouldBe(b.Target);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new CNAMERecord

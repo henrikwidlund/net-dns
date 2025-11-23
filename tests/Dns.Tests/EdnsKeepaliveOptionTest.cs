@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class EdnsKeepaliveOptionTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();
@@ -27,7 +27,7 @@ public class EdnsKeepaliveOptionTest
         actual.Timeout.Value.ShouldBe(expected.Timeout.Value);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Empty()
     {
         var opt1 = new OPTRecord();

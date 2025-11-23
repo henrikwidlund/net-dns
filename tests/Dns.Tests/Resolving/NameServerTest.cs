@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 using Shouldly;
-using Xunit;
 
 namespace DnsTests.Resolving;
 
@@ -20,12 +19,12 @@ public class NameServerTest
         _dotorg.IncludeZone(new PresentationReader(new StringReader(CatalogTest.ExampleDotOrgZoneText)));
     }
 
-    [Fact]
+    [Test]
     public async Task Simple()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -34,12 +33,12 @@ public class NameServerTest
         response.Answers[0].Type.ShouldBe(DnsType.A);
     }
 
-    [Fact]
+    [Test]
     public async Task Missing_Name()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "foo.bar.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NameError);
@@ -49,34 +48,34 @@ public class NameServerTest
         authority.Name.ShouldBe("example.com");
     }
 
-    [Fact]
+    [Test]
     public async Task Missing_Type()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.MX };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NameError);
     }
 
-    [Fact]
+    [Test]
     public async Task Missing_Class()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.CH };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NameError);
     }
 
-    [Fact]
+    [Test]
     public async Task AnyType()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.ANY };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -84,12 +83,12 @@ public class NameServerTest
         response.Answers.Count.ShouldBe(2);
     }
 
-    [Fact]
+    [Test]
     public async Task AnyClass()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.ANY, Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -97,12 +96,12 @@ public class NameServerTest
         response.Answers.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Test]
     public async Task Alias()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "www.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.AA.ShouldBeTrue();
@@ -113,7 +112,7 @@ public class NameServerTest
         response.Answers[1].Type.ShouldBe(DnsType.A);
     }
 
-    [Fact]
+    [Test]
     public async Task Alias_BadZoneTarget()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -121,7 +120,7 @@ public class NameServerTest
         ftp.Resources.Add(new CNAMERecord { Name = ftp.Name, Target = "ftp-server.example.com" });
         resolver.Catalog.TryAdd(ftp.Name, ftp);
         var question = new Question { Name = "ftp.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.AA.ShouldBeTrue();
@@ -135,7 +134,7 @@ public class NameServerTest
         authority.Name.ShouldBe("example.com");
     }
 
-    [Fact]
+    [Test]
     public async Task Alias_BadInterZoneTarget()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -143,7 +142,7 @@ public class NameServerTest
         bad.Resources.Add(new CNAMERecord { Name = bad.Name, Target = "somewhere-else.org" });
         resolver.Catalog.TryAdd(bad.Name, bad);
         var question = new Question { Name = "bad.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.AA.ShouldBeTrue();
@@ -155,21 +154,21 @@ public class NameServerTest
         response.AuthorityRecords.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public async Task MultipleQuestions_AnswerAny()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var request = new Message();
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
         response.AA.ShouldBeTrue();
         response.Answers.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Test]
     public async Task MultipleQuestions_SomeQuestionNoAnswer_AnswerAny()
     {
         var resolver = new NameServer { Catalog = _dotcom };
@@ -178,7 +177,7 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "unknown-name.example.com", Type = DnsType.AAAA });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -186,14 +185,14 @@ public class NameServerTest
         response.Answers.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Test]
     public async Task MultipleQuestions_AnswerAll()
     {
         var resolver = new NameServer { Catalog = _dotcom, AnswerAllQuestions = true};
         var request = new Message();
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -201,7 +200,7 @@ public class NameServerTest
         response.Answers.Count.ShouldBe(2);
     }
 
-    [Fact]
+    [Test]
     public async Task MultipleQuestions_SomeQuestionNoAnswer_AnswerAll()
     {
         var resolver = new NameServer { Catalog = _dotcom, AnswerAllQuestions = true };
@@ -210,7 +209,7 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "unknown-name.example.com", Type = DnsType.AAAA });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -219,13 +218,13 @@ public class NameServerTest
         response.AuthorityRecords.Count.ShouldBe(3);
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_PTR_WithAddresses()
     {
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "x.example.org", Type = DnsType.PTR });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -237,13 +236,13 @@ public class NameServerTest
         response.AdditionalRecords[0].Name.ShouldBe("ns1.example.org");
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_PTR_WithSRV()
     {
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "_http._tcp.example.org", Type = DnsType.PTR });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -255,13 +254,13 @@ public class NameServerTest
         response.AdditionalRecords.Any(static a => a.Type == DnsType.A).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_NS()
     {
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -272,13 +271,13 @@ public class NameServerTest
         response.AdditionalRecords.All(static r => r.Type == DnsType.A).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_SOA()
     {
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.SOA });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -290,13 +289,13 @@ public class NameServerTest
         response.AdditionalRecords[0].Name.ShouldBe("ns1.example.org");
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_SRV()
     {
         var resolver = new NameServer { Catalog = _dotorg };
         var request = new Message();
         request.Questions.Add(new Question { Name = "a._http._tcp.example.org", Type = DnsType.SRV });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -307,13 +306,13 @@ public class NameServerTest
         response.AdditionalRecords.OfType<ARecord>().Any().ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_A()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -325,13 +324,13 @@ public class NameServerTest
             r.Name == "example.com" && r.Type == DnsType.AAAA).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_AAAA()
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.AAAA });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -343,7 +342,7 @@ public class NameServerTest
             r.Name == "example.com" && r.Type == DnsType.A).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task AdditionalRecords_NoDuplicates()
     {
         var resolver = new NameServer { Catalog = _dotorg,  AnswerAllQuestions = true };
@@ -351,7 +350,7 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
         request.Questions.Add(new Question { Name = "ns1.example.org", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns2.example.org", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
         response.IsResponse.ShouldBeTrue();
         response.Status.ShouldBe(MessageStatus.NoError);
@@ -361,7 +360,7 @@ public class NameServerTest
         response.AdditionalRecords.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public async Task EscapedDotDomainName()
     {
         var catalog = new Catalog
@@ -381,7 +380,7 @@ public class NameServerTest
 
         var request = new Message();
         request.Questions.Add(new Question { Name = "a.b", Type = DnsType.A });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
         response.Status.ShouldBe(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
         answer.Address.ShouldNotBeNull();
@@ -389,14 +388,14 @@ public class NameServerTest
 
         request = new Message();
         request.Questions.Add(new Question { Name = @"a\.b", Type = DnsType.A });
-        response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
         response.Status.ShouldBe(MessageStatus.NoError);
         answer = response.Answers.OfType<ARecord>().First();
         answer.Address.ShouldNotBeNull();
         answer.Address.ToString().ShouldBe("127.0.0.3");
     }
 
-    [Fact]
+    [Test]
     public async Task RoundTrip_EscapedDotDomainName()
     {
         var catalog = new Catalog
@@ -420,7 +419,7 @@ public class NameServerTest
         var r1 = new Message();
         r1.Read(bin);
 
-        var response = await resolver.ResolveAsync(r1, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(r1, TestContext.Current!.Execution.CancellationToken);
         response.Status.ShouldBe(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
         answer.Address.ShouldNotBeNull();

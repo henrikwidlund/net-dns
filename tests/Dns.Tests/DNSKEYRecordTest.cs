@@ -10,7 +10,7 @@ public class DNSKEYRecordTest
 {
     private static readonly byte[] Key = Convert.FromBase64String("AQPSKmynfzW4kyBv015MUG2DeIQ3Cbl+BBZH4b/0PY1kxkmvHjcZc8nokfzj31GajIQKY+5CptLr3buXA10hWqTkF7H6RfoRqXQeogmMHfpftf6zMv1LyBUgia7za6ZEzOJBOztyvhjL742iU/TpPSEDhm2SNKLijfUppn1UaNvv4w==");
 
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new DNSKEYRecord
@@ -35,7 +35,7 @@ public class DNSKEYRecordTest
         a.PublicKey.ShouldBe(b.PublicKey);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new DNSKEYRecord
@@ -61,7 +61,7 @@ public class DNSKEYRecordTest
         a.PublicKey.ShouldBe(b.PublicKey);
     }
 
-    [Fact]
+    [Test]
     public void KeyTag()
     {
         // From https://tools.ietf.org/html/rfc4034#section-5.4
@@ -87,7 +87,7 @@ public class DNSKEYRecordTest
         a.KeyTag().ShouldBe((ushort)60485);
     }
 
-    [Fact]
+    [Test]
     public void FromRsaSha256()
     {
         // From https://tools.ietf.org/html/rfc5702#section-6.1
@@ -116,7 +116,7 @@ public class DNSKEYRecordTest
         dnskey.KeyTag().ShouldBe((ushort)9033);
     }
 
-    [Fact]
+    [Test]
     public void FromRsaSha256_BadAlgorithm()
     {
         // From https://tools.ietf.org/html/rfc5702#section-6.1
@@ -138,7 +138,7 @@ public class DNSKEYRecordTest
         });
     }
 
-    [Fact]
+    [Test]
     public void FromRsaSha512()
     {
         // From https://tools.ietf.org/html/rfc5702#section-6.2
@@ -167,7 +167,7 @@ public class DNSKEYRecordTest
         dnskey.KeyTag().ShouldBe((ushort)3740);
     }
 
-    [Fact]
+    [Test]
     public void FromECDsaP256()
     {
         // From https://tools.ietf.org/html/rfc6605#section-6.1
@@ -210,7 +210,7 @@ public class DNSKEYRecordTest
         dnskey.KeyTag().ShouldBe((ushort)55648);
     }
 
-    [Fact]
+    [Test]
     public void FromECDsaP384()
     {
         // From https://tools.ietf.org/html/rfc6605#section-6.2

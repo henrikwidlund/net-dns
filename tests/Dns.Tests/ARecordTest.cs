@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class ARecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new ARecord
@@ -25,7 +25,7 @@ public class ARecordTest
         a.Address.ShouldBe(b.Address);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new ARecord
@@ -43,7 +43,7 @@ public class ARecordTest
         a.Address.ShouldBe(b.Address);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new ARecord

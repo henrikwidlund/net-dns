@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class AAAARecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new AAAARecord
@@ -24,7 +24,7 @@ public class AAAARecordTest
         a.Address.ShouldBe(b.Address);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_ScopeId()
     {
         var a = new AAAARecord
@@ -41,7 +41,7 @@ public class AAAARecordTest
         IPAddress.Parse("fe80::7573:b0a8:46b0:bfea").ShouldBe(b.Address);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new AAAARecord
@@ -59,7 +59,7 @@ public class AAAARecordTest
         a.Address.ShouldBe(b.Address);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new AAAARecord

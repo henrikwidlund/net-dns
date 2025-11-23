@@ -7,16 +7,16 @@ namespace DnsTests;
 
 public class SecurityAlgorithmRegistryTest
 {
-    [Fact]
+    [Test]
     public void Exists() => SecurityAlgorithmRegistry.Algorithms.Count.ShouldNotBe(0);
 
-    [Fact]
+    [Test]
     public void RSASHA1()
     {
         var metadata = SecurityAlgorithmRegistry.GetMetadata(SecurityAlgorithm.RSASHA1);
         metadata.ShouldNotBeNull();
     }
 
-    [Fact]
+    [Test]
     public void UnknownAlgorithm() => Should.Throw<NotImplementedException>(static () => SecurityAlgorithmRegistry.GetMetadata((SecurityAlgorithm)0xBA));
 }

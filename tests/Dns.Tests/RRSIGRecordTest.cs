@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class RRSIGRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
@@ -43,7 +43,7 @@ public class RRSIGRecordTest
         a.Signature.ShouldBe(b.Signature);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);

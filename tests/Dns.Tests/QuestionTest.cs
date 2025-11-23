@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class QuestionTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new Question

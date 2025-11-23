@@ -7,7 +7,7 @@ namespace DnsTests.Resolving;
 
 public class NodeTest
 {
-    [Fact]
+    [Test]
     public void Defaults()
     {
         var node = new Node();
@@ -17,7 +17,7 @@ public class NodeTest
         node.ToString().ShouldBe("");
     }
 
-    [Fact]
+    [Test]
     public void DuplicateResources()
     {
         var node = new Node();

@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class NameCompressionTest
 {
-    [Fact]
+    [Test]
     public void Writing()
     {
         using var ms = new MemoryStream();
@@ -27,7 +27,7 @@ public class NameCompressionTest
         bytes.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void Writing_Labels()
     {
         using var ms = new MemoryStream();
@@ -50,7 +50,7 @@ public class NameCompressionTest
         bytes.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void Writing_Past_MaxPointer()
     {
         using var ms = new MemoryStream();
@@ -68,7 +68,7 @@ public class NameCompressionTest
         reader.ReadDomainName().ShouldBe("b");
     }
 
-    [Fact]
+    [Test]
     public void Reading_Labels()
     {
         var bytes = new byte[]
@@ -89,7 +89,7 @@ public class NameCompressionTest
         reader.ReadDomainName().ShouldBe("x.b.c");
     }
 
-    [Fact]
+    [Test]
     public void Reading()
     {
         var bytes = new byte[]

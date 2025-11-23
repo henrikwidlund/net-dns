@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class DomainNameTest
 {
-    [Fact]
+    [Test]
     public void Standard()
     {
         var name = new DomainName("my.example.org");
@@ -19,7 +19,7 @@ public class DomainNameTest
         name.ToString().ShouldBe("my.example.org");
     }
 
-    [Fact]
+    [Test]
     public void TopLevelDomain()
     {
         var name = new DomainName("org");
@@ -30,7 +30,7 @@ public class DomainNameTest
         name.ToString().ShouldBe("org");
     }
 
-    [Fact]
+    [Test]
     public void Root()
     {
         var name = new DomainName("");
@@ -39,7 +39,7 @@ public class DomainNameTest
         name.ToString().ShouldBe("");
     }
 
-    [Fact]
+    [Test]
     public void EscapedDotCharacter()
     {
         var name = new DomainName(@"my\.example.org");
@@ -50,7 +50,7 @@ public class DomainNameTest
         name.ToString().ShouldBe(@"my\.example.org");
     }
 
-    [Fact]
+    [Test]
     public void EscapedDotDigits()
     {
         var name = new DomainName(@"my\046example.org");
@@ -61,7 +61,7 @@ public class DomainNameTest
         name.ToString().ShouldBe(@"my\.example.org");
     }
 
-    [Fact]
+    [Test]
     public void ImplicitParsingOfString()
     {
         DomainName name = @"my\046example.org";
@@ -81,7 +81,7 @@ public class DomainNameTest
         name.Labels[2].ShouldBe("org");
     }
 
-    [Fact]
+    [Test]
     public void FromLabels()
     {
         var name = new DomainName("my.example", "org");
@@ -92,7 +92,7 @@ public class DomainNameTest
         name.ToString().ShouldBe(@"my\.example.org");
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new DomainName(@"my\.example.org");
@@ -133,7 +133,7 @@ public class DomainNameTest
         a.Equals(null).ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void HashEquality()
     {
         var a = new DomainName(@"my\.example.org");
@@ -150,7 +150,7 @@ public class DomainNameTest
         a.GetHashCode().ShouldNotBe(other2.GetHashCode());
     }
 
-    [Fact]
+    [Test]
     public void ToCanonical()
     {
         var a = new DomainName("My.EXAMPLe.ORg");
@@ -159,7 +159,7 @@ public class DomainNameTest
         a.ToCanonical().ToString().ShouldBe("my.example.org");
     }
 
-    [Fact]
+    [Test]
     public void IsSubdomainOf()
     {
         var zone = new DomainName("example.org");
@@ -176,7 +176,7 @@ public class DomainNameTest
         new DomainName("a.b.org").IsSubdomainOf(zone).ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void BelongsTo()
     {
         var zone = new DomainName("example.org");
@@ -195,7 +195,7 @@ public class DomainNameTest
         new DomainName("a.b.org").BelongsTo(zone).ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Parent()
     {
         var name = new DomainName(@"a.b\.c.example.org");
@@ -208,7 +208,7 @@ public class DomainNameTest
         expected.Parent().ShouldBeNull();
     }
 
-    [Fact]
+    [Test]
     public void Joining()
     {
         var a = new DomainName(@"foo\.bar");
@@ -222,14 +222,14 @@ public class DomainNameTest
         c.Labels[3].ShouldBe("z");
     }
 
-    [Fact]
+    [Test]
     public void Rfc4343_Section_2()
     {
         new DomainName("foo.example.net.").ShouldBe(new DomainName("Foo.ExamplE.net."));
         new DomainName("69.2.0.192.in-addr.arpa.").ShouldBe(new DomainName("69.2.0.192.in-ADDR.ARPA."));
     }
 
-    [Fact]
+    [Test]
     public void Rfc4343_Section_21_Backslash()
     {
         var aslashb = new DomainName(@"a\\b");
@@ -240,7 +240,7 @@ public class DomainNameTest
         aslashb.ShouldBe(new DomainName(@"a\092b"));
     }
 
-    [Fact]
+    [Test]
     public void Rfc4343_Section_21_4Digits()
     {
         var a = new DomainName(@"a\\4");
@@ -249,7 +249,7 @@ public class DomainNameTest
         a.ShouldBe(b);
     }
 
-    [Fact]
+    [Test]
     public void Rfc4343_Section_22_SpacesAndDots()
     {
         var a = new DomainName(@"Donald\032E\.\032Eastlake\0323rd.example");
@@ -259,7 +259,7 @@ public class DomainNameTest
         a.Labels[1].ShouldBe("example");
     }
 
-    [Fact]
+    [Test]
     public void Rfc4343_Section_22_Binary()
     {
         var a = new DomainName(@"a\000\\\255z.example");
@@ -275,7 +275,7 @@ public class DomainNameTest
         a.ShouldBe(new DomainName(a.ToString()));
     }
 
-    [Fact]
+    [Test]
     public void FormattedString()
     {
         var name = new DomainName(@"foo ~ \.bar-12A.org");

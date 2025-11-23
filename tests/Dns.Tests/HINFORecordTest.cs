@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class HINFORecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new HINFORecord
@@ -26,7 +26,7 @@ public class HINFORecordTest
         a.OS.ShouldBe(b.OS);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new HINFORecord
@@ -47,7 +47,7 @@ public class HINFORecordTest
         a.OS.ShouldBe(b.OS);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new HINFORecord

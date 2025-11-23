@@ -9,7 +9,7 @@ namespace DnsTests;
 
 public class UpdatePrerequisiteListTest
 {
-    [Fact]
+    [Test]
     public void MustExist_Name()
     {
         var prerequisites = new UpdatePrerequisiteList()
@@ -24,7 +24,7 @@ public class UpdatePrerequisiteListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void MustExist_Name_Type()
     {
         var prerequisites = new UpdatePrerequisiteList()
@@ -39,7 +39,7 @@ public class UpdatePrerequisiteListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void MustExist_Name_Typename()
     {
         var prerequisites = new UpdatePrerequisiteList()
@@ -54,7 +54,7 @@ public class UpdatePrerequisiteListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void MustExist_ResourceRecord()
     {
         var rr = new ARecord
@@ -76,7 +76,7 @@ public class UpdatePrerequisiteListTest
         rr.GetData().SequenceEqual(p.GetData()).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public void MustNotExist_Name()
     {
         var prerequisites = new UpdatePrerequisiteList()
@@ -91,7 +91,7 @@ public class UpdatePrerequisiteListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void MustNotExist_Name_Type()
     {
         var prerequisites = new UpdatePrerequisiteList()
@@ -106,7 +106,7 @@ public class UpdatePrerequisiteListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void MustNotExist_Name_Typename()
     {
         var prerequisites = new UpdatePrerequisiteList()

@@ -9,7 +9,7 @@ namespace DnsTests;
 
 public class UpdateResourceListTest
 {
-    [Fact]
+    [Test]
     public void AddResource()
     {
         var rr = new ARecord
@@ -32,7 +32,7 @@ public class UpdateResourceListTest
         rr.GetData().SequenceEqual(p.GetData()).ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public void DeleteResource_Name()
     {
         var updates = new UpdateResourceList()
@@ -47,7 +47,7 @@ public class UpdateResourceListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void DeleteResource_Name_Type()
     {
         var updates = new UpdateResourceList()
@@ -62,7 +62,7 @@ public class UpdateResourceListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void DeleteResource_Name_Typename()
     {
         var updates = new UpdateResourceList()
@@ -77,7 +77,7 @@ public class UpdateResourceListTest
         p.GetDataLength().ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void DeleteResource()
     {
         var rr = new ARecord

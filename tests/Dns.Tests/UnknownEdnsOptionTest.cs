@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class UnknownEdnsOptionTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();

@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class SOARecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new SOARecord
@@ -35,7 +35,7 @@ public class SOARecordTest
         a.Minimum.ShouldBe(b.Minimum);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new SOARecord
@@ -66,7 +66,7 @@ public class SOARecordTest
         a.Minimum.ShouldBe(b.Minimum);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new SOARecord

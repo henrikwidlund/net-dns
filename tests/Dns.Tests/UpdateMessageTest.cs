@@ -8,7 +8,7 @@ namespace DnsTests;
 
 public class UpdateMessageTest
 {
-    [Fact]
+    [Test]
     public void Defaults()
     {
         var m = new UpdateMessage();
@@ -28,7 +28,7 @@ public class UpdateMessageTest
         m.Zone.Class.ShouldBe(DnsClass.IN);
     }
 
-    [Fact]
+    [Test]
     public void Flags()
     {
         var expected = new UpdateMessage
@@ -53,7 +53,7 @@ public class UpdateMessageTest
         actual.Zone.Type.ShouldBe(expected.Zone.Type);
     }
 
-    [Fact]
+    [Test]
     public void Response()
     {
         var update = new UpdateMessage { Id = 1234 };
@@ -64,7 +64,7 @@ public class UpdateMessageTest
         response.Opcode.ShouldBe(update.Opcode);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var expected = new UpdateMessage

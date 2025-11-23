@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class MXRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new MXRecord
@@ -26,7 +26,7 @@ public class MXRecordTest
         a.Exchange.ShouldBe(b.Exchange);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new MXRecord
@@ -47,7 +47,7 @@ public class MXRecordTest
         a.Exchange.ShouldBe(b.Exchange);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new MXRecord

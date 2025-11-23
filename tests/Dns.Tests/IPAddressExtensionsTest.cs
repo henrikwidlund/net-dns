@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class IPAddressExtensionsTest
 {
-    [Fact]
+    [Test]
     public void ArpaName()
     {
         IPAddress.Parse("8.8.4.4").GetArpaName().ShouldBe("4.4.8.8.in-addr.arpa");

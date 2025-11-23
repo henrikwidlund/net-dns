@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class TSIGRecordTest
 {
-    [Fact]
+    [Test]
     public void Defaults()
     {
         var tsig = new TSIGRecord();
@@ -20,7 +20,7 @@ public class TSIGRecordTest
         tsig.Fudge.ShouldBe(TimeSpan.FromSeconds(300));
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new TSIGRecord
@@ -50,7 +50,7 @@ public class TSIGRecordTest
         a.OtherData.ShouldBe(b.OtherData);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new TSIGRecord

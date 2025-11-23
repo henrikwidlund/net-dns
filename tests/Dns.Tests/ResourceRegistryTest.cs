@@ -6,10 +6,10 @@ namespace DnsTests;
 
 public class ResourceRegistryTest
 {
-    [Fact]
+    [Test]
     public void Exists() => ResourceRegistry.Records.Count.ShouldNotBe(0);
 
-    [Fact]
+    [Test]
     public void Create()
     {
         var rr = ResourceRegistry.Create(DnsType.NS);

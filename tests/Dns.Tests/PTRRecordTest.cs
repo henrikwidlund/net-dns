@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class PTRRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new PTRRecord
@@ -24,7 +24,7 @@ public class PTRRecordTest
         a.DomainName.ShouldBe(b.DomainName);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new PTRRecord
@@ -43,7 +43,7 @@ public class PTRRecordTest
         a.DomainName.ShouldBe(b.DomainName);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new PTRRecord

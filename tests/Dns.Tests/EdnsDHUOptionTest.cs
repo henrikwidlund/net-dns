@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class EdnsDHUOptionTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();
@@ -26,7 +26,7 @@ public class EdnsDHUOptionTest
         actual.Algorithms.ShouldBe(expected.Algorithms);
     }
 
-    [Fact]
+    [Test]
     public void Create()
     {
         var option = EdnsDHUOption.Create();

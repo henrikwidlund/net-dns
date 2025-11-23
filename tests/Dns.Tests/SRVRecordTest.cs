@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class SRVRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new SRVRecord
@@ -30,7 +30,7 @@ public class SRVRecordTest
         a.Target.ShouldBe(b.Target);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new SRVRecord
@@ -55,7 +55,7 @@ public class SRVRecordTest
         a.Target.ShouldBe(b.Target);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new SRVRecord

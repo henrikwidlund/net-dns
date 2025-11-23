@@ -12,7 +12,7 @@ public class MessageTest
     /// <summary>
     ///   From https://en.wikipedia.org/wiki/Multicast_DNS
     /// </summary>
-    [Fact]
+    [Test]
     public void DecodeQuery()
     {
         var bytes = new byte[]
@@ -48,7 +48,7 @@ public class MessageTest
     /// <summary>
     ///   From https://en.wikipedia.org/wiki/Multicast_DNS
     /// </summary>
-    [Fact]
+    [Test]
     public void DecodeResponse()
     {
         var bytes = new byte[]
@@ -92,7 +92,7 @@ public class MessageTest
         nsec.NextOwnerName.ShouldBe("appletv.local");
     }
 
-    [Fact]
+    [Test]
     public void Flags()
     {
         var expected = new Message
@@ -124,7 +124,7 @@ public class MessageTest
         expected.Status.ShouldBe(actual.Status);
     }
 
-    [Fact]
+    [Test]
     public void Response()
     {
         var query = new Message { Id = 1234, Opcode = MessageOperation.InverseQuery };
@@ -138,7 +138,7 @@ public class MessageTest
         response.Questions[0].ShouldBe(query.Questions[0]);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var expected = new Message
@@ -170,7 +170,7 @@ public class MessageTest
         actual.AdditionalRecords.Count.ShouldBe(1);
     }
 
-    [Fact]
+    [Test]
     public void ExtendedOpcode()
     {
         var expected = new Message { Opcode = (MessageOperation)0xfff };
@@ -181,21 +181,21 @@ public class MessageTest
         actual.Opcode.ShouldBe(expected.Opcode);
     }
 
-    [Fact]
+    [Test]
     public void Issue_11()
     {
         var bytes = Convert.FromBase64String("EjSBgAABAAEAAAAABGlwZnMCaW8AABAAAcAMABAAAQAAADwAPTxkbnNsaW5rPS9pcGZzL1FtWU5RSm9LR05IVHBQeENCUGg5S2tEcGFFeGdkMmR1TWEzYUY2eXRNcEhkYW8=");
         new Message().Read(bytes).ShouldBeOfType<Message>();
     }
 
-    [Fact]
+    [Test]
     public void Issue_12()
     {
         var bytes = Convert.FromBase64String("AASBgAABAAQAAAABA3d3dwxvcGluaW9uc3RhZ2UDY29tAAABAAHADAAFAAEAAAA8AALAEMAQAAEAAQAAADwABCLAkCrANAABAAEAAAA8AAQ0NgUNwDQAAQABAAAAPAAEaxUAqgAAKQYAAAAAAAFlAAwBYQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         new Message().Read(bytes).ShouldBeOfType<Message>();
     }
 
-    [Fact]
+    [Test]
     public void Truncation_NotRequired()
     {
         var msg = new Message();
@@ -206,7 +206,7 @@ public class MessageTest
         msg.TC.ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Truncation_Fails()
     {
         var msg = new Message();
@@ -217,7 +217,7 @@ public class MessageTest
         msg.TC.ShouldBeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Truncation_AdditionalRecords()
     {
         var msg = new Message();
@@ -236,7 +236,7 @@ public class MessageTest
         msg.TC.ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void AuthorityRecords()
     {
         var msg = new Message();
@@ -254,7 +254,7 @@ public class MessageTest
         msg.TC.ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void UseDnsSecurity()
     {
         var expected = new Message().UseDnsSecurity();
@@ -263,7 +263,7 @@ public class MessageTest
         opt.DO.ShouldBeTrue("dnssec ok");
     }
 
-    [Fact]
+    [Test]
     public void UseDnsSecurity_OPT_Exists()
     {
         var expected = new Message();
@@ -274,7 +274,7 @@ public class MessageTest
         opt.DO.ShouldBeTrue("dnssec ok");
     }
 
-    [Fact]
+    [Test]
     public void Dnssec_Bit()
     {
         var message = new Message();
@@ -290,7 +290,7 @@ public class MessageTest
         message.AdditionalRecords.OfType<OPTRecord>().Count().ShouldBe(1);
     }
 
-    [Fact]
+    [Test]
     public void Stringify()
     {
         var m = new Message
@@ -329,7 +329,7 @@ public class MessageTest
         text.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void Stringify_Edns()
     {
         const string sample = "AH6FDwEAAAEAAAAAAAEEaXBmcwJpbwAAEAABAAApBQAAAAAAAFoACwAC1MAADABQ8bbi5IwN3llzr84N11j2dG7+7lE5aBzanfc1yvO3LcgvS0TuT3Xvz6yVWcVBa8YnFwehfSyT6YiaCEaV2BNlvIIG3YwUCCX4Dh6kpA9WmDI=";
@@ -362,7 +362,7 @@ public class MessageTest
         text.ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void AppleMessage()
     {
         // A MDNS query from an Apple Host.  It contains a UTF8 domain name

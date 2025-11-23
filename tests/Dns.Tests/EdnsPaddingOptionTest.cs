@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class EdnsPaddingOptionTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var opt1 = new OPTRecord();

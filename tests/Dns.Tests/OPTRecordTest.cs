@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class OPTRecordTest
 {
-    [Fact]
+    [Test]
     public void Defaults()
     {
         var opt = new OPTRecord();
@@ -20,7 +20,7 @@ public class OPTRecordTest
         opt.Options.Count.ShouldBe(0);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new OPTRecord
@@ -43,7 +43,7 @@ public class OPTRecordTest
         a.DO.ShouldBe(b.DO);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_NoOptions()
     {
         var a = new OPTRecord();
@@ -55,7 +55,7 @@ public class OPTRecordTest
         a.TTL.ShouldBe(b.TTL);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new OPTRecord();

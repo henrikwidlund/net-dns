@@ -6,6 +6,6 @@ namespace DnsTests;
 
 public class DigestRegistryTest
 {
-    [Fact]
+    [Test]
     public void Exists() => DigestRegistry.Digests.Count.ShouldNotBe(0);
 }

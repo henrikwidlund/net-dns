@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class TXTRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new TXTRecord
@@ -28,7 +28,7 @@ public class TXTRecordTest
         a.Strings.ShouldBe(b.Strings);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new TXTRecord
@@ -54,7 +54,7 @@ public class TXTRecordTest
         a.Strings.ShouldBe(b.Strings);
     }
 
-    [Fact]
+    [Test]
     public void NoStrings()
     {
         var a = new TXTRecord
@@ -71,7 +71,7 @@ public class TXTRecordTest
         a.Strings.ShouldBe(b.Strings);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new TXTRecord

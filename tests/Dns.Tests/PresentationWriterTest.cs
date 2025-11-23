@@ -9,7 +9,7 @@ namespace DnsTests;
 
 public class PresentationWriterTest
 {
-    [Fact]
+    [Test]
     public void WriteByte()
     {
         using var text = new StringWriter();
@@ -20,7 +20,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("255 1");
     }
 
-    [Fact]
+    [Test]
     public void WriteUInt16()
     {
         using var text = new StringWriter();
@@ -31,7 +31,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("65535 1");
     }
 
-    [Fact]
+    [Test]
     public void WriteUInt32()
     {
         using var text = new StringWriter();
@@ -42,7 +42,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("2147483647 1");
     }
 
-    [Fact]
+    [Test]
     public void WriteString()
     {
         using var text = new StringWriter();
@@ -59,7 +59,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("alpha \"a b\" \"\" \"\" \" \" a\\\\b a\\\"b end");
     }
 
-    [Fact]
+    [Test]
     public void WriteStringUnencoded()
     {
         using var text = new StringWriter();
@@ -70,7 +70,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe(@"\a \b");
     }
 
-    [Fact]
+    [Test]
     public void WriteDomainName()
     {
         using var text1 = new StringWriter();
@@ -85,7 +85,7 @@ public class PresentationWriterTest
         text2.ToString().ShouldBe("alpha.com");
     }
 
-    [Fact]
+    [Test]
     public void WriteDomainName_Escaped()
     {
         using var text = new StringWriter();
@@ -95,7 +95,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe(@"dr\.\032smith.com");
     }
 
-    [Fact]
+    [Test]
     public void WriteBase16String()
     {
         using var text = new StringWriter();
@@ -106,7 +106,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("010203 010203");
     }
 
-    [Fact]
+    [Test]
     public void WriteBase64String()
     {
         using var text = new StringWriter();
@@ -117,7 +117,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("AQID AQID");
     }
 
-    [Fact]
+    [Test]
     public void WriteTimeSpan16()
     {
         using var text = new StringWriter();
@@ -128,7 +128,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("65535 0");
     }
 
-    [Fact]
+    [Test]
     public void WriteTimeSpan32()
     {
         using var text = new StringWriter();
@@ -139,7 +139,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("2147483647 0");
     }
 
-    [Fact]
+    [Test]
     public void WriteDateTime()
     {
         using var text = new StringWriter();
@@ -150,7 +150,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("19700101000000 99991231235959");
     }
 
-    [Fact]
+    [Test]
     public void WriteIPAddress()
     {
         using var text = new StringWriter();
@@ -161,7 +161,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("127.0.0.1 ::1");
     }
 
-    [Fact]
+    [Test]
     public void WriteDnsType()
     {
         using var text = new StringWriter();
@@ -172,7 +172,7 @@ public class PresentationWriterTest
         text.ToString().ShouldBe("ANY TYPE1234");
     }
 
-    [Fact]
+    [Test]
     public void WriteDnsClass()
     {
         using var text = new StringWriter();

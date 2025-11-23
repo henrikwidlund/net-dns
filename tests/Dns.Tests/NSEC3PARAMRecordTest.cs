@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class NSEC3PARAMRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new NSEC3PARAMRecord
@@ -32,7 +32,7 @@ public class NSEC3PARAMRecordTest
         a.Salt.ShouldBe(b.Salt);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new NSEC3PARAMRecord
@@ -58,7 +58,7 @@ public class NSEC3PARAMRecordTest
         a.Salt.ShouldBe(b.Salt);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master_NullSalt()
     {
         var a = new NSEC3PARAMRecord
@@ -83,7 +83,7 @@ public class NSEC3PARAMRecordTest
         b.Salt.ShouldBeNull();
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master_EmptySalt()
     {
         var a = new NSEC3PARAMRecord

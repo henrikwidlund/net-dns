@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class NSRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new NSRecord
@@ -24,7 +24,7 @@ public class NSRecordTest
         a.Authority.ShouldBe(b.Authority);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new NSRecord
@@ -43,7 +43,7 @@ public class NSRecordTest
         a.Authority.ShouldBe(b.Authority);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new NSRecord

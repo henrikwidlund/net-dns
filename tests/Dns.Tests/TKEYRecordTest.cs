@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class TKEYRecordTest
 {
-    [Fact]
+    [Test]
     public void Defaults()
     {
         var tsig = new TKEYRecord();
@@ -17,7 +17,7 @@ public class TKEYRecordTest
         tsig.TTL.ShouldBe(TimeSpan.Zero);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
@@ -48,7 +48,7 @@ public class TKEYRecordTest
         a.OtherData.ShouldBe(b.OtherData);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);

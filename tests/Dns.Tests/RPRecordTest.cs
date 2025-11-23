@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class RPRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new RPRecord
@@ -25,7 +25,7 @@ public class RPRecordTest
         a.TextName.ShouldBe(b.TextName);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new RPRecord
@@ -45,7 +45,7 @@ public class RPRecordTest
         a.TextName.ShouldBe(b.TextName);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new RPRecord

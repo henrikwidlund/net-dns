@@ -8,7 +8,7 @@ namespace DnsTests;
 
 public class DSRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new DSRecord
@@ -33,7 +33,7 @@ public class DSRecordTest
         a.Digest.ShouldBe(b.Digest);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new DSRecord
@@ -59,7 +59,7 @@ public class DSRecordTest
         a.Digest.ShouldBe(b.Digest);
     }
 
-    [Fact]
+    [Test]
     public void FromDNSKEY()
     {
         // From https://tools.ietf.org/html/rfc4034#section-5.4
@@ -94,7 +94,7 @@ public class DSRecordTest
         ds.Digest.ShouldBe(Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray());
     }
 
-    [Fact]
+    [Test]
     public void FromDNSKEY_Missing_ZK()
     {
         var key = new DNSKEYRecord
@@ -121,7 +121,7 @@ public class DSRecordTest
         });
     }
 
-    [Fact]
+    [Test]
     public void FromDNSKEY_Missing_SEP()
     {
         var key = new DNSKEYRecord

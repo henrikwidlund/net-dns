@@ -2,12 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-
-using Shouldly;
-using Xunit;
 
 namespace DnsTests.Resolving;
 
@@ -54,201 +52,209 @@ public class CatalogTest
 
                                                 """;
     
-    [Fact]
-    public void IncludeZone()
+    [Test]
+    public async Task IncludeZone()
     {
         var catalog = new Catalog();
-        var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
+        using var stringReader = new StringReader(ExampleDotComZoneText);
+        var reader = new PresentationReader(stringReader);
         var zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example.com");
-        zone.Authoritative.ShouldBeTrue();
+        await Assert.That(zone.Name.ToString()).IsEqualTo("example.com");
 
-        catalog.ContainsKey("example.com").ShouldBeTrue();
-        catalog.ContainsKey("ns.example.com").ShouldBeTrue();
-        catalog.ContainsKey("www.example.com").ShouldBeTrue();
-        catalog.ContainsKey("wwwtest.example.com").ShouldBeTrue();
-        catalog.ContainsKey("mail.example.com").ShouldBeTrue();
-        catalog.ContainsKey("mail2.example.com").ShouldBeTrue();
-        catalog.ContainsKey("mail3.example.com").ShouldBeTrue();
+        await Assert.That(catalog).ContainsKey("example.com");
+        await Assert.That(catalog).ContainsKey("ns.example.com");
+        await Assert.That(catalog).ContainsKey("www.example.com");
+        await Assert.That(catalog).ContainsKey("wwwtest.example.com");
+        await Assert.That(catalog).ContainsKey("mail.example.com");
+        await Assert.That(catalog).ContainsKey("mail2.example.com");
+        await Assert.That(catalog).ContainsKey("mail3.example.com");
 
-        catalog["mail.example.com"].Authoritative.ShouldBeTrue();
+        await Assert.That(catalog["example.com"].Authoritative).IsTrue();
     }
 
-    [Fact]
-    public void IncludeZone_AlreadyExists()
+    [Test]
+    public async Task IncludeZone_AlreadyExists()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         var zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example.com");
+        await Assert.That(zone.Name.ToString()).IsEqualTo("example.com");
 
         reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
-        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
+        await Assert.That(() => catalog.IncludeZone(reader)).ThrowsExactly<InvalidDataException>();
     }
 
-    [Fact]
-    public void IncludeZone_NoResources()
+    [Test]
+    public async Task IncludeZone_NoResources()
     {
         var catalog = new Catalog();
-        var reader = new PresentationReader(new StringReader(""));
-        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
+        using var stringReader = new StringReader("");
+        var reader = new PresentationReader(stringReader);
+        await Assert.That(() => catalog.IncludeZone(reader)).ThrowsExactly<InvalidDataException>();
     }
 
-    [Fact]
-    public void IncludeZone_MissingSOA()
+    [Test]
+    public async Task IncludeZone_MissingSOA()
     {
         const string text = "foo.org A 127.0.0.1";
         var catalog = new Catalog();
-        var reader = new PresentationReader(new StringReader(text));
-        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
+        using var stringReader = new StringReader(text);
+        var reader = new PresentationReader(stringReader);
+        await Assert.That(() => catalog.IncludeZone(reader)).ThrowsExactly<InvalidDataException>();
     }
 
-    [Fact]
-    public void IncludeZone_InvalidName()
+    [Test]
+    public async Task IncludeZone_InvalidName()
     {
         // Missing a new line
         const string text = ExampleDotOrgZoneText + " not.in.zone. A 127.0.0.1 ; bad";
         var catalog = new Catalog();
-        var reader = new PresentationReader(new StringReader(text));
-        Should.Throw<InvalidDataException>(() => catalog.IncludeZone(reader));
+        using var stringReader = new StringReader(text);
+        var reader = new PresentationReader(stringReader);
+        await Assert.That(() => catalog.IncludeZone(reader)).ThrowsExactly<InvalidDataException>();
     }
 
-    [Fact]
-    public void MultipleZones()
+    [Test]
+    public async Task MultipleZones()
     {
         var catalog = new Catalog();
 
-        var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
+        using var stringReader = new StringReader(ExampleDotComZoneText);
+        var reader = new PresentationReader(stringReader);
         var zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example.com");
+        await Assert.That(zone.Name.ToString()).IsEqualTo("example.com");
 
-        reader = new PresentationReader(new StringReader(ExampleDotOrgZoneText));
+        using var textReader = new StringReader(ExampleDotOrgZoneText);
+        reader = new PresentationReader(textReader);
         zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example.org");
+        await Assert.That(zone.Name.ToString()).IsEqualTo("example.org");
     }
 
-    [Fact]
-    public void RemoveZone()
+    [Test]
+    public async Task RemoveZone()
     {
         var catalog = new Catalog();
-        
-        var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
-        var zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example.com");
-        catalog.Count.ShouldBe(7);
 
-        reader = new PresentationReader(new StringReader(ExampleDotOrgZoneText));
+        using var stringReader = new StringReader(ExampleDotComZoneText);
+        var reader = new PresentationReader(stringReader);
+        var zone = catalog.IncludeZone(reader);
+        await Assert.That(zone.Name.ToString()).IsEqualTo("example.org");
+        await Assert.That(catalog).HasCount(7);
+
+        using var textReader = new StringReader(ExampleDotOrgZoneText);
+        reader = new PresentationReader(textReader);
         zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example.org");
-        catalog.Count.ShouldBe(14);
+        await Assert.That(zone.Name.ToString()).IsEqualTo("example.org");
+        await Assert.That(catalog).HasCount(14);
 
         catalog.RemoveZone("example.org");
-        catalog.Count.ShouldBe(7);
+        await Assert.That(catalog).HasCount(7);
 
         catalog.RemoveZone("example.com");
-        catalog.Count.ShouldBe(0);
+        await Assert.That(catalog).HasCount().Zero();
     }
 
-    [Fact]
-    public void NamesAreCaseInsenstive()
+    [Test]
+    public async Task NamesAreCaseInsenstive()
     {
         var catalog = new Catalog();
-        var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
+        using var stringReader = new StringReader(ExampleDotComZoneText);
+        var reader = new PresentationReader(stringReader);
         catalog.IncludeZone(reader);
 
-        catalog.ContainsKey("EXAMPLE.COM").ShouldBeTrue();
-        catalog.ContainsKey("NS.EXAMPLE.COM").ShouldBeTrue();
-        catalog.ContainsKey("WWW.EXAMPLE.COM").ShouldBeTrue();
-        catalog.ContainsKey("WWWTEST.EXAMPLE.COM").ShouldBeTrue();
-        catalog.ContainsKey("MAIL.EXAMPLE.COM").ShouldBeTrue();
-        catalog.ContainsKey("MAIL2.EXAMPLE.COM").ShouldBeTrue();
-        catalog.ContainsKey("MAIL3.EXAMPLE.COM").ShouldBeTrue();
+        await Assert.That(catalog).ContainsKey("EXAMPLE.COM");
+        await Assert.That(catalog).ContainsKey("NS.EXAMPLE.COM");
+        await Assert.That(catalog).ContainsKey("WWW.EXAMPLE.COM");
+        await Assert.That(catalog).ContainsKey("WWWTEST.EXAMPLE.COM");
+        await Assert.That(catalog).ContainsKey("MAIL.EXAMPLE.COM");
+        await Assert.That(catalog).ContainsKey("MAIL2.EXAMPLE.COM");
+        await Assert.That(catalog).ContainsKey("MAIL3.EXAMPLE.COM");
     }
 
-    [Fact]
-    public void AddResource()
+    [Test]
+    public async Task AddResource()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var aaaa = AddressRecord.Create("foo", IPAddress.IPv6Loopback);
         var catalog = new Catalog();
         var n1 = catalog.Add(a, true);
-        n1.Authoritative.ShouldBeTrue();
-        n1.Resources.Contains(a).ShouldBeTrue();
+        await Assert.That(n1.Authoritative).IsTrue();
+        await Assert.That(n1.Resources).Contains(a);
 
         var n2 = catalog.Add(aaaa);
-        n1.ShouldBeSameAs(n2);
-        n1.Authoritative.ShouldBeTrue();
-        n1.Resources.Contains(a).ShouldBeTrue();
-        n1.Resources.Contains(aaaa).ShouldBeTrue();
+        await Assert.That(n1).IsSameReferenceAs(n2);
+        await Assert.That(n1.Authoritative).IsTrue();
+        await Assert.That(n1.Resources).Contains(a);
+        await Assert.That(n1.Resources).Contains(aaaa);
     }
 
-    [Fact]
-    public void AddResource_Same()
+    [Test]
+    public async Task AddResource_Same()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
-        n1.Resources.Contains(a).ShouldBeTrue();
+        await Assert.That(n1.Resources).Contains(a);
 
         var n2 = catalog.Add(a);
-        n1.ShouldBeSameAs(n2);
-        n1.Resources.Contains(a).ShouldBeTrue();
-        n1.Resources.Count.ShouldBe(1);
+        await Assert.That(n1).IsSameReferenceAs(n2);
+        await Assert.That(n1.Resources).Contains(a);
+        await Assert.That(n1.Resources).HasCount(1);
     }
 
-    [Fact]
-    public void AddResource_Duplicate()
+    [Test]
+    public async Task AddResource_Duplicate()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var b = AddressRecord.Create("foo", IPAddress.Loopback);
-        a.ShouldBe(b);
+        await Assert.That(a).IsEqualTo(b);
 
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
-        n1.Resources.Contains(a).ShouldBeTrue();
+        await Assert.That(n1.Resources).Contains(a);
 
         var n2 = catalog.Add(b);
-        n1.ShouldBeSameAs(n2);
-        n1.Resources.Contains(a).ShouldBeTrue();
-        n1.Resources.Contains(b).ShouldBeTrue();
-        n1.Resources.Count.ShouldBe(1);
+        await Assert.That(n1).IsSameReferenceAs(n2);
+        await Assert.That(n1.Resources).Contains(a);
+        await Assert.That(n1.Resources).Contains(b);
+        await Assert.That(n1.Resources).HasCount(1);
     }
 
-    [Fact]
-    public void AddResource_Latest()
+    [Test]
+    public async Task AddResource_Latest()
     {
         var a = AddressRecord.Create("foo", IPAddress.Loopback);
         var b = AddressRecord.Create("foo", IPAddress.Loopback);
         a.TTL = TimeSpan.FromHours(2);
         b.CreationTime = a.CreationTime + TimeSpan.FromHours(1);
         b.TTL = TimeSpan.FromHours(3);
-        a.ShouldBe(b);
+        await Assert.That(a).IsEqualTo(b);
 
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
-        n1.Resources.Contains(a).ShouldBeTrue();
+        await Assert.That(n1.Resources).Contains(a);
 
         var n2 = catalog.Add(b);
-        n1.ShouldBeSameAs(n2);
-        n1.Resources.Contains(a).ShouldBeTrue();
-        n1.Resources.Contains(b).ShouldBeTrue();
-        n1.Resources.Count.ShouldBe(1);
-        n1.Resources.First().CreationTime.ShouldBe(b.CreationTime);
-        n1.Resources.First().TTL.ShouldBe(b.TTL);
+        await Assert.That(n1).IsSameReferenceAs(n2);
+        await Assert.That(n1.Resources).Contains(a);
+        await Assert.That(n1.Resources).Contains(b);
+        await Assert.That(n1.Resources).HasCount(1);
+        await Assert.That(n1.Resources.First().CreationTime).IsEqualTo(b.CreationTime);
+        await Assert.That(n1.Resources.First().TTL).IsEqualTo(b.TTL);
     }
 
-    [Fact]
-    public void RootHints()
+    [Test]
+    public async Task RootHints()
     {
         var catalog = new Catalog();
         var root = catalog.IncludeRootHints();
-        root.Name.ShouldBe("");
-        root.Authoritative.ShouldBeTrue();
-        root.Resources.OfType<NSRecord>().Any().ShouldBeTrue();
+        await Assert.That(root.Name.ToString()).IsEqualTo("");
+        await Assert.That(root.Authoritative).IsTrue();
+        await Assert.That(root.Resources.OfType<NSRecord>()).IsNotEmpty();
     }
 
-    [Fact]
-    public void CanonicalOrder()
+    [Test]
+    public async Task CanonicalOrder()
     {
         var catalog = new Catalog
         {
@@ -273,11 +279,11 @@ public class CatalogTest
             .NodesInCanonicalOrder()
             .Select(static node => node.Name)
             .ToArray();
-        actual.ShouldBe(expected);
+        await Assert.That(actual).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void Include()
+    [Test]
+    public async Task Include()
     {
         const string dig = """
 
@@ -307,24 +313,25 @@ public class CatalogTest
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(dig));
         catalog.Include(reader);
-        catalog.ContainsKey("com").ShouldBeTrue();
+        await Assert.That(catalog).ContainsKey("com");
 
         var node = catalog["COM"];
-        node.Resources.Count.ShouldBe(3);
+        await Assert.That(node.Resources).HasCount(3);
     }
 
-    [Fact]
-    public void IncludeReverseLookupRecords()
+    [Test]
+    public async Task IncludeReverseLookupRecords()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         _ = catalog.IncludeZone(reader);
         catalog.IncludeReverseLookupRecords();
 
-        catalog.ContainsKey("1.2.0.192.in-addr.arpa").ShouldBeTrue();
-        catalog.ContainsKey("2.2.0.192.in-addr.arpa").ShouldBeTrue();
-        catalog.ContainsKey("3.2.0.192.in-addr.arpa").ShouldBeTrue();
+        await Assert.That(catalog).ContainsKey("1.2.0.192.in-addr.arpa");
+        await Assert.That(catalog).ContainsKey("2.2.0.192.in-addr.arpa");
+        await Assert.That(catalog).ContainsKey("3.2.0.192.in-addr.arpa");
+        await Assert.That(catalog).ContainsKey("1.2.0.192.in-addr.arpa");
 
-        catalog["1.2.0.192.in-addr.arpa"].Authoritative.ShouldBeTrue();
+        await Assert.That(catalog["1.2.0.192.in-addr.arpa"].Authoritative).IsTrue();
     }
 }

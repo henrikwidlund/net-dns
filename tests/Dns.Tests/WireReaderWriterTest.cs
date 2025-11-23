@@ -9,7 +9,7 @@ namespace DnsTests;
 
 public class WireReaderWriterTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var someBytes = new byte[] { 1, 2, 3 };
@@ -48,7 +48,7 @@ public class WireReaderWriterTest
         reader.ReadDateTime48().ShouldBe(someDate);
     }
 
-    [Fact]
+    [Test]
     public void Write_DomainName()
     {
         using var ms = new MemoryStream();
@@ -63,7 +63,7 @@ public class WireReaderWriterTest
         ms.ReadByte().ShouldBe(0, customMessage: "trailing nul");
     }
 
-    [Fact]
+    [Test]
     public void Write_EscapedDomainName()
     {
         using var ms = new MemoryStream();
@@ -78,7 +78,7 @@ public class WireReaderWriterTest
         ms.ReadByte().ShouldBe(0, customMessage: "trailing nul");
     }
 
-    [Fact]
+    [Test]
     public void BufferOverflow_Byte()
     {
         using var ms = new MemoryStream([]);
@@ -87,7 +87,7 @@ public class WireReaderWriterTest
         Should.Throw<EndOfStreamException>(() => reader.ReadByte());
     }
 
-    [Fact]
+    [Test]
     public void BufferOverflow_Bytes()
     {
         using var ms = new MemoryStream([1, 2]);
@@ -96,7 +96,7 @@ public class WireReaderWriterTest
         Should.Throw<EndOfStreamException>(() => reader.ReadBytes(3));
     }
 
-    [Fact]
+    [Test]
     public void BufferOverflow_DomainName()
     {
         using var ms = new MemoryStream([1, (byte)'a']);
@@ -105,7 +105,7 @@ public class WireReaderWriterTest
         Should.Throw<EndOfStreamException>(() => reader.ReadDomainName());
     }
 
-    [Fact]
+    [Test]
     public void BufferOverflow_String()
     {
         using var ms = new MemoryStream([10, 1]);
@@ -114,7 +114,7 @@ public class WireReaderWriterTest
         Should.Throw<EndOfStreamException>(() => reader.ReadString());
     }
 
-    [Fact]
+    [Test]
     public void BytePrefixedArray_TooBig()
     {
         var bytes = new byte[byte.MaxValue + 1];
@@ -123,7 +123,7 @@ public class WireReaderWriterTest
         Should.Throw<ArgumentException>(() => writer.WriteByteLengthPrefixedBytes(bytes));
     }
 
-    [Fact]
+    [Test]
     public void LengthPrefixedScope()
     {
         using var ms = new MemoryStream();
@@ -143,7 +143,7 @@ public class WireReaderWriterTest
         reader.ReadDomainName().ShouldBe("a");
     }
 
-    [Fact]
+    [Test]
     public void EmptyDomainName()
     {
         using var ms = new MemoryStream();
@@ -158,7 +158,7 @@ public class WireReaderWriterTest
         reader.ReadString().ShouldBe("abc");
     }
 
-    [Fact]
+    [Test]
     public void CanonicalDomainName()
     {
         using var ms = new MemoryStream();
@@ -173,7 +173,7 @@ public class WireReaderWriterTest
         reader.ReadDomainName().ShouldBe("foo");
     }
 
-    [Fact]
+    [Test]
     public void NullDomainName_String()
     {
         using var ms = new MemoryStream();
@@ -188,7 +188,7 @@ public class WireReaderWriterTest
         reader.ReadString().ShouldBe("abc");
     }
 
-    [Fact]
+    [Test]
     public void NullDomainName_Class()
     {
         using var ms = new MemoryStream();
@@ -203,7 +203,7 @@ public class WireReaderWriterTest
         reader.ReadString().ShouldBe("abc");
     }
 
-    [Fact]
+    [Test]
     public void Read_EscapedDotDomainName()
     {
         const string domainName = @"a\.b";
@@ -218,7 +218,7 @@ public class WireReaderWriterTest
         name.ShouldBe(domainName);
     }
 
-    [Fact]
+    [Test]
     public void Bitmap()
     {
         // From https://tools.ietf.org/html/rfc3845#section-2.3
@@ -244,7 +244,7 @@ public class WireReaderWriterTest
         ms2.ToArray().ShouldBe(wire);
     }
 
-    [Fact]
+    [Test]
     public void Uint48TooBig()
     {
         using var ms = new MemoryStream();
@@ -252,7 +252,7 @@ public class WireReaderWriterTest
         Should.Throw<ArgumentException>(() => writer.WriteUInt48(0X1FFFFFFFFFFFFul));
     }
 
-    [Fact]
+    [Test]
     public void ReadDateTime48()
     {
         // From https://tools.ietf.org/html/rfc2845 section 3.3
@@ -263,21 +263,21 @@ public class WireReaderWriterTest
         reader.ReadDateTime48().ShouldBe(expected);
     }
 
-    [Fact]
+    [Test]
     public void WriteString_NotAscii()
     {
         var writer = new WireWriter(Stream.Null);
         Should.Throw<ArgumentException>(() => writer.WriteString("δοκιμή")); // test in Greek
     }
 
-    [Fact]
+    [Test]
     public void WriteString_TooBig()
     {
         var writer = new WireWriter(Stream.Null);
         Should.Throw<ArgumentException>(() => writer.WriteString(new string('a', 0x100)));
     }
 
-    [Fact]
+    [Test]
     public void ReadString_NotAscii()
     {
         using var ms = new MemoryStream([1, 0xFF]);
@@ -285,7 +285,7 @@ public class WireReaderWriterTest
         Should.Throw<InvalidDataException>(() => reader.ReadString());
     }
 
-    [Fact]
+    [Test]
     public void WriteDateTime32_TooManySeconds()
     {
         var writer = new WireWriter(Stream.Null);

@@ -8,7 +8,7 @@ namespace DnsTests;
 
 public class NSEC3RecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new NSEC3Record
@@ -37,7 +37,7 @@ public class NSEC3RecordTest
         a.Types.ShouldBe(b.Types);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new NSEC3Record

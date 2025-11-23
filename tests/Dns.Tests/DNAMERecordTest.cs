@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class DNAMERecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new DNAMERecord
@@ -24,7 +24,7 @@ public class DNAMERecordTest
         a.Target.ShouldBe(b.Target);
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new DNAMERecord
@@ -43,7 +43,7 @@ public class DNAMERecordTest
         a.Target.ShouldBe(b.Target);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new DNAMERecord

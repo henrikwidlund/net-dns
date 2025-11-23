@@ -6,7 +6,7 @@ namespace DnsTests;
 
 public class UnknownRecordTest
 {
-    [Fact]
+    [Test]
     public void Roundtrip()
     {
         var a = new UnknownRecord
@@ -24,7 +24,7 @@ public class UnknownRecordTest
         a.Data.ShouldBe(b.Data);
     }
 
-    [Fact]
+    [Test]
     public void Equality()
     {
         var a = new UnknownRecord
@@ -45,7 +45,7 @@ public class UnknownRecordTest
         a.Equals(null).ShouldBeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Roundtrip_Master()
     {
         var a = new UnknownRecord

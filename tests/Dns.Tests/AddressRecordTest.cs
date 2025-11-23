@@ -7,7 +7,7 @@ namespace DnsTests;
 
 public class AddressRecordTest
 {
-    [Fact]
+    [Test]
     public void Create()
     {
         var rr = AddressRecord.Create("foo", IPAddress.Loopback);

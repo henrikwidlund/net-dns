@@ -6,14 +6,14 @@ namespace DnsTests;
 
 public class DnsObjectTest
 {
-    [Fact]
+    [Test]
     public void Length_EmptyMessage()
     {
         var message = new Message();
         message.Length().ShouldBe(Message.MinLength);
     }
 
-    [Fact]
+    [Test]
     public void Clone()
     {
         var m1 = new Message
@@ -26,7 +26,7 @@ public class DnsObjectTest
         m1.ToByteArray().ShouldBe(m2.ToByteArray());
     }
 
-    [Fact]
+    [Test]
     public void Clone_Typed()
     {
         var m1 = new Message

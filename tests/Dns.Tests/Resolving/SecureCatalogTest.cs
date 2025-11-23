@@ -259,7 +259,7 @@ public class SecureCatalogTest
                                                                        GghLahumFIpg4MO3LS/prgzVVWo= )
                                          """;
     
-    [Fact]
+    [Test]
     public void IncludeZone()
     {
         var catalog = new Catalog();
