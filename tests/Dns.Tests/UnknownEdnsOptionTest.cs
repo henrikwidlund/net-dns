@@ -1,13 +1,13 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class UnknownEdnsOptionTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var opt1 = new OPTRecord();
         var expected = new UnknownEdnsOption
@@ -20,7 +20,7 @@ public class UnknownEdnsOptionTest
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (UnknownEdnsOption)opt2.Options[0];
 
-        expected.Type.ShouldBe(actual.Type);
-        expected.Data.ShouldBe(actual.Data);
+        await Assert.That(expected.Type).IsEqualTo(actual.Type);
+        await Assert.That(expected.Data).IsEquivalentTo(actual.Data!);
     }
 }

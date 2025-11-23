@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-using Shouldly;
 
 namespace DnsTests.Resolving;
 
@@ -26,11 +25,11 @@ public class NameServerTest
         var question = new Question { Name = "ns.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
-        response.Answers[0].Type.ShouldBe(DnsType.A);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.A);
     }
 
     [Test]
@@ -40,12 +39,12 @@ public class NameServerTest
         var question = new Question { Name = "foo.bar.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NameError);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
 
-        response.AuthorityRecords.Count.ShouldBeGreaterThan(0);
+        await Assert.That(response.AuthorityRecords).HasCount().GreaterThan(0);
         var authority = response.AuthorityRecords.OfType<SOARecord>().First();
-        authority.Name.ShouldBe("example.com");
+        await Assert.That(authority.Name).IsEquatableOrEqualTo("example.com");
     }
 
     [Test]
@@ -55,8 +54,8 @@ public class NameServerTest
         var question = new Question { Name = "ns.example.com", Type = DnsType.MX };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NameError);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
     }
 
     [Test]
@@ -66,8 +65,8 @@ public class NameServerTest
         var question = new Question { Name = "ns.example.com", Class = DnsClass.CH };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NameError);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
     }
 
     [Test]
@@ -77,10 +76,10 @@ public class NameServerTest
         var question = new Question { Name = "ns.example.com", Type = DnsType.ANY };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(2);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(2);
     }
 
     [Test]
@@ -90,10 +89,10 @@ public class NameServerTest
         var question = new Question { Name = "ns.example.com", Class = DnsClass.ANY, Type = DnsType.A };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeFalse();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsFalse();
+        await Assert.That(response.Answers).HasCount(1);
     }
 
     [Test]
@@ -103,13 +102,13 @@ public class NameServerTest
         var question = new Question { Name = "www.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.AA.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
 
-        response.Answers.Count.ShouldBe(2);
-        response.Answers[0].Type.ShouldBe(DnsType.CNAME);
-        response.Answers[1].Type.ShouldBe(DnsType.A);
+        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.CNAME);
+        await Assert.That(response.Answers[1].Type).IsEqualTo(DnsType.A);
     }
 
     [Test]
@@ -122,16 +121,16 @@ public class NameServerTest
         var question = new Question { Name = "ftp.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.AA.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NameError);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
 
-        response.Answers.Count.ShouldBe(1);
-        response.Answers[0].Type.ShouldBe(DnsType.CNAME);
+        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.CNAME);
 
-        response.AuthorityRecords.Count.ShouldBe(1);
+        await Assert.That(response.AuthorityRecords).HasCount(1);
         var authority = response.AuthorityRecords.OfType<SOARecord>().First();
-        authority.Name.ShouldBe("example.com");
+        await Assert.That(authority.Name).IsEquatableOrEqualTo("example.com");
     }
 
     [Test]
@@ -144,14 +143,14 @@ public class NameServerTest
         var question = new Question { Name = "bad.example.com", Type = DnsType.A };
         var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.AA.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NameError);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
 
-        response.Answers.Count.ShouldBe(1);
-        response.Answers[0].Type.ShouldBe(DnsType.CNAME);
+        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.CNAME);
 
-        response.AuthorityRecords.Count.ShouldBe(0);
+        await Assert.That(response.AuthorityRecords).HasCount().Zero();
     }
 
     [Test]
@@ -162,10 +161,10 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
     }
 
     [Test]
@@ -179,10 +178,10 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
     }
 
     [Test]
@@ -194,10 +193,10 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(2);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(2);
     }
 
     [Test]
@@ -211,11 +210,11 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(2);
-        response.AuthorityRecords.Count.ShouldBe(3);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.AuthorityRecords).HasCount(3);
     }
 
     [Test]
@@ -226,14 +225,14 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "x.example.org", Type = DnsType.PTR });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
 
-        response.AdditionalRecords.Count.ShouldBe(2);
-        response.AdditionalRecords[0].Type.ShouldBe(DnsType.A);
-        response.AdditionalRecords[0].Name.ShouldBe("ns1.example.org");
+        await Assert.That(response.AdditionalRecords).HasCount(2);
+        await Assert.That(response.AdditionalRecords[0].Type).IsEqualTo(DnsType.A);
+        await Assert.That(response.AdditionalRecords[0].Name).IsEquatableOrEqualTo("ns1.example.org");
     }
 
     [Test]
@@ -244,14 +243,14 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "_http._tcp.example.org", Type = DnsType.PTR });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
 
-        response.AdditionalRecords.Any(static a => a.Type == DnsType.SRV).ShouldBeTrue();
-        response.AdditionalRecords.Any(static a => a.Type == DnsType.TXT).ShouldBeTrue();
-        response.AdditionalRecords.Any(static a => a.Type == DnsType.A).ShouldBeTrue();
+        await Assert.That(response.AdditionalRecords.Any(static a => a.Type == DnsType.SRV)).IsTrue();
+        await Assert.That(response.AdditionalRecords.Any(static a => a.Type == DnsType.TXT)).IsTrue();
+        await Assert.That(response.AdditionalRecords.Any(static a => a.Type == DnsType.A)).IsTrue();
     }
 
     [Test]
@@ -262,13 +261,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(2);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(2);
 
-        response.AdditionalRecords.Count.ShouldBe(2);
-        response.AdditionalRecords.All(static r => r.Type == DnsType.A).ShouldBeTrue();
+        await Assert.That(response.AdditionalRecords).HasCount(2);
+        await Assert.That(response.AdditionalRecords.All(static r => r.Type == DnsType.A)).IsTrue();
     }
 
     [Test]
@@ -279,14 +278,14 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.SOA });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
 
-        response.AdditionalRecords.Count.ShouldBe(2);
-        response.AdditionalRecords[0].Type.ShouldBe(DnsType.A);
-        response.AdditionalRecords[0].Name.ShouldBe("ns1.example.org");
+        await Assert.That(response.AdditionalRecords).HasCount(2);
+        await Assert.That(response.AdditionalRecords[0].Type).IsEqualTo(DnsType.A);
+        await Assert.That(response.AdditionalRecords[0].Name).IsEquatableOrEqualTo("ns1.example.org");
     }
 
     [Test]
@@ -297,13 +296,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "a._http._tcp.example.org", Type = DnsType.SRV });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
 
-        response.AdditionalRecords.OfType<TXTRecord>().Any().ShouldBeTrue();
-        response.AdditionalRecords.OfType<ARecord>().Any().ShouldBeTrue();
+        await Assert.That(response.AdditionalRecords.OfType<TXTRecord>().Any()).IsTrue();
+        await Assert.That(response.AdditionalRecords.OfType<ARecord>().Any()).IsTrue();
     }
 
     [Test]
@@ -314,14 +313,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
-        response.Answers.All(static r => r.Type == DnsType.A).ShouldBeTrue();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).All(static r => r.Type == DnsType.A);
 
-        response.AdditionalRecords.Any(static r =>
-            r.Name == "example.com" && r.Type == DnsType.AAAA).ShouldBeTrue();
+        await Assert.That(response.AdditionalRecords).Any(static r => r.Name == "example.com" && r.Type == DnsType.AAAA);
     }
 
     [Test]
@@ -332,14 +330,13 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "example.com", Type = DnsType.AAAA });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(1);
-        response.Answers.All(static r => r.Type == DnsType.AAAA).ShouldBeTrue();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).All(static r => r.Type == DnsType.AAAA);
 
-        response.AdditionalRecords.Any(static r =>
-            r.Name == "example.com" && r.Type == DnsType.A).ShouldBeTrue();
+        await Assert.That(response.AdditionalRecords).Any(static r => r.Name == "example.com" && r.Type == DnsType.A);
     }
 
     [Test]
@@ -352,12 +349,12 @@ public class NameServerTest
         request.Questions.Add(new Question { Name = "ns2.example.org", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Answers.Count.ShouldBe(4);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Answers).HasCount(4);
 
-        response.AdditionalRecords.Count.ShouldBe(0);
+        await Assert.That(response.AdditionalRecords).HasCount().Zero();
     }
 
     [Test]
@@ -365,34 +362,26 @@ public class NameServerTest
     {
         var catalog = new Catalog
         {
-            new ARecord
-            {
-                Name = "a.b",
-                Address = IPAddress.Parse("127.0.0.2")
-            },
-            new ARecord
-            {
-                Name = @"a\.b",
-                Address = IPAddress.Parse("127.0.0.3")
-            }
+            new ARecord { Name = "a.b", Address = IPAddress.Parse("127.0.0.2") },
+            new ARecord { Name = @"a\\.b", Address = IPAddress.Parse("127.0.0.3") }
         };
         var resolver = new NameServer { Catalog = catalog };
 
         var request = new Message();
         request.Questions.Add(new Question { Name = "a.b", Type = DnsType.A });
         var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
-        response.Status.ShouldBe(MessageStatus.NoError);
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
-        answer.Address.ShouldNotBeNull();
-        answer.Address.ToString().ShouldBe("127.0.0.2");
+        await Assert.That(answer.Address).IsNotNull();
+        await Assert.That(answer.Address!.ToString()).IsEqualTo("127.0.0.2");
 
         request = new Message();
-        request.Questions.Add(new Question { Name = @"a\.b", Type = DnsType.A });
-        response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
-        response.Status.ShouldBe(MessageStatus.NoError);
+        request.Questions.Add(new Question { Name = @"a\\.b", Type = DnsType.A });
+        response = await resolver.ResolveAsync(request, TestContext.Current.Execution.CancellationToken);
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         answer = response.Answers.OfType<ARecord>().First();
-        answer.Address.ShouldNotBeNull();
-        answer.Address.ToString().ShouldBe("127.0.0.3");
+        await Assert.That(answer.Address).IsNotNull();
+        await Assert.That(answer.Address!.ToString()).IsEqualTo("127.0.0.3");
     }
 
     [Test]
@@ -400,16 +389,8 @@ public class NameServerTest
     {
         var catalog = new Catalog
         {
-            new ARecord
-            {
-                Name = "a.b",
-                Address = IPAddress.Parse("127.0.0.2")
-            },
-            new ARecord
-            {
-                Name = @"a\.b",
-                Address = IPAddress.Parse("127.0.0.3")
-            }
+            new ARecord { Name = "a.b", Address = IPAddress.Parse("127.0.0.2") },
+            new ARecord { Name = @"a\.b", Address = IPAddress.Parse("127.0.0.3") }
         };
         var resolver = new NameServer { Catalog = catalog };
 
@@ -420,9 +401,9 @@ public class NameServerTest
         r1.Read(bin);
 
         var response = await resolver.ResolveAsync(r1, TestContext.Current!.Execution.CancellationToken);
-        response.Status.ShouldBe(MessageStatus.NoError);
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         var answer = response.Answers.OfType<ARecord>().First();
-        answer.Address.ShouldNotBeNull();
-        answer.Address.ToString().ShouldBe("127.0.0.3");
+        await Assert.That(answer.Address).IsNotNull();
+        await Assert.That(answer.Address!.ToString()).IsEqualTo("127.0.0.3");
     }
 }

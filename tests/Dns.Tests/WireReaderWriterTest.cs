@@ -1,16 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class WireReaderWriterTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var someBytes = new byte[] { 1, 2, 3 };
         var someDate = new DateTime(1997, 1, 21, 3, 4, 5, DateTimeKind.Utc);
@@ -33,98 +32,98 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        reader.ReadDomainName().ShouldBe("emanon.org");
-        reader.ReadString().ShouldBe("alpha");
-        reader.ReadTimeSpan32().ShouldBe(TimeSpan.FromHours(3));
-        reader.ReadUInt16().ShouldBe(ushort.MaxValue);
-        reader.ReadUInt32().ShouldBe(uint.MaxValue);
-        reader.ReadUInt48().ShouldBe(0XFFFFFFFFFFFFul);
-        reader.ReadBytes(3).ShouldBe(someBytes);
-        reader.ReadByteLengthPrefixedBytes().ShouldBe(someBytes);
-        reader.ReadByteLengthPrefixedBytes().ShouldBe([]);
-        reader.ReadIPAddress().ShouldBe(IPAddress.Parse("127.0.0.1"));
-        reader.ReadIPAddress(16).ShouldBe(IPAddress.Parse("2406:e001:13c7:1:7173:ef8:852f:25cb"));
-        reader.ReadDateTime32().ShouldBe(someDate);
-        reader.ReadDateTime48().ShouldBe(someDate);
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("emanon.org");
+        await Assert.That(reader.ReadString()).IsEqualTo("alpha");
+        await Assert.That(reader.ReadTimeSpan32()).IsEqualTo(TimeSpan.FromHours(3));
+        await Assert.That(reader.ReadUInt16()).IsEqualTo(ushort.MaxValue);
+        await Assert.That(reader.ReadUInt32()).IsEqualTo(uint.MaxValue);
+        await Assert.That(reader.ReadUInt48()).IsEqualTo(0XFFFFFFFFFFFFul);
+        await Assert.That(reader.ReadBytes(3)).IsEquivalentTo(someBytes);
+        await Assert.That(reader.ReadByteLengthPrefixedBytes()).IsEquivalentTo(someBytes);
+        await Assert.That(reader.ReadByteLengthPrefixedBytes()).IsEquivalentTo(Array.Empty<byte>());
+        await Assert.That(reader.ReadIPAddress()).IsEqualTo(IPAddress.Parse("127.0.0.1"));
+        await Assert.That(reader.ReadIPAddress(16)).IsEqualTo(IPAddress.Parse("2406:e001:13c7:1:7173:ef8:852f:25cb"));
+        await Assert.That(reader.ReadDateTime32()).IsEqualTo(someDate);
+        await Assert.That(reader.ReadDateTime48()).IsEqualTo(someDate);
     }
 
     [Test]
-    public void Write_DomainName()
+    public async Task Write_DomainName()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
         writer.WriteDomainName("a.b");
         ms.Position = 0;
         
-        ms.ReadByte().ShouldBe(1, customMessage: "length of 'a'");
-        ((char)ms.ReadByte()).ShouldBe('a');
-        ms.ReadByte().ShouldBe(1, customMessage: "length of 'b'");
-        ((char)ms.ReadByte()).ShouldBe('b');
-        ms.ReadByte().ShouldBe(0, customMessage: "trailing nul");
+        await Assert.That(ms.ReadByte()).IsEqualTo(1);
+        await Assert.That((char)ms.ReadByte()).IsEqualTo('a');
+        await Assert.That(ms.ReadByte()).IsEqualTo(1);
+        await Assert.That((char)ms.ReadByte()).IsEqualTo('b');
+        await Assert.That(ms.ReadByte()).IsEqualTo(0);
     }
 
     [Test]
-    public void Write_EscapedDomainName()
+    public async Task Write_EscapedDomainName()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
         writer.WriteDomainName(@"a\.b");
         ms.Position = 0;
         
-        ms.ReadByte().ShouldBe(3, customMessage: "length of 'a.b'");
-        ((char)ms.ReadByte()).ShouldBe('a');
-        ((char)ms.ReadByte()).ShouldBe('.');
-        ((char)ms.ReadByte()).ShouldBe('b');
-        ms.ReadByte().ShouldBe(0, customMessage: "trailing nul");
+        await Assert.That(ms.ReadByte()).IsEqualTo(3);
+        await Assert.That((char)ms.ReadByte()).IsEqualTo('a');
+        await Assert.That((char)ms.ReadByte()).IsEqualTo('.');
+        await Assert.That((char)ms.ReadByte()).IsEqualTo('b');
+        await Assert.That(ms.ReadByte()).IsEqualTo(0);
     }
 
     [Test]
-    public void BufferOverflow_Byte()
+    public async Task BufferOverflow_Byte()
     {
         using var ms = new MemoryStream([]);
         var reader = new WireReader(ms);
         
-        Should.Throw<EndOfStreamException>(() => reader.ReadByte());
+        await Assert.That(() => reader.ReadByte()).Throws<EndOfStreamException>();
     }
 
     [Test]
-    public void BufferOverflow_Bytes()
+    public async Task BufferOverflow_Bytes()
     {
         using var ms = new MemoryStream([1, 2]);
         var reader = new WireReader(ms);
         
-        Should.Throw<EndOfStreamException>(() => reader.ReadBytes(3));
+        await Assert.That(() => reader.ReadBytes(3)).Throws<EndOfStreamException>();
     }
 
     [Test]
-    public void BufferOverflow_DomainName()
+    public async Task BufferOverflow_DomainName()
     {
         using var ms = new MemoryStream([1, (byte)'a']);
         var reader = new WireReader(ms);
         
-        Should.Throw<EndOfStreamException>(() => reader.ReadDomainName());
+        await Assert.That(() => reader.ReadDomainName()).Throws<EndOfStreamException>();
     }
 
     [Test]
-    public void BufferOverflow_String()
+    public async Task BufferOverflow_String()
     {
         using var ms = new MemoryStream([10, 1]);
         var reader = new WireReader(ms);
         
-        Should.Throw<EndOfStreamException>(() => reader.ReadString());
+        await Assert.That(() => reader.ReadString()).Throws<EndOfStreamException>();
     }
 
     [Test]
-    public void BytePrefixedArray_TooBig()
+    public async Task BytePrefixedArray_TooBig()
     {
         var bytes = new byte[byte.MaxValue + 1];
         var writer = new WireWriter(new MemoryStream());
         
-        Should.Throw<ArgumentException>(() => writer.WriteByteLengthPrefixedBytes(bytes));
+        await Assert.That(() => writer.WriteByteLengthPrefixedBytes(bytes)).Throws<ArgumentException>();
     }
 
     [Test]
-    public void LengthPrefixedScope()
+    public async Task LengthPrefixedScope()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
@@ -137,14 +136,14 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        reader.ReadString().ShouldBe("abc");
-        reader.ReadUInt16().ShouldBe((ushort)5);
-        reader.ReadDomainName().ShouldBe("a");
-        reader.ReadDomainName().ShouldBe("a");
+        await Assert.That(reader.ReadString()).IsEqualTo("abc");
+        await Assert.That(reader.ReadUInt16()).IsEqualTo((ushort)5);
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a");
     }
 
     [Test]
-    public void EmptyDomainName()
+    public async Task EmptyDomainName()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
@@ -154,27 +153,27 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        reader.ReadDomainName().ShouldBe("");
-        reader.ReadString().ShouldBe("abc");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("");
+        await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
 
     [Test]
-    public void CanonicalDomainName()
+    public async Task CanonicalDomainName()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms) { CanonicalForm = true };
         writer.WriteDomainName("FOO");
         writer.WriteDomainName("FOO");
-        writer.Position.ShouldBe(5 * 2);
+        await Assert.That(writer.Position).IsEqualTo(5 * 2);
 
         ms.Position = 0;
         var reader = new WireReader(ms);
-        reader.ReadDomainName().ShouldBe("foo");
-        reader.ReadDomainName().ShouldBe("foo");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("foo");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("foo");
     }
 
     [Test]
-    public void NullDomainName_String()
+    public async Task NullDomainName_String()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
@@ -184,27 +183,27 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        reader.ReadDomainName().ShouldBe("");
-        reader.ReadString().ShouldBe("abc");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("");
+        await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
 
     [Test]
-    public void NullDomainName_Class()
+    public async Task NullDomainName_Class()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
-        writer.WriteDomainName((DomainName)null);
+        writer.WriteDomainName((DomainName?)null);
         writer.WriteString("abc");
 
         ms.Position = 0;
         var reader = new WireReader(ms);
         
-        reader.ReadDomainName().ShouldBe("");
-        reader.ReadString().ShouldBe("abc");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("");
+        await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
 
     [Test]
-    public void Read_EscapedDotDomainName()
+    public async Task Read_EscapedDotDomainName()
     {
         const string domainName = @"a\.b";
         using var ms = new MemoryStream();
@@ -215,11 +214,11 @@ public class WireReaderWriterTest
         var reader = new WireReader(ms);
         var name = reader.ReadDomainName();
         
-        name.ShouldBe(domainName);
+        await Assert.That(name).IsEquatableOrEqualTo(domainName);
     }
 
     [Test]
-    public void Bitmap()
+    public async Task Bitmap()
     {
         // From https://tools.ietf.org/html/rfc3845#section-2.3
         var wire = new byte[]
@@ -235,66 +234,63 @@ public class WireReaderWriterTest
         var reader = new WireReader(ms1);
         var first = new ushort[] { 1, 15, 46, 47 };
         var second = new ushort[] { 1234 };
-        reader.ReadBitmap().ShouldBe(first);
-        reader.ReadBitmap().ShouldBe(second);
+        await Assert.That(reader.ReadBitmap()).IsEquivalentTo(first);
+        await Assert.That(reader.ReadBitmap()).IsEquivalentTo(second);
 
         using var ms2 = new MemoryStream();
         var writer = new WireWriter(ms2);
         writer.WriteBitmap([1, 15, 46, 47, 1234]);
-        ms2.ToArray().ShouldBe(wire);
+        await Assert.That(ms2.ToArray()).IsEquivalentTo(wire);
     }
 
     [Test]
-    public void Uint48TooBig()
+    public async Task Uint48TooBig()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
-        Should.Throw<ArgumentException>(() => writer.WriteUInt48(0X1FFFFFFFFFFFFul));
+        await Assert.That(() => writer.WriteUInt48(0X1FFFFFFFFFFFFul)).Throws<ArgumentException>();
     }
 
     [Test]
-    public void ReadDateTime48()
+    public async Task ReadDateTime48()
     {
         // From https://tools.ietf.org/html/rfc2845 section 3.3
         var expected = new DateTime(1997, 1, 21, 0, 0, 0, DateTimeKind.Utc);
         using var ms = new MemoryStream([0x00, 0x00, 0x32, 0xe4, 0x07, 0x00]);
         var reader = new WireReader(ms);
         
-        reader.ReadDateTime48().ShouldBe(expected);
+        await Assert.That(reader.ReadDateTime48()).IsEqualTo(expected);
     }
 
     [Test]
-    public void WriteString_NotAscii()
+    public async Task WriteString_NotAscii()
     {
         var writer = new WireWriter(Stream.Null);
-        Should.Throw<ArgumentException>(() => writer.WriteString("δοκιμή")); // test in Greek
+        await Assert.That(() => writer.WriteString("δοκιμή")).Throws<ArgumentException>();
     }
 
     [Test]
-    public void WriteString_TooBig()
+    public async Task WriteString_TooBig()
     {
         var writer = new WireWriter(Stream.Null);
-        Should.Throw<ArgumentException>(() => writer.WriteString(new string('a', 0x100)));
+        await Assert.That(() => writer.WriteString(new string('a', 0x100))).Throws<ArgumentException>();
     }
 
     [Test]
-    public void ReadString_NotAscii()
+    public async Task ReadString_NotAscii()
     {
         using var ms = new MemoryStream([1, 0xFF]);
         var reader = new WireReader(ms);
-        Should.Throw<InvalidDataException>(() => reader.ReadString());
+        await Assert.That(() => reader.ReadString()).Throws<InvalidDataException>();
     }
 
     [Test]
-    public void WriteDateTime32_TooManySeconds()
+    public async Task WriteDateTime32_TooManySeconds()
     {
         var writer = new WireWriter(Stream.Null);
         writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime);
         writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime.AddSeconds(uint.MaxValue));
 
-        Should.Throw<OverflowException>(() =>
-        {
-            writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime.AddSeconds((long)(uint.MaxValue) + 1));
-        });
+        await Assert.That(() => writer.WriteDateTime32(DateTimeOffset.UnixEpoch.UtcDateTime.AddSeconds((long)uint.MaxValue + 1))).Throws<OverflowException>();
     }
 }

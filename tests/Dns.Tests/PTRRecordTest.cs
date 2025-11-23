@@ -1,13 +1,12 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class PTRRecordTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new PTRRecord
         {
@@ -17,15 +16,15 @@ public class PTRRecordTest
         
         var b = (PTRRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.DomainName.ShouldBe(b.DomainName);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.DomainName).IsEqualTo(b.DomainName);
     }
 
     [Test]
-    public void Roundtrip_Master()
+    public async Task Roundtrip_Master()
     {
         var a = new PTRRecord
         {
@@ -33,18 +32,18 @@ public class PTRRecordTest
             DomainName = "somewhere.else.org"
         };
         
-        var b = (PTRRecord)new ResourceRecord().Read(a.ToString());
+        var b = (PTRRecord)new ResourceRecord().Read(a.ToString())!;
         
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.DomainName.ShouldBe(b.DomainName);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.DomainName).IsEqualTo(b.DomainName);
     }
 
     [Test]
-    public void Equality()
+    public async Task Equality()
     {
         var a = new PTRRecord
         {
@@ -59,8 +58,8 @@ public class PTRRecordTest
         };
 
         // ReSharper disable once EqualExpressionComparison
-        a.Equals(a).ShouldBeTrue();
-        a.Equals(b).ShouldBeFalse();
-        a.Equals(null).ShouldBeFalse();
+        await Assert.That(a.Equals(a)).IsTrue();
+        await Assert.That(a.Equals(b)).IsFalse();
+        await Assert.That(a.Equals(null)).IsFalse();
     }
 }

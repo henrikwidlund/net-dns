@@ -24,17 +24,17 @@ public class CachedNameServerTest
         await Assert.That(response.Answers).Any(static a => a.Name == "b.foo.org");
 
         cache.Prune(now);
-        response = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
+        response = await cache.ResolveAsync(query, TestContext.Current.Execution.CancellationToken);
         await Assert.That(response.Answers).Any(static a => a.Name == "a.foo.org");
         await Assert.That(response.Answers).Any(static a => a.Name == "b.foo.org");
 
         cache.Prune(now + TimeSpan.FromSeconds(31));
-        response = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
+        response = await cache.ResolveAsync(query, TestContext.Current.Execution.CancellationToken);
         await Assert.That(response.Answers).DoesNotContain(static a => a.Name == "a.foo.org");
         await Assert.That(response.Answers).Any(static a => a.Name == "b.foo.org");
 
         cache.Prune(now + TimeSpan.FromSeconds(61));
-        response = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
+        response = await cache.ResolveAsync(query, TestContext.Current.Execution.CancellationToken);
         await Assert.That(response.Answers).DoesNotContain(static a => a.Name == "a.foo.org");
         await Assert.That(response.Answers).DoesNotContain(static a => a.Name == "b.foo.org");
     }
@@ -62,8 +62,8 @@ public class CachedNameServerTest
         
         var res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
 
-        await Assert.That(response.Answers).Any(static a => a.Name == "foo.org" && a.Type == DnsType.A);
-        await Assert.That(response.Answers).Any(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA);
+        await Assert.That(res.Answers).Contains(static a => a.Name == "foo.org" && a.Type == DnsType.A);
+        await Assert.That(res.Answers).Contains(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA);
     }
 
     [Test]
@@ -89,8 +89,8 @@ public class CachedNameServerTest
         
         var res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
 
-        await Assert.That(response.Answers).DoesNotContain(static a => a.Name == "foo.org" && a.Type == DnsType.A);
-        await Assert.That(response.Answers).DoesNotContain(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA);
+        await Assert.That(res.Answers).DoesNotContain(static a => a.Name == "foo.org" && a.Type == DnsType.A);
+        await Assert.That(res.Answers).Contains(static a => a.Name == "foo.org" && a.Type == DnsType.AAAA);
     }
 
     [Test]
@@ -116,10 +116,10 @@ public class CachedNameServerTest
         await Assert.That(res.Answers).HasCount(1);
 
         var cts = cache.PruneContinuously(TimeSpan.FromMilliseconds(200));
-        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current!.Execution.CancellationToken);
+        await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.Execution.CancellationToken);
         await cts.CancelAsync();
-        await Task.Delay(TimeSpan.FromMilliseconds(40), TestContext.Current!.Execution.CancellationToken);
-        res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
+        await Task.Delay(TimeSpan.FromMilliseconds(40), TestContext.Current.Execution.CancellationToken);
+        res = await cache.ResolveAsync(query, TestContext.Current.Execution.CancellationToken);
         await Assert.That(res.Answers).HasCount().Zero();
     }
 }

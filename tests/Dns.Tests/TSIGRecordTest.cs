@@ -1,27 +1,26 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class TSIGRecordTest
 {
     [Test]
-    public void Defaults()
+    public async Task Defaults()
     {
         var tsig = new TSIGRecord();
 
-        tsig.Type.ShouldBe(DnsType.TSIG);
-        tsig.Class.ShouldBe(DnsClass.ANY);
-        tsig.TTL.ShouldBe(TimeSpan.Zero);
-        tsig.TimeSigned!.Kind.ShouldBe(DateTimeKind.Utc);
-        tsig.TimeSigned!.Millisecond.ShouldBe(0);
-        tsig.Fudge.ShouldBe(TimeSpan.FromSeconds(300));
+        await Assert.That(tsig.Type).IsEqualTo(DnsType.TSIG);
+        await Assert.That(tsig.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(tsig.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(tsig.TimeSigned.Kind).IsEqualTo(DateTimeKind.Utc);
+        await Assert.That(tsig.TimeSigned.Millisecond).IsEqualTo(0);
+        await Assert.That(tsig.Fudge).IsEqualTo(TimeSpan.FromSeconds(300));
     }
 
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new TSIGRecord
         {
@@ -37,21 +36,21 @@ public class TSIGRecordTest
 
         var b = (TSIGRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.TimeSigned.ShouldBe(b.TimeSigned);
-        a.Fudge.ShouldBe(b.Fudge);
-        a.MAC.ShouldBe(b.MAC);
-        a.OriginalMessageId.ShouldBe(b.OriginalMessageId);
-        a.Error.ShouldBe(b.Error);
-        a.OtherData.ShouldBe(b.OtherData);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.TimeSigned).IsEqualTo(b.TimeSigned);
+        await Assert.That(a.Fudge).IsEqualTo(b.Fudge);
+        await Assert.That(a.MAC).IsEquivalentTo(b.MAC!);
+        await Assert.That(a.OriginalMessageId).IsEqualTo(b.OriginalMessageId);
+        await Assert.That(a.Error).IsEqualTo(b.Error);
+        await Assert.That(a.OtherData).IsEquivalentTo(b.OtherData!);
     }
 
     [Test]
-    public void Roundtrip_Master()
+    public async Task Roundtrip_Master()
     {
         var a = new TSIGRecord
         {
@@ -64,18 +63,18 @@ public class TSIGRecordTest
             Error = MessageStatus.BadTime
         };
 
-        var b = (TSIGRecord)new ResourceRecord().Read(a.ToString());
+        var b = (TSIGRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.TimeSigned.ShouldBe(b.TimeSigned);
-        a.MAC.ShouldBe(b.MAC);
-        a.OriginalMessageId.ShouldBe(b.OriginalMessageId);
-        a.Error.ShouldBe(b.Error);
-        a.OtherData.ShouldBe(b.OtherData);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.TimeSigned).IsEqualTo(b.TimeSigned);
+        await Assert.That(a.MAC).IsEquivalentTo(b.MAC!);
+        await Assert.That(a.OriginalMessageId).IsEqualTo(b.OriginalMessageId);
+        await Assert.That(a.Error).IsEqualTo(b.Error);
+        await Assert.That(a.OtherData).IsEquivalentTo(b.OtherData!);
     }
 }

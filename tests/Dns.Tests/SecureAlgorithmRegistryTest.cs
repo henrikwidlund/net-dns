@@ -1,22 +1,22 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class SecurityAlgorithmRegistryTest
 {
     [Test]
-    public void Exists() => SecurityAlgorithmRegistry.Algorithms.Count.ShouldNotBe(0);
+    public async Task Exists() => await Assert.That(SecurityAlgorithmRegistry.Algorithms).HasCount().NotEqualTo(0);
 
     [Test]
-    public void RSASHA1()
+    public async Task RSASHA1()
     {
         var metadata = SecurityAlgorithmRegistry.GetMetadata(SecurityAlgorithm.RSASHA1);
-        metadata.ShouldNotBeNull();
+        await Assert.That(metadata).IsNotNull();
     }
 
     [Test]
-    public void UnknownAlgorithm() => Should.Throw<NotImplementedException>(static () => SecurityAlgorithmRegistry.GetMetadata((SecurityAlgorithm)0xBA));
+    public void UnknownAlgorithm() => Assert.Throws<NotImplementedException>(static () => SecurityAlgorithmRegistry.GetMetadata((SecurityAlgorithm)0xBA));
 }

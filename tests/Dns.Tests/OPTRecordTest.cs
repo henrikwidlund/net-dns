@@ -1,27 +1,26 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class OPTRecordTest
 {
     [Test]
-    public void Defaults()
+    public async Task Defaults()
     {
         var opt = new OPTRecord();
 
-        opt.Name.ShouldBe("");
-        opt.RequestorPayloadSize.ShouldBe((ushort)1280);
-        ((ushort)opt.Class).ShouldBe(opt.RequestorPayloadSize);
-        opt.Opcode8.ShouldBe((byte)0);
-        opt.Version.ShouldBe((byte)0);
-        opt.DO.ShouldBeFalse();
-        opt.Options.Count.ShouldBe(0);
+        await Assert.That(opt.Name).IsEquatableOrEqualTo("");
+        await Assert.That(opt.RequestorPayloadSize).IsEqualTo((ushort)1280);
+        await Assert.That((ushort)opt.Class).IsEqualTo(opt.RequestorPayloadSize);
+        await Assert.That(opt.Opcode8).IsEqualTo((byte)0);
+        await Assert.That(opt.Version).IsEqualTo((byte)0);
+        await Assert.That(opt.DO).IsFalse();
+        await Assert.That(opt.Options).HasCount().Zero();
     }
 
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new OPTRecord
         {
@@ -33,30 +32,30 @@ public class OPTRecordTest
 
         var b = (OPTRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.RequestorPayloadSize.ShouldBe(b.RequestorPayloadSize);
-        a.Opcode8.ShouldBe(b.Opcode8);
-        a.Version.ShouldBe(b.Version);
-        a.DO.ShouldBe(b.DO);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.RequestorPayloadSize).IsEqualTo(b.RequestorPayloadSize);
+        await Assert.That(a.Opcode8).IsEqualTo(b.Opcode8);
+        await Assert.That(a.Version).IsEqualTo(b.Version);
+        await Assert.That(a.DO).IsEqualTo(b.DO);
     }
 
     [Test]
-    public void Roundtrip_NoOptions()
+    public async Task Roundtrip_NoOptions()
     {
         var a = new OPTRecord();
         var b = (OPTRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
     }
 
     [Test]
-    public void Equality()
+    public async Task Equality()
     {
         var a = new OPTRecord();
 
@@ -66,8 +65,8 @@ public class OPTRecordTest
         };
 
         // ReSharper disable once EqualExpressionComparison
-        a.Equals(a).ShouldBeTrue();
-        a.Equals(b).ShouldBeFalse();
-        a.Equals(null).ShouldBeFalse();
+        await Assert.That(a.Equals(a)).IsTrue();
+        await Assert.That(a.Equals(b)).IsFalse();
+        await Assert.That(a.Equals(null)).IsFalse();
     }
 }

@@ -6,6 +6,7 @@
         <DebugType>full</DebugType>
         <IsTestProject>true</IsTestProject>
         <RootNamespace>DnsTests</RootNamespace>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <ItemGroup>
@@ -14,9 +15,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" PrivateAssets="all" />
-        <PackageReference Include="Shouldly" Version="4.3.0" />
         <PackageReference Include="SimpleBase" Version="5.6.0" />
-        <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.0" />
         <PackageReference Include="TUnit" Version="1.2.11" />
     </ItemGroup>
 

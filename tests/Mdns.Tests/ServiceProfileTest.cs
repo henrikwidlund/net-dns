@@ -21,8 +21,8 @@ public class ServiceProfileTest
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
 
-        await Assert.That(service.QualifiedServiceName).IsEqualTo("_sdtest._udp.local");
-        await Assert.That(service.FullyQualifiedName).IsEqualTo("x._sdtest._udp.local");
+        await Assert.That(service.QualifiedServiceName).IsEquatableOrEqualTo("_sdtest._udp.local");
+        await Assert.That(service.FullyQualifiedName).IsEquatableOrEqualTo("x._sdtest._udp.local");
     }
 
     [Test]
@@ -102,9 +102,9 @@ public class ServiceProfileTest
     public async Task HostName()
     {
         var service = new ServiceProfile("fred", "_foo._tcp", 1024);
-        await Assert.That(service.HostName).IsEqualTo("fred.foo.local");
+        await Assert.That(service.HostName).IsEquatableOrEqualTo("fred.foo.local");
 
         service = new ServiceProfile("fred", "_foo_bar._tcp", 1024);
-        await Assert.That(service.HostName).IsEqualTo("fred.foo-bar.local");
+        await Assert.That(service.HostName).IsEquatableOrEqualTo("fred.foo-bar.local");
     }
 }

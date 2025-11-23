@@ -1,13 +1,12 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class QuestionTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new Question
         {
@@ -18,8 +17,8 @@ public class QuestionTest
 
         var b = (Question)new Question().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
     }
 }

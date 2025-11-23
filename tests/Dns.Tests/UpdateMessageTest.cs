@@ -1,35 +1,34 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class UpdateMessageTest
 {
     [Test]
-    public void Defaults()
+    public async Task Defaults()
     {
         var m = new UpdateMessage();
         
-        m.AdditionalResources.Count.ShouldBe(0);
-        m.Id.ShouldBe((ushort)0);
-        m.IsResponse.ShouldBeFalse();
-        m.IsUpdate.ShouldBeTrue();
-        m.Opcode.ShouldBe(MessageOperation.Update);
-        m.Prerequisites.Count.ShouldBe(0);
-        m.QR.ShouldBeFalse();
-        m.Status.ShouldBe(MessageStatus.NoError);
-        m.Updates.Count.ShouldBe(0);
-        m.Z.ShouldBe(0);
-        m.Zone.ShouldNotBeNull();
-        m.Zone.Type.ShouldBe(DnsType.SOA);
-        m.Zone.Class.ShouldBe(DnsClass.IN);
+        await Assert.That(m.AdditionalResources).HasCount().Zero();
+        await Assert.That(m.Id).IsEqualTo((ushort)0);
+        await Assert.That(m.IsResponse).IsFalse();
+        await Assert.That(m.IsUpdate).IsTrue();
+        await Assert.That(m.Opcode).IsEqualTo(MessageOperation.Update);
+        await Assert.That(m.Prerequisites).HasCount().Zero();
+        await Assert.That(m.QR).IsFalse();
+        await Assert.That(m.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(m.Updates).HasCount().Zero();
+        await Assert.That(m.Z).IsEqualTo(0);
+        await Assert.That(m.Zone).IsNotNull();
+        await Assert.That(m.Zone.Type).IsEqualTo(DnsType.SOA);
+        await Assert.That(m.Zone.Class).IsEqualTo(DnsClass.IN);
     }
 
     [Test]
-    public void Flags()
+    public async Task Flags()
     {
         var expected = new UpdateMessage
         {
@@ -43,29 +42,29 @@ public class UpdateMessageTest
         var actual = new UpdateMessage();
         actual.Read(expected.ToByteArray());
         
-        actual.Id.ShouldBe(expected.Id);
-        actual.QR.ShouldBe(expected.QR);
-        actual.Opcode.ShouldBe(expected.Opcode);
-        actual.Z.ShouldBe(expected.Z);
-        actual.Status.ShouldBe(expected.Status);
-        actual.Zone.Name.ShouldBe(expected.Zone.Name);
-        actual.Zone.Class.ShouldBe(expected.Zone.Class);
-        actual.Zone.Type.ShouldBe(expected.Zone.Type);
+        await Assert.That(actual.Id).IsEqualTo(expected.Id);
+        await Assert.That(actual.QR).IsEqualTo(expected.QR);
+        await Assert.That(actual.Opcode).IsEqualTo(expected.Opcode);
+        await Assert.That(actual.Z).IsEqualTo(expected.Z);
+        await Assert.That(actual.Status).IsEqualTo(expected.Status);
+        await Assert.That(actual.Zone.Name).IsEqualTo(expected.Zone.Name);
+        await Assert.That(actual.Zone.Class).IsEqualTo(expected.Zone.Class);
+        await Assert.That(actual.Zone.Type).IsEqualTo(expected.Zone.Type);
     }
 
     [Test]
-    public void Response()
+    public async Task Response()
     {
         var update = new UpdateMessage { Id = 1234 };
         var response = update.CreateResponse();
         
-        response.IsResponse.ShouldBeTrue();
-        response.Id.ShouldBe(update.Id);
-        response.Opcode.ShouldBe(update.Opcode);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Id).IsEqualTo(update.Id);
+        await Assert.That(response.Opcode).IsEqualTo(update.Opcode);
     }
 
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var expected = new UpdateMessage
         {
@@ -86,17 +85,17 @@ public class UpdateMessageTest
         
         var actual = (UpdateMessage)new UpdateMessage().Read(expected.ToByteArray());
         
-        actual.Id.ShouldBe(expected.Id);
-        actual.IsUpdate.ShouldBe(expected.IsUpdate);
-        actual.IsResponse.ShouldBe(expected.IsResponse);
-        actual.Opcode.ShouldBe(expected.Opcode);
-        actual.QR.ShouldBe(expected.QR);
-        actual.Status.ShouldBe(expected.Status);
-        actual.Zone.Name.ShouldBe(expected.Zone.Name);
-        actual.Zone.Class.ShouldBe(expected.Zone.Class);
-        actual.Zone.Type.ShouldBe(expected.Zone.Type);
-        actual.Prerequisites.SequenceEqual(expected.Prerequisites).ShouldBeTrue();
-        actual.Updates.SequenceEqual(expected.Updates).ShouldBeTrue();
-        actual.AdditionalResources.SequenceEqual(expected.AdditionalResources).ShouldBeTrue();
+        await Assert.That(actual.Id).IsEqualTo(expected.Id);
+        await Assert.That(actual.IsUpdate).IsEqualTo(expected.IsUpdate);
+        await Assert.That(actual.IsResponse).IsEqualTo(expected.IsResponse);
+        await Assert.That(actual.Opcode).IsEqualTo(expected.Opcode);
+        await Assert.That(actual.QR).IsEqualTo(expected.QR);
+        await Assert.That(actual.Status).IsEqualTo(expected.Status);
+        await Assert.That(actual.Zone.Name).IsEqualTo(expected.Zone.Name);
+        await Assert.That(actual.Zone.Class).IsEqualTo(expected.Zone.Class);
+        await Assert.That(actual.Zone.Type).IsEqualTo(expected.Zone.Type);
+        await Assert.That(actual.Prerequisites.SequenceEqual(expected.Prerequisites)).IsTrue();
+        await Assert.That(actual.Updates.SequenceEqual(expected.Updates)).IsTrue();
+        await Assert.That(actual.AdditionalResources.SequenceEqual(expected.AdditionalResources)).IsTrue();
     }
 }

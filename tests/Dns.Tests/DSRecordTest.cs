@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+
 using SimpleBase;
 
 namespace DnsTests;
@@ -9,7 +10,7 @@ namespace DnsTests;
 public class DSRecordTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new DSRecord
         {
@@ -22,19 +23,19 @@ public class DSRecordTest
         };
         
         var b = (DSRecord)new ResourceRecord().Read(a.ToByteArray());
-        
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.KeyTag.ShouldBe(b.KeyTag);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Digest.ShouldBe(b.Digest);
+
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.KeyTag).IsEqualTo(b.KeyTag);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Digest).IsEquivalentTo(b.Digest!);
     }
 
     [Test]
-    public void Roundtrip_Master()
+    public async Task Roundtrip_Master()
     {
         var a = new DSRecord
         {
@@ -46,21 +47,21 @@ public class DSRecordTest
             Digest = Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray()
         };
         
-        var b = (DSRecord)new ResourceRecord().Read(a.ToString());
-        
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.KeyTag.ShouldBe(b.KeyTag);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Digest.ShouldBe(b.Digest);
+        var b = (DSRecord)new ResourceRecord().Read(a.ToString())!;
+
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.KeyTag).IsEqualTo(b.KeyTag);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Digest).IsEquivalentTo(b.Digest!);
     }
 
     [Test]
-    public void FromDNSKEY()
+    public async Task FromDNSKEY()
     {
         // From https://tools.ietf.org/html/rfc4034#section-5.4
         var key = new DNSKEYRecord
@@ -83,19 +84,19 @@ public class DSRecordTest
         };
         
         var ds = new DSRecord(key, force: true);
-        
-        key.Name.ShouldBe(ds.Name);
-        key.Class.ShouldBe(ds.Class);
-        ds.Type.ShouldBe(DnsType.DS);
-        key.TTL.ShouldBe(ds.TTL);
-        ds.KeyTag!.Value.ShouldBe((ushort)60485);
-        ds.Algorithm.ShouldBe(SecurityAlgorithm.RSASHA1);
-        ds.HashAlgorithm.ShouldBe(DigestType.Sha1);
-        ds.Digest.ShouldBe(Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray());
+
+        await Assert.That(key.Name).IsEqualTo(ds.Name);
+        await Assert.That(key.Class).IsEqualTo(ds.Class);
+        await Assert.That(ds.Type).IsEqualTo(DnsType.DS);
+        await Assert.That(key.TTL).IsEqualTo(ds.TTL);
+        await Assert.That(ds.KeyTag).IsEqualTo((ushort)60485);
+        await Assert.That(ds.Algorithm).IsEqualTo(SecurityAlgorithm.RSASHA1);
+        await Assert.That(ds.HashAlgorithm).IsEqualTo(DigestType.Sha1);
+        await Assert.That(ds.Digest).IsEquivalentTo(Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray());
     }
 
     [Test]
-    public void FromDNSKEY_Missing_ZK()
+    public async Task FromDNSKEY_Missing_ZK()
     {
         var key = new DNSKEYRecord
         {
@@ -115,14 +116,14 @@ public class DSRecordTest
                 """)
         };
         
-        ExceptionAssert.Throws<ArgumentException>(() =>
+        await ExceptionAssert.Throws<ArgumentException>(() =>
         {
             _ = new DSRecord(key);
         });
     }
 
     [Test]
-    public void FromDNSKEY_Missing_SEP()
+    public async Task FromDNSKEY_Missing_SEP()
     {
         var key = new DNSKEYRecord
         {
@@ -142,7 +143,7 @@ public class DSRecordTest
                 """)
         };
         
-        ExceptionAssert.Throws<ArgumentException>(() =>
+        await ExceptionAssert.Throws<ArgumentException>(() =>
         {
             _ = new DSRecord(key);
         });

@@ -538,7 +538,7 @@ public class ServiceDiscoveryTest
 
             foreach (var answer in answers)
             {
-                await Assert.That(answer.Name?.ToString()).IsEqualTo(arpaAddress);
+                await Assert.That(answer.Name).IsEquatableOrEqualTo(arpaAddress);
                 await Assert.That(answer.TTL).IsGreaterThan(TimeSpan.Zero);
                 await Assert.That(answer.Class).IsEqualTo(DnsClass.IN);
             }
@@ -559,7 +559,7 @@ public class ServiceDiscoveryTest
         using var sd = await ServiceDiscovery.CreateInstance(cancellationToken: TestContext.Current!.Execution.CancellationToken);
         sd.Advertise(profile);
 
-        await Assert.That(sd.NameServer.Catalog).IsNotNull();
+        await Assert.That(sd.NameServer.Catalog!).IsNotNull();
 
         var resourceRecords = sd.NameServer.Catalog.Values.SelectMany(static node => node.Resources);
         foreach (var r in resourceRecords)

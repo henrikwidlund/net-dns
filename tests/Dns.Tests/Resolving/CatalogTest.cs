@@ -59,7 +59,7 @@ public class CatalogTest
         using var stringReader = new StringReader(ExampleDotComZoneText);
         var reader = new PresentationReader(stringReader);
         var zone = catalog.IncludeZone(reader);
-        await Assert.That(zone.Name.ToString()).IsEqualTo("example.com");
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example.com");
 
         await Assert.That(catalog).ContainsKey("example.com");
         await Assert.That(catalog).ContainsKey("ns.example.com");
@@ -78,7 +78,7 @@ public class CatalogTest
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         var zone = catalog.IncludeZone(reader);
-        await Assert.That(zone.Name.ToString()).IsEqualTo("example.com");
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example.com");
 
         reader = new PresentationReader(new StringReader(ExampleDotComZoneText));
         await Assert.That(() => catalog.IncludeZone(reader)).ThrowsExactly<InvalidDataException>();
@@ -122,12 +122,12 @@ public class CatalogTest
         using var stringReader = new StringReader(ExampleDotComZoneText);
         var reader = new PresentationReader(stringReader);
         var zone = catalog.IncludeZone(reader);
-        await Assert.That(zone.Name.ToString()).IsEqualTo("example.com");
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example.com");
 
         using var textReader = new StringReader(ExampleDotOrgZoneText);
         reader = new PresentationReader(textReader);
         zone = catalog.IncludeZone(reader);
-        await Assert.That(zone.Name.ToString()).IsEqualTo("example.org");
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example.org");
     }
 
     [Test]
@@ -138,13 +138,13 @@ public class CatalogTest
         using var stringReader = new StringReader(ExampleDotComZoneText);
         var reader = new PresentationReader(stringReader);
         var zone = catalog.IncludeZone(reader);
-        await Assert.That(zone.Name.ToString()).IsEqualTo("example.org");
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example.com");
         await Assert.That(catalog).HasCount(7);
 
         using var textReader = new StringReader(ExampleDotOrgZoneText);
         reader = new PresentationReader(textReader);
         zone = catalog.IncludeZone(reader);
-        await Assert.That(zone.Name.ToString()).IsEqualTo("example.org");
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example.org");
         await Assert.That(catalog).HasCount(14);
 
         catalog.RemoveZone("example.org");
@@ -248,7 +248,7 @@ public class CatalogTest
     {
         var catalog = new Catalog();
         var root = catalog.IncludeRootHints();
-        await Assert.That(root.Name.ToString()).IsEqualTo("");
+        await Assert.That(root.Name).IsEquatableOrEqualTo("");
         await Assert.That(root.Authoritative).IsTrue();
         await Assert.That(root.Resources.OfType<NSRecord>()).IsNotEmpty();
     }
@@ -279,7 +279,7 @@ public class CatalogTest
             .NodesInCanonicalOrder()
             .Select(static node => node.Name)
             .ToArray();
-        await Assert.That(actual).IsEqualTo(expected);
+        await Assert.That(actual).IsEquivalentTo(expected);
     }
 
     [Test]

@@ -1,13 +1,12 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class RPRecordTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new RPRecord
         {
@@ -17,16 +16,16 @@ public class RPRecordTest
 
         var b = (RPRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Mailbox.ShouldBe(b.Mailbox);
-        a.TextName.ShouldBe(b.TextName);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Mailbox).IsEqualTo(b.Mailbox);
+        await Assert.That(a.TextName).IsEqualTo(b.TextName);
     }
 
     [Test]
-    public void Roundtrip_Master()
+    public async Task Roundtrip_Master()
     {
         var a = new RPRecord
         {
@@ -34,19 +33,19 @@ public class RPRecordTest
             Mailbox = "nowon.emanon.org"
         };
 
-        var b = (RPRecord)new ResourceRecord().Read(a.ToString());
+        var b = (RPRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Mailbox.ShouldBe(b.Mailbox);
-        a.TextName.ShouldBe(b.TextName);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Mailbox).IsEqualTo(b.Mailbox);
+        await Assert.That(a.TextName).IsEqualTo(b.TextName);
     }
 
     [Test]
-    public void Equality()
+    public async Task Equality()
     {
         var a = new RPRecord
         {
@@ -61,8 +60,8 @@ public class RPRecordTest
         };
 
         // ReSharper disable once EqualExpressionComparison
-        a.Equals(a).ShouldBeTrue();
-        a.Equals(b).ShouldBeFalse();
-        a.Equals(null).ShouldBeFalse();
+        await Assert.That(a.Equals(a)).IsTrue();
+        await Assert.That(a.Equals(b)).IsFalse();
+        await Assert.That(a.Equals(null)).IsFalse();
     }
 }

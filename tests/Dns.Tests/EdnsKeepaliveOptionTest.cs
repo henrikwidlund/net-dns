@@ -1,46 +1,46 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class EdnsKeepaliveOptionTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var opt1 = new OPTRecord();
         var expected = new EdnsKeepaliveOption
         {
             Timeout = TimeSpan.FromSeconds(3)
         };
-        
-        expected.Type.ShouldBe(EdnsOptionType.Keepalive);
+
+        await Assert.That(expected.Type).IsEqualTo(EdnsOptionType.Keepalive);
 
         opt1.Options.Add(expected);
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (EdnsKeepaliveOption)opt2.Options[0];
-        
-        actual.Type.ShouldBe(expected.Type);
-        actual.Timeout.HasValue.ShouldBeTrue();
-        actual.Timeout.Value.ShouldBe(expected.Timeout.Value);
+
+        await Assert.That(actual.Type).IsEqualTo(expected.Type);
+        await Assert.That(actual.Timeout.HasValue).IsEqualTo(expected.Timeout.HasValue);
+        await Assert.That(actual.Timeout!.Value).IsEqualTo(expected.Timeout!.Value);
     }
 
     [Test]
-    public void Roundtrip_Empty()
+    public async Task Roundtrip_Empty()
     {
         var opt1 = new OPTRecord();
         var expected = new EdnsKeepaliveOption();
-        
-        expected.Type.ShouldBe(EdnsOptionType.Keepalive);
-        expected.Timeout.HasValue.ShouldBeFalse();
+
+        await Assert.That(expected.Type).IsEqualTo(EdnsOptionType.Keepalive);
+        await Assert.That(expected.Timeout.HasValue).IsFalse();
 
         opt1.Options.Add(expected);
         var opt2 = (OPTRecord)new ResourceRecord().Read(opt1.ToByteArray());
         var actual = (EdnsKeepaliveOption)opt2.Options[0];
-        
-        actual.Type.ShouldBe(expected.Type);
-        actual.Timeout.HasValue.ShouldBe(expected.Timeout.HasValue);
+
+        await Assert.That(actual.Type).IsEqualTo(expected.Type);
+        await Assert.That(actual.Timeout.HasValue).IsEqualTo(expected.Timeout.HasValue);
     }
 }

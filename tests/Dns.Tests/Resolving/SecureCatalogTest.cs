@@ -1,10 +1,7 @@
 ﻿using System.IO;
-
+using System.Threading.Tasks;
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-
-using Shouldly;
-using Xunit;
 
 namespace DnsTests.Resolving;
 
@@ -260,16 +257,16 @@ public class SecureCatalogTest
                                          """;
     
     [Test]
-    public void IncludeZone()
+    public async Task IncludeZone()
     {
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(ExampleZoneText));
         var zone = catalog.IncludeZone(reader);
-        zone.Name.ShouldBe("example");
-        zone.Authoritative.ShouldBeTrue();
+        await Assert.That(zone.Name).IsEquatableOrEqualTo("example");
+        await Assert.That(zone.Authoritative).IsTrue();
 
-        catalog.ContainsKey("example").ShouldBeTrue();
-        catalog.ContainsKey("ns1.example").ShouldBeTrue();
-        catalog.ContainsKey("xx.example").ShouldBeTrue();
+        await Assert.That(catalog).ContainsKey("example");
+        await Assert.That(catalog).ContainsKey("ns1.example");
+        await Assert.That(catalog).ContainsKey("xx.example");
     }
 }

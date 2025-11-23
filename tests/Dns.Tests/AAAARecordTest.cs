@@ -1,14 +1,13 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class AAAARecordTest
 {
     [Test]
-    public void Roundtrip()
+    public async Task Roundtrip()
     {
         var a = new AAAARecord
         {
@@ -17,15 +16,15 @@ public class AAAARecordTest
         };
         var b = (AAAARecord)new ResourceRecord().Read(a.ToByteArray());
         
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Address.ShouldBe(b.Address);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Address).IsEqualTo(b.Address);
     }
 
     [Test]
-    public void Roundtrip_ScopeId()
+    public async Task Roundtrip_ScopeId()
     {
         var a = new AAAARecord
         {
@@ -34,33 +33,33 @@ public class AAAARecordTest
         };
         var b = (AAAARecord)new ResourceRecord().Read(a.ToByteArray());
         
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        IPAddress.Parse("fe80::7573:b0a8:46b0:bfea").ShouldBe(b.Address);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(IPAddress.Parse("fe80::7573:b0a8:46b0:bfea")).IsEqualTo(b.Address);
     }
 
     [Test]
-    public void Roundtrip_Master()
+    public async Task Roundtrip_Master()
     {
         var a = new AAAARecord
         {
             Name = "emanon.org",
             Address = IPAddress.Parse("2406:e001:13c7:1:7173:ef8:852f:25cb")
         };
-        var b = (AAAARecord)new ResourceRecord().Read(a.ToString());
+        var b = (AAAARecord)new ResourceRecord().Read(a.ToString())!;
         
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Address.ShouldBe(b.Address);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Address).IsEqualTo(b.Address);
     }
 
     [Test]
-    public void Equality()
+    public async Task Equality()
     {
         var a = new AAAARecord
         {
@@ -74,8 +73,8 @@ public class AAAARecordTest
         };
         
         // ReSharper disable once EqualExpressionComparison
-        a.Equals(a).ShouldBeTrue();
-        a.Equals(b).ShouldBeFalse();
-        a.Equals(null).ShouldBeFalse();
+        await Assert.That(a.Equals(a)).IsTrue();
+        await Assert.That(a.Equals(b)).IsFalse();
+        await Assert.That(a.Equals(null)).IsFalse();
     }
 }

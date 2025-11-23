@@ -1,20 +1,20 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class DnsObjectTest
 {
     [Test]
-    public void Length_EmptyMessage()
+    public async Task Length_EmptyMessage()
     {
         var message = new Message();
-        message.Length().ShouldBe(Message.MinLength);
+        await Assert.That(message.Length()).IsEqualTo(Message.MinLength);
     }
 
     [Test]
-    public void Clone()
+    public async Task Clone()
     {
         var m1 = new Message
         {
@@ -23,11 +23,11 @@ public class DnsObjectTest
         
         var m2 = (Message)m1.Clone();
 
-        m1.ToByteArray().ShouldBe(m2.ToByteArray());
+        await Assert.That(m1.ToByteArray()).IsEquivalentTo(m2.ToByteArray());
     }
 
     [Test]
-    public void Clone_Typed()
+    public async Task Clone_Typed()
     {
         var m1 = new Message
         {
@@ -36,6 +36,6 @@ public class DnsObjectTest
 
         var m2 = m1.Clone<Message>();
 
-        m1.ToByteArray().ShouldBe(m2.ToByteArray());
+        await Assert.That(m1.ToByteArray()).IsEquivalentTo(m2.ToByteArray());
     }
 }

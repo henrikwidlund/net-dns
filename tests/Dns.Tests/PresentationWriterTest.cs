@@ -1,51 +1,50 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class PresentationWriterTest
 {
     [Test]
-    public void WriteByte()
+    public async Task WriteByte()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteByte(byte.MaxValue);
         writer.WriteByte(1, appendSpace: false);
 
-        text.ToString().ShouldBe("255 1");
+        await Assert.That(text.ToString()).IsEqualTo("255 1");
     }
 
     [Test]
-    public void WriteUInt16()
+    public async Task WriteUInt16()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteUInt16(ushort.MaxValue);
         writer.WriteUInt16(1, appendSpace: false);
 
-        text.ToString().ShouldBe("65535 1");
+        await Assert.That(text.ToString()).IsEqualTo("65535 1");
     }
 
     [Test]
-    public void WriteUInt32()
+    public async Task WriteUInt32()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteUInt32(int.MaxValue);
         writer.WriteUInt32(1, appendSpace: false);
 
-        text.ToString().ShouldBe("2147483647 1");
+        await Assert.That(text.ToString()).IsEqualTo("2147483647 1");
     }
 
     [Test]
-    public void WriteString()
+    public async Task WriteString()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteString("alpha");
         writer.WriteString("a b");
@@ -56,130 +55,130 @@ public class PresentationWriterTest
         writer.WriteString("a\"b");
         writer.WriteString("end", appendSpace: false);
 
-        text.ToString().ShouldBe("alpha \"a b\" \"\" \"\" \" \" a\\\\b a\\\"b end");
+        await Assert.That(text.ToString()).IsEqualTo("alpha \"a b\" \"\" \"\" \" \" a\\\\b a\\\"b end");
     }
 
     [Test]
-    public void WriteStringUnencoded()
+    public async Task WriteStringUnencoded()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteStringUnencoded("\\a");
         writer.WriteStringUnencoded("\\b", appendSpace: false);
 
-        text.ToString().ShouldBe(@"\a \b");
+        await Assert.That(text.ToString()).IsEqualTo(@"\a \b");
     }
 
     [Test]
-    public void WriteDomainName()
+    public async Task WriteDomainName()
     {
-        using var text1 = new StringWriter();
+        await using var text1 = new StringWriter();
         var writer = new PresentationWriter(text1);
         writer.WriteString("alpha.com");
         writer.WriteString("omega.com", appendSpace: false);
-        text1.ToString().ShouldBe("alpha.com omega.com");
+        await Assert.That(text1.ToString()).IsEqualTo("alpha.com omega.com");
 
-        using var text2 = new StringWriter();
+        await using var text2 = new StringWriter();
         writer = new PresentationWriter(text2);
         writer.WriteDomainName(new DomainName("alpha.com"), false);
-        text2.ToString().ShouldBe("alpha.com");
+        await Assert.That(text2.ToString()).IsEqualTo("alpha.com");
     }
 
     [Test]
-    public void WriteDomainName_Escaped()
+    public async Task WriteDomainName_Escaped()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDomainName(new DomainName(@"dr\. smith.com"), false);
 
-        text.ToString().ShouldBe(@"dr\.\032smith.com");
+        await Assert.That(text.ToString()).IsEqualTo(@"dr\.\032smith.com");
     }
 
     [Test]
-    public void WriteBase16String()
+    public async Task WriteBase16String()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteBase16String([1, 2, 3]);
         writer.WriteBase16String([1, 2, 3], appendSpace: false);
 
-        text.ToString().ShouldBe("010203 010203");
+        await Assert.That(text.ToString()).IsEqualTo("010203 010203");
     }
 
     [Test]
-    public void WriteBase64String()
+    public async Task WriteBase64String()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteBase64String([1, 2, 3]);
         writer.WriteBase64String([1, 2, 3], appendSpace: false);
 
-        text.ToString().ShouldBe("AQID AQID");
+        await Assert.That(text.ToString()).IsEqualTo("AQID AQID");
     }
 
     [Test]
-    public void WriteTimeSpan16()
+    public async Task WriteTimeSpan16()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteTimeSpan16(TimeSpan.FromSeconds(ushort.MaxValue));
         writer.WriteTimeSpan16(TimeSpan.Zero, appendSpace: false);
 
-        text.ToString().ShouldBe("65535 0");
+        await Assert.That(text.ToString()).IsEqualTo("65535 0");
     }
 
     [Test]
-    public void WriteTimeSpan32()
+    public async Task WriteTimeSpan32()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteTimeSpan32(TimeSpan.FromSeconds(int.MaxValue));
         writer.WriteTimeSpan32(TimeSpan.Zero, appendSpace: false);
 
-        text.ToString().ShouldBe("2147483647 0");
+        await Assert.That(text.ToString()).IsEqualTo("2147483647 0");
     }
 
     [Test]
-    public void WriteDateTime()
+    public async Task WriteDateTime()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDateTime(DateTime.UnixEpoch);
         writer.WriteDateTime(DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc), appendSpace: false);
 
-        text.ToString().ShouldBe("19700101000000 99991231235959");
+        await Assert.That(text.ToString()).IsEqualTo("19700101000000 99991231235959");
     }
 
     [Test]
-    public void WriteIPAddress()
+    public async Task WriteIPAddress()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteIPAddress(IPAddress.Loopback);
         writer.WriteIPAddress(IPAddress.IPv6Loopback, appendSpace: false);
 
-        text.ToString().ShouldBe("127.0.0.1 ::1");
+        await Assert.That(text.ToString()).IsEqualTo("127.0.0.1 ::1");
     }
 
     [Test]
-    public void WriteDnsType()
+    public async Task WriteDnsType()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDnsType(DnsType.ANY);
         writer.WriteDnsType((DnsType)1234, appendSpace: false);
 
-        text.ToString().ShouldBe("ANY TYPE1234");
+        await Assert.That(text.ToString()).IsEqualTo("ANY TYPE1234");
     }
 
     [Test]
-    public void WriteDnsClass()
+    public async Task WriteDnsClass()
     {
-        using var text = new StringWriter();
+        await using var text = new StringWriter();
         var writer = new PresentationWriter(text);
         writer.WriteDnsClass(DnsClass.IN);
         writer.WriteDnsClass((DnsClass)1234, appendSpace: false);
 
-        text.ToString().ShouldBe("IN CLASS1234");
+        await Assert.That(text.ToString()).IsEqualTo("IN CLASS1234");
     }
 }

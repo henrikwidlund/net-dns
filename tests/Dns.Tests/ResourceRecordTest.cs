@@ -3,55 +3,54 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
 
 namespace DnsTests;
 
 public class ResourceRecordTest
 {
     [Test]
-    public void Defaults()
+    public async Task Defaults()
     {
         var rr = new ResourceRecord();
 
-        rr.Class.ShouldBe(DnsClass.IN);
-        rr.TTL.ShouldBe(ResourceRecord.DefaultTTL);
+        await Assert.That(rr.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(rr.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
     }
 
     [Test]
-    public void DataLength()
+    public async Task DataLength()
     {
         var rr = new ResourceRecord();
 
-        rr.GetDataLength().ShouldBe(0);
+        await Assert.That(rr.GetDataLength()).IsEqualTo(0);
     }
 
     [Test]
-    public void DataLength_DerivedClass()
+    public async Task DataLength_DerivedClass()
     {
         var a = new ARecord { Address = IPAddress.Parse("127.0.0.1") };
 
-        a.GetDataLength().ShouldBe(4);
+        await Assert.That(a.GetDataLength()).IsEqualTo(4);
     }
 
     [Test]
-    public void Data()
+    public async Task Data()
     {
         var rr = new ResourceRecord();
 
-        rr.GetData().Length.ShouldBe(0);
+        await Assert.That(rr.GetData()).HasCount().Zero();
     }
 
     [Test]
-    public void Data_DerivedClass()
+    public async Task Data_DerivedClass()
     {
         var a = new ARecord { Address = IPAddress.Parse("127.0.0.1") };
 
-        a.GetData().Length.ShouldNotBe(0);
+        await Assert.That(a.GetData()).HasCount().NotEqualTo(0);
     }
 
     [Test]
-    public void RoundTrip()
+    public async Task RoundTrip()
     {
         var a = new ResourceRecord
         {
@@ -63,17 +62,17 @@ public class ResourceRecordTest
 
         var b = (ResourceRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.GetDataLength().ShouldBe(b.GetDataLength());
-        a.GetHashCode().ShouldBe(b.GetHashCode());
-        b.ShouldBeAssignableTo<ResourceRecord>();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.GetDataLength()).IsEqualTo(b.GetDataLength());
+        await Assert.That(a.GetHashCode()).IsEqualTo(b.GetHashCode());
+        await Assert.That(b).IsAssignableTo<ResourceRecord>();
     }
 
     [Test]
-    public void Value_Equality()
+    public async Task Value_Equality()
     {
         var a0 = new ResourceRecord
         {
@@ -99,59 +98,59 @@ public class ResourceRecordTest
             TTL = TimeSpan.FromSeconds(1)
         };
 
-        ResourceRecord c = null;
-        ResourceRecord d = null;
+        ResourceRecord? c = null;
+        ResourceRecord? d = null;
         ResourceRecord e = new();
 
         // ReSharper disable ConditionIsAlwaysTrueOrFalse
-        (c == d).ShouldBeTrue();
-        (c == b).ShouldBeFalse();
-        (b == c).ShouldBeFalse();
+        await Assert.That(c == d).IsTrue();
+        await Assert.That(c == b).IsFalse();
+        await Assert.That(b == c).IsFalse();
 
 
-        (c != d).ShouldBeFalse();
-        (c != b).ShouldBeTrue();
-        (b != c).ShouldBeTrue();
+        await Assert.That(c != d).IsFalse();
+        await Assert.That(c != b).IsTrue();
+        await Assert.That(b != c).IsTrue();
         // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
 #pragma warning disable 1718
         // ReSharper disable once EqualExpressionComparison
-        (a0 == a0).ShouldBeTrue();
-        (a0 == a1).ShouldBeTrue();
-        (a0 == b).ShouldBeFalse();
+        await Assert.That(a0 == a0).IsTrue();
+        await Assert.That(a0 == a1).IsTrue();
+        await Assert.That(a0 == b).IsFalse();
 
         // ReSharper disable once EqualExpressionComparison
-        (a0 != a0).ShouldBeFalse();
-        (a0 != a1).ShouldBeFalse();
-        (a0 != b).ShouldBeTrue();
+        await Assert.That(a0 != a0).IsFalse();
+        await Assert.That(a0 != a1).IsFalse();
+        await Assert.That(a0 != b).IsTrue();
 
         // ReSharper disable once EqualExpressionComparison
-        a0.Equals(a0).ShouldBeTrue();
-        a0.Equals(a1).ShouldBeTrue();
-        a0.Equals(b).ShouldBeFalse();
+        await Assert.That(a0.Equals(a0)).IsTrue();
+        await Assert.That(a0.Equals(a1)).IsTrue();
+        await Assert.That(a0.Equals(b)).IsFalse();
 
-        a0.ShouldBe(a0);
-        a0.ShouldBe(a1);
-        a0.ShouldNotBe(b);
+        await Assert.That(a0).IsEqualTo(a0);
+        await Assert.That(a0).IsEqualTo(a1);
+        await Assert.That(a0).IsNotEqualTo(b);
 
-        e.ShouldBe(e);
-        e.ShouldNotBe(a0);
+        await Assert.That(e).IsEqualTo(e);
+        await Assert.That(e).IsNotEqualTo(a0);
 
-        a0.GetHashCode().ShouldBe(a0.GetHashCode());
-        a0.GetHashCode().ShouldBe(a1.GetHashCode());
-        a0.GetHashCode().ShouldNotBe(b.GetHashCode());
-        e.GetHashCode().ShouldBe(e.GetHashCode());
+        await Assert.That(a0.GetHashCode()).IsEqualTo(a0.GetHashCode());
+        await Assert.That(a0.GetHashCode()).IsEqualTo(a1.GetHashCode());
+        await Assert.That(a0.GetHashCode()).IsNotEqualTo(b.GetHashCode());
+        await Assert.That(e.GetHashCode()).IsEqualTo(e.GetHashCode());
     }
 
     [Test]
-    public void Stringing()
+    public async Task Stringing()
     {
         var a = new ResourceRecord
         {
             Name = "x.emanon.org",
             Type = DnsType.A
         };
-        a.ToString().ShouldBe("x.emanon.org IN A \\# 0");
+        await Assert.That(a.ToString()).IsEqualTo("x.emanon.org IN A \\# 0");
 
         a = new ResourceRecord
         {
@@ -159,7 +158,7 @@ public class ResourceRecordTest
             Type = DnsType.A,
             Class = DnsClass.CH
         };
-        a.ToString().ShouldBe("x.emanon.org CH A \\# 0");
+        await Assert.That(a.ToString()).IsEqualTo("x.emanon.org CH A \\# 0");
 
         a = new ResourceRecord
         {
@@ -167,7 +166,7 @@ public class ResourceRecordTest
             Type = DnsType.A,
             TTL = TimeSpan.FromSeconds(123)
         };
-        a.ToString().ShouldBe("x.emanon.org 123 IN A \\# 0");
+        await Assert.That(a.ToString()).IsEqualTo("x.emanon.org 123 IN A \\# 0");
     }
 
     [Test]
@@ -175,26 +174,26 @@ public class ResourceRecordTest
     {
         var now = DateTime.Now;
         var rr = new ResourceRecord();
-        rr.CreationTime.Kind.ShouldBe(DateTimeKind.Local);
-        rr.CreationTime.ShouldBeGreaterThanOrEqualTo(now);
+        await Assert.That(rr.CreationTime.Kind).IsEqualTo(DateTimeKind.Local);
+        await Assert.That(rr.CreationTime).IsGreaterThanOrEqualTo(now);
 
         await Task.Delay(50, TestContext.Current!.Execution.CancellationToken);
         var clone = rr.Clone<ResourceRecord>();
-        rr.CreationTime.ShouldBe(clone.CreationTime);
+        await Assert.That(rr.CreationTime).IsEqualTo(clone.CreationTime);
     }
 
     [Test]
-    public void IsExpired()
+    public async Task IsExpired()
     {
         var rr = new ResourceRecord { TTL = TimeSpan.FromSeconds(2) };
 
-        rr.IsExpired().ShouldBeFalse();
-        rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(-3)).ShouldBeFalse();
-        rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(3)).ShouldBeTrue();
+        await Assert.That(rr.IsExpired()).IsFalse();
+        await Assert.That(rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(-3))).IsFalse();
+        await Assert.That(rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(3))).IsTrue();
     }
 
     [Test]
-    public void Stringing_UnknownClass()
+    public async Task Stringing_UnknownClass()
     {
         var a = new ResourceRecord
         {
@@ -203,11 +202,11 @@ public class ResourceRecordTest
             Type = DnsType.A
         };
 
-        a.ToString().ShouldBe("x.emanon.org CLASS1234 A \\# 0");
+        await Assert.That(a.ToString()).IsEqualTo("x.emanon.org CLASS1234 A \\# 0");
     }
 
     [Test]
-    public void Stringing_UnknownType()
+    public async Task Stringing_UnknownType()
     {
         var a = new ResourceRecord
         {
@@ -215,28 +214,25 @@ public class ResourceRecordTest
             Type = (DnsType)1234
         };
 
-        a.ToString().ShouldBe("x.emanon.org IN TYPE1234 \\# 0");
+        await Assert.That(a.ToString()).IsEqualTo("x.emanon.org IN TYPE1234 \\# 0");
     }
 
     [Test]
-    public void CanonicalName()
+    public async Task CanonicalName()
     {
         var rr = new ResourceRecord { Name = "x.EmAnOn.OrG" };
 
-        rr.CanonicalName.ShouldBe("x.emanon.org");
+        await Assert.That(rr.CanonicalName).IsEqualTo("x.emanon.org");
     }
 
     [Test]
-    public void RDATA_Underflow()
+    public async Task RDATA_Underflow()
     {
         var ms = new MemoryStream(Convert.FromBase64String("A2ZvbwAABQABAAFRgAAKB3Vua25vd24A/w=="))
         {
             Position = 0
         };
 
-        Should.Throw<InvalidDataException>(() =>
-        {
-            _ = new ResourceRecord().Read(ms);
-        });
+        await Assert.That(() => new ResourceRecord().Read(ms)).Throws<InvalidDataException>();
     }
 }
