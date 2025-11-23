@@ -66,7 +66,7 @@ public class MulticastServiceTest
 
             await mdns.SendQuery("some-service.local");
             await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
-            await Assert.That(msg.Questions[0].Name).IsEqualTo("some-service.local");
+            await Assert.That(msg.Questions[0].Name?.ToString()).IsEqualTo("some-service.local");
             await Assert.That(msg.Questions[0].Class).IsEqualTo(DnsClass.IN);
         }
         finally
@@ -103,7 +103,7 @@ public class MulticastServiceTest
 
             await mdns.SendUnicastQuery("some-service.local");
             await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
-            await Assert.That(msg.Questions[0].Name).IsEqualTo("some-service.local");
+            await Assert.That(msg.Questions[0].Name?.ToString()).IsEqualTo("some-service.local");
             await Assert.That(msg.Questions[0].Class).IsEqualTo(DnsClass.IN + 0x8000);
         }
         finally
@@ -214,7 +214,7 @@ public class MulticastServiceTest
         await Assert.That(response.Questions.Count).IsEqualTo(1);
         var a = (ARecord)response.Answers[0];
         await Assert.That(a.Address).IsEqualTo(IPAddress.Parse("127.1.1.1"));
-        await Assert.That(a.Name).IsEqualTo(service);
+        await Assert.That(a.Name?.ToString()).IsEqualTo(service);
         await Assert.That(a.TTL).IsEqualTo(TimeSpan.FromSeconds(10));
     }
 

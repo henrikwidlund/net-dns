@@ -538,7 +538,7 @@ public class ServiceDiscoveryTest
 
             foreach (var answer in answers)
             {
-                await Assert.That(answer.Name).IsEqualTo(arpaAddress);
+                await Assert.That(answer.Name?.ToString()).IsEqualTo(arpaAddress);
                 await Assert.That(answer.TTL).IsGreaterThan(TimeSpan.Zero);
                 await Assert.That(answer.Class).IsEqualTo(DnsClass.IN);
             }

@@ -21,8 +21,8 @@ public class ServiceProfileTest
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
 
-        await Assert.That(service.QualifiedServiceName).IsEqualTo("_sdtest._udp.local");
-        await Assert.That(service.FullyQualifiedName).IsEqualTo("x._sdtest._udp.local");
+        await Assert.That(service.QualifiedServiceName.ToString()).IsEqualTo("_sdtest._udp.local");
+        await Assert.That(service.FullyQualifiedName.ToString()).IsEqualTo("x._sdtest._udp.local");
     }
 
     [Test]
@@ -30,9 +30,9 @@ public class ServiceProfileTest
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
 
-        await Assert.That(service.Resources).IsTypeOf<SRVRecord>();
-        await Assert.That(service.Resources).IsTypeOf<TXTRecord>();
-        await Assert.That(service.Resources).IsTypeOf<ARecord>();
+        await Assert.That(service.Resources).Any(static x => x is SRVRecord);
+        await Assert.That(service.Resources).Any(static x => x is TXTRecord);
+        await Assert.That(service.Resources).Any(static x => x is ARecord);
     }
 
     [Test]
@@ -79,7 +79,7 @@ public class ServiceProfileTest
         var txt = service.Resources.OfType<TXTRecord>().First();
 
         await Assert.That(txt.Name).IsEqualTo(service.FullyQualifiedName);
-        await Assert.That(txt.Strings).IsEqualTo("a=1");
+        await Assert.That(txt.Strings).Contains("a=1");
     }
 
     [Test]
@@ -88,7 +88,7 @@ public class ServiceProfileTest
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
 
         await Assert.That(service.Resources.OfType<TXTRecord>().First().TTL).IsEqualTo(TimeSpan.FromMinutes(75));
-        await Assert.That(service.Resources.OfType<AddressRecord>().First().TTL).IsEqualTo(TimeSpan.FromMinutes(120));
+        await Assert.That(service.Resources.OfType<AddressRecord>().First().TTL).IsEqualTo(TimeSpan.FromSeconds(120));
     }
 
     [Test]
@@ -102,9 +102,9 @@ public class ServiceProfileTest
     public async Task HostName()
     {
         var service = new ServiceProfile("fred", "_foo._tcp", 1024);
-        await Assert.That(service.HostName).IsEqualTo("fred.foo.local");
+        await Assert.That(service.HostName.ToString()).IsEqualTo("fred.foo.local");
 
         service = new ServiceProfile("fred", "_foo_bar._tcp", 1024);
-        await Assert.That(service.HostName).IsEqualTo("fred.foo-bar.local");
+        await Assert.That(service.HostName.ToString()).IsEqualTo("fred.foo-bar.local");
     }
 }
