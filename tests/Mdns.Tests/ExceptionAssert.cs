@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Shouldly;
 
 namespace Makaretu.Mdns;
 
@@ -27,8 +26,9 @@ public static class ExceptionAssert
         {
             thrown = e;
         }
-        thrown.ShouldNotBeNull();
+
+        await Assert.That(thrown).IsNotNull();
         if (expectedMessage != null)
-            thrown.Message.ShouldBe(expectedMessage);
+            await Assert.That(thrown!.Message).IsEqualTo(expectedMessage);
     }
 }

@@ -1,3 +1,12 @@
-using Xunit;
+using Makaretu.Mdns;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+using TUnit.Core.Interfaces;
+
+[assembly: ParallelLimiter<MyParallelLimit>]
+
+namespace Makaretu.Mdns;
+
+internal record MyParallelLimit : IParallelLimit
+{
+    public int Limit => 1;
+}
