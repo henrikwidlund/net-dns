@@ -2,15 +2,13 @@
 using System.Threading.Tasks;
 using Makaretu.Dns;
 using Moq;
-using Shouldly;
-using Xunit;
 
 namespace Makaretu.Mdns;
 
 public class RecentMessagesTest
 {
-    [Fact]
-    public void Pruning()
+    [Test]
+    public async Task Pruning()
     {
         var now = DateTimeOffset.UtcNow;
         var timeProviderMock = new Mock<TimeProvider>();
@@ -24,33 +22,33 @@ public class RecentMessagesTest
         byte[] cMessage = "c"u8.ToArray();
         messages.TryAdd(cMessage);
 
-        messages.Count.ShouldBe(1);
-        messages.HasMessage(cMessage).ShouldBeTrue();
+        await Assert.That(messages.Count).IsEqualTo(1);
+        await Assert.That(messages.HasMessage(cMessage)).IsTrue();
     }
 
-    [Fact]
-    public void MessageId()
+    [Test]
+    public async Task MessageId()
     {
         var a0 = RecentMessages.GetId([1]);
         var a1 = RecentMessages.GetId([1]);
         var b = RecentMessages.GetId([2]);
 
-        a0.ShouldBe(a1);
-        b.ShouldNotBe(a0);
+        await Assert.That(a0).IsEqualTo(a1);
+        await Assert.That(b).IsNotEqualTo(a0);
     }
 
-    [Fact]
+    [Test]
     public async Task DuplicateCheck()
     {
         var r = new RecentMessages { Interval = TimeSpan.FromMilliseconds(100) };
         var a = new byte[] { 1 };
         var b = new byte[] { 2 };
 
-        r.TryAdd(a).ShouldBeTrue();
-        r.TryAdd(b).ShouldBeTrue();
-        r.TryAdd(a).ShouldBeFalse();
+        await Assert.That(r.TryAdd(a)).IsTrue();
+        await Assert.That(r.TryAdd(b)).IsTrue();
+        await Assert.That(r.TryAdd(a)).IsFalse();
 
-        await Task.Delay(200, TestContext.Current.CancellationToken);
-        r.TryAdd(a).ShouldBeTrue();
+        await Task.Delay(200, TestContext.Current!.Execution.CancellationToken);
+        await Assert.That(r.TryAdd(a)).IsTrue();
     }
 }

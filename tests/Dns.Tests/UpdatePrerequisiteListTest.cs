@@ -1,61 +1,62 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class UpdatePrerequisiteListTest
 {
-    [Fact]
-    public void MustExist_Name()
+    [Test]
+    public async Task MustExist_Name()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist("www.example.org");
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.ANY);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.ANY);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.ANY);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void MustExist_Name_Type()
+    [Test]
+    public async Task MustExist_Name_Type()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist("www.example.org", DnsType.A);
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.ANY);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.A);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.A);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void MustExist_Name_Typename()
+    [Test]
+    public async Task MustExist_Name_Typename()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist<ARecord>("www.example.org");
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.ANY);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.A);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.A);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void MustExist_ResourceRecord()
+    [Test]
+    public async Task MustExist_ResourceRecord()
     {
         var rr = new ARecord
         {
@@ -65,60 +66,63 @@ public class UpdatePrerequisiteListTest
         };
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist(rr);
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(rr.Class);
-        p.Name.ShouldBe(rr.Name);
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(rr.Type);
-        p.GetDataLength().ShouldBe(rr.GetDataLength());
-        rr.GetData().SequenceEqual(p.GetData()).ShouldBeTrue();
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(rr.Class);
+        await Assert.That(p.Name).IsEqualTo(rr.Name);
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(rr.Type);
+        await Assert.That(p.GetDataLength()).IsEqualTo(rr.GetDataLength());
+        await Assert.That(rr.GetData().SequenceEqual(p.GetData())).IsTrue();
     }
 
-    [Fact]
-    public void MustNotExist_Name()
+    [Test]
+    public async Task MustNotExist_Name()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist("www.example.org");
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.None);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.ANY);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.None);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.ANY);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void MustNotExist_Name_Type()
+    [Test]
+    public async Task MustNotExist_Name_Type()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist("www.example.org", DnsType.A);
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.None);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.A);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.None);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.A);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void MustNotExist_Name_Typename()
+    [Test]
+    public async Task MustNotExist_Name_Typename()
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist<ARecord>("www.example.org");
+        await Assert.That(prerequisites).HasCount(1);
         var p = prerequisites[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.None);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.A);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.None);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.A);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
-
 }

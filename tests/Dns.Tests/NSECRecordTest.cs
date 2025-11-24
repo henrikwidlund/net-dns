@@ -1,14 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class NSECRecordTest
 {
-    [Fact]
-    public void Roundtrip()
+    [Test]
+    public async Task Roundtrip()
     {
         var a = new NSECRecord
         {
@@ -20,16 +19,16 @@ public class NSECRecordTest
         
         var b = (NSECRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.NextOwnerName.ShouldBe(b.NextOwnerName);
-        a.Types.ShouldBe(b.Types);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.NextOwnerName).IsEqualTo(b.NextOwnerName);
+        await Assert.That(a.Types).IsEquivalentTo(b.Types);
     }
 
-    [Fact]
-    public void Roundtrip_Master()
+    [Test]
+    public async Task Roundtrip_Master()
     {
         var a = new NSECRecord
         {
@@ -39,14 +38,14 @@ public class NSECRecordTest
             Types = { DnsType.A, DnsType.MX, DnsType.RRSIG, DnsType.NSEC, (DnsType)1234 }
         };
         
-        var b = (NSECRecord)new ResourceRecord().Read(a.ToString());
+        var b = (NSECRecord)new ResourceRecord().Read(a.ToString())!;
         
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.NextOwnerName.ShouldBe(b.NextOwnerName);
-        a.Types.ShouldBe(b.Types);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.NextOwnerName).IsEqualTo(b.NextOwnerName);
+        await Assert.That(a.Types).IsEquivalentTo(b.Types);
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class NameCompressionTest
 {
-    [Fact]
-    public void Writing()
+    [Test]
+    public async Task Writing()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
@@ -24,11 +23,11 @@ public class NameCompressionTest
             0XC0, 3
         };
         
-        bytes.ShouldBe(expected);
+        await Assert.That(bytes).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void Writing_Labels()
+    [Test]
+    public async Task Writing_Labels()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
@@ -47,11 +46,11 @@ public class NameCompressionTest
             0xC0, 0x04,
             0x01, (byte)'x', 0xC0, 0x02
         };
-        bytes.ShouldBe(expected);
+        await Assert.That(bytes).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void Writing_Past_MaxPointer()
+    [Test]
+    public async Task Writing_Past_MaxPointer()
     {
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
@@ -63,13 +62,13 @@ public class NameCompressionTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         reader.ReadBytes(0x4000);
-        reader.ReadDomainName().ShouldBe("a");
-        reader.ReadDomainName().ShouldBe("b");
-        reader.ReadDomainName().ShouldBe("b");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("b");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("b");
     }
 
-    [Fact]
-    public void Reading_Labels()
+    [Test]
+    public async Task Reading_Labels()
     {
         var bytes = new byte[]
         {
@@ -82,15 +81,15 @@ public class NameCompressionTest
         
         using var ms = new MemoryStream(bytes);
         var reader = new WireReader(ms);
-        reader.ReadDomainName().ShouldBe("a.b.c");
-        reader.ReadDomainName().ShouldBe("a.b.c");
-        reader.ReadDomainName().ShouldBe("b.c");
-        reader.ReadDomainName().ShouldBe("c");
-        reader.ReadDomainName().ShouldBe("x.b.c");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a.b.c");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a.b.c");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("b.c");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("c");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("x.b.c");
     }
 
-    [Fact]
-    public void Reading()
+    [Test]
+    public async Task Reading()
     {
         var bytes = new byte[]
         {
@@ -101,8 +100,8 @@ public class NameCompressionTest
         
         using var ms = new MemoryStream(bytes);
         var reader = new WireReader(ms);
-        reader.ReadDomainName().ShouldBe("a");
-        reader.ReadDomainName().ShouldBe("b");
-        reader.ReadDomainName().ShouldBe("b");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("b");
+        await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("b");
     }
 }

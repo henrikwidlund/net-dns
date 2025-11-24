@@ -1,11 +1,10 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class DigestRegistryTest
 {
-    [Fact]
-    public void Exists() => DigestRegistry.Digests.Count.ShouldNotBe(0);
+    [Test]
+    public async Task Exists() => await Assert.That(DigestRegistry.Digests).HasCount().NotEqualTo(0);
 }

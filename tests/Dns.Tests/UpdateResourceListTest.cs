@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class UpdateResourceListTest
 {
-    [Fact]
-    public void AddResource()
+    [Test]
+    public async Task AddResource()
     {
         var rr = new ARecord
         {
@@ -21,64 +19,68 @@ public class UpdateResourceListTest
 
         var updates = new UpdateResourceList()
             .AddResource(rr);
+        await Assert.That(updates).HasCount(1);
         var p = updates[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(rr.Class);
-        p.Name.ShouldBe(rr.Name);
-        p.TTL.ShouldBe(rr.TTL);
-        p.Type.ShouldBe(rr.Type);
-        p.GetDataLength().ShouldBe(rr.GetDataLength());
-        rr.GetData().SequenceEqual(p.GetData()).ShouldBeTrue();
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(rr.Class);
+        await Assert.That(p.Name).IsEqualTo(rr.Name);
+        await Assert.That(p.TTL).IsEqualTo(rr.TTL);
+        await Assert.That(p.Type).IsEqualTo(rr.Type);
+        await Assert.That(p.GetDataLength()).IsEqualTo(rr.GetDataLength());
+        await Assert.That(rr.GetData().SequenceEqual(p.GetData())).IsTrue();
     }
 
-    [Fact]
-    public void DeleteResource_Name()
+    [Test]
+    public async Task DeleteResource_Name()
     {
         var updates = new UpdateResourceList()
             .DeleteResource("www.example.org");
+        await Assert.That(updates).HasCount(1);
         var p = updates[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.ANY);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.ANY);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.ANY);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void DeleteResource_Name_Type()
+    [Test]
+    public async Task DeleteResource_Name_Type()
     {
         var updates = new UpdateResourceList()
             .DeleteResource("www.example.org", DnsType.A);
+        await Assert.That(updates).HasCount(1);
         var p = updates[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.ANY);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.A);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.A);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void DeleteResource_Name_Typename()
+    [Test]
+    public async Task DeleteResource_Name_Typename()
     {
         var updates = new UpdateResourceList()
             .DeleteResource<ARecord>("www.example.org");
+        await Assert.That(updates).HasCount(1);
         var p = updates[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.ANY);
-        p.Name.ShouldBe("www.example.org");
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(DnsType.A);
-        p.GetDataLength().ShouldBe(0);
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(p.Name).IsEquatableOrEqualTo("www.example.org");
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(DnsType.A);
+        await Assert.That(p.GetDataLength()).IsEqualTo(0);
     }
 
-    [Fact]
-    public void DeleteResource()
+    [Test]
+    public async Task DeleteResource()
     {
         var rr = new ARecord
         {
@@ -89,14 +91,15 @@ public class UpdateResourceListTest
 
         var updates = new UpdateResourceList()
             .DeleteResource(rr);
+        await Assert.That(updates).HasCount(1);
         var p = updates[0];
 
-        p.ShouldNotBeNull();
-        p.Class.ShouldBe(DnsClass.None);
-        p.Name.ShouldBe(rr.Name);
-        p.TTL.ShouldBe(TimeSpan.Zero);
-        p.Type.ShouldBe(rr.Type);
-        p.GetDataLength().ShouldBe(rr.GetDataLength());
-        rr.GetData().SequenceEqual(p.GetData()).ShouldBeTrue();
+        await Assert.That(p).IsNotNull();
+        await Assert.That(p.Class).IsEqualTo(DnsClass.None);
+        await Assert.That(p.Name).IsEqualTo(rr.Name);
+        await Assert.That(p.TTL).IsEqualTo(TimeSpan.Zero);
+        await Assert.That(p.Type).IsEqualTo(rr.Type);
+        await Assert.That(p.GetDataLength()).IsEqualTo(rr.GetDataLength());
+        await Assert.That(rr.GetData().SequenceEqual(p.GetData())).IsTrue();
     }
 }

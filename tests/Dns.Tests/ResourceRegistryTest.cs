@@ -1,21 +1,21 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class ResourceRegistryTest
 {
-    [Fact]
-    public void Exists() => ResourceRegistry.Records.Count.ShouldNotBe(0);
+    [Test]
+    public async Task Exists() => await Assert.That(ResourceRegistry.Records).HasCount().NotEqualTo(0);
 
-    [Fact]
-    public void Create()
+    [Test]
+    public async Task Create()
     {
         var rr = ResourceRegistry.Create(DnsType.NS);
-        rr.ShouldBeOfType<NSRecord>();
+        await Assert.That(rr).IsTypeOf<NSRecord>();
 
         rr = ResourceRegistry.Create((DnsType)1234);
-        rr.ShouldBeOfType<UnknownRecord>();
+        await Assert.That(rr).IsTypeOf<UnknownRecord>();
     }
 }

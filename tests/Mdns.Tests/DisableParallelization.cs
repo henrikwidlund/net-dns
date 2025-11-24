@@ -1,3 +1,8 @@
-using Xunit;
+using TUnit.Core.Interfaces;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+namespace Makaretu.Mdns;
+
+internal sealed record SingleTestRateLimit : IParallelLimit
+{
+    public int Limit => 1;
+}

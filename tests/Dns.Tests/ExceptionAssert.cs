@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Shouldly;
+using System.Threading.Tasks;
 
 namespace DnsTests;
 
@@ -9,7 +9,7 @@ namespace DnsTests;
 /// </summary>
 public static class ExceptionAssert
 {
-    public static void Throws<T>(Action action, string expectedMessage = null) where T : Exception
+    public static async Task Throws<T>(Action action, string? expectedMessage = null) where T : Exception
     {
         try
         {
@@ -22,21 +22,21 @@ public static class ExceptionAssert
                 throw;
 
             if (expectedMessage != null)
-                match.Message.ShouldBe(expectedMessage, "Wrong exception message.");
+                await Assert.That(match.Message).IsEqualTo(expectedMessage).Because("Wrong exception message.");
             return;
 
         }
         catch (T e)
         {
             if (expectedMessage != null)
-                e.Message.ShouldBe(expectedMessage);
+                await Assert.That(e.Message).IsEqualTo(expectedMessage);
             return;
         }
         catch (Exception e)
         {
-            throw new Xunit.Sdk.XunitException($"Exception of type {typeof(T)} should be thrown not {e.GetType()}.");
+            Assert.Fail($"Exception of type {typeof(T)} should be thrown not {e.GetType()}.");
         }
 
-        throw new Xunit.Sdk.XunitException($"Expected Exception of type {typeof(T)} but nothing was thrown.");
+        Assert.Fail($"Expected Exception of type {typeof(T)} but nothing was thrown.");
     }
 }

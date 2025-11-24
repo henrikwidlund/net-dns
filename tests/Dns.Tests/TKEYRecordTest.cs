@@ -1,24 +1,23 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class TKEYRecordTest
 {
-    [Fact]
-    public void Defaults()
+    [Test]
+    public async Task Defaults()
     {
         var tsig = new TKEYRecord();
 
-        tsig.Type.ShouldBe(DnsType.TKEY);
-        tsig.Class.ShouldBe(DnsClass.ANY);
-        tsig.TTL.ShouldBe(TimeSpan.Zero);
+        await Assert.That(tsig.Type).IsEqualTo(DnsType.TKEY);
+        await Assert.That(tsig.Class).IsEqualTo(DnsClass.ANY);
+        await Assert.That(tsig.TTL).IsEqualTo(TimeSpan.Zero);
     }
 
-    [Fact]
-    public void Roundtrip()
+    [Test]
+    public async Task Roundtrip()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
         var a = new TKEYRecord
@@ -35,21 +34,21 @@ public class TKEYRecordTest
 
         var b = (TKEYRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.Inception.ShouldBe(b.Inception);
-        a.Expiration.ShouldBe(b.Expiration);
-        a.Mode.ShouldBe(b.Mode);
-        a.Key.ShouldBe(b.Key);
-        a.Error.ShouldBe(b.Error);
-        a.OtherData.ShouldBe(b.OtherData);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.Inception).IsEqualTo(b.Inception);
+        await Assert.That(a.Expiration).IsEqualTo(b.Expiration);
+        await Assert.That(a.Mode).IsEqualTo(b.Mode);
+        await Assert.That(a.Key).IsEquivalentTo(b.Key!);
+        await Assert.That(a.Error).IsEqualTo(b.Error);
+        await Assert.That(a.OtherData).IsEquivalentTo(b.OtherData!);
     }
 
-    [Fact]
-    public void Roundtrip_Master()
+    [Test]
+    public async Task Roundtrip_Master()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
         var a = new TKEYRecord
@@ -64,19 +63,19 @@ public class TKEYRecordTest
             OtherData = [5, 6]
         };
 
-        var b = (TKEYRecord)new ResourceRecord().Read(a.ToString());
+        var b = (TKEYRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.Inception.ShouldBe(b.Inception);
-        a.Expiration.ShouldBe(b.Expiration);
-        a.Mode.ShouldBe(b.Mode);
-        a.Key.ShouldBe(b.Key);
-        a.Error.ShouldBe(b.Error);
-        a.OtherData.ShouldBe(b.OtherData);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.Inception).IsEqualTo(b.Inception);
+        await Assert.That(a.Expiration).IsEqualTo(b.Expiration);
+        await Assert.That(a.Mode).IsEqualTo(b.Mode);
+        await Assert.That(a.Key).IsEquivalentTo(b.Key!);
+        await Assert.That(a.Error).IsEqualTo(b.Error);
+        await Assert.That(a.OtherData).IsEquivalentTo(b.OtherData!);
     }
 }

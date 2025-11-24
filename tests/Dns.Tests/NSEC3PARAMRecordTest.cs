@@ -1,14 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class NSEC3PARAMRecordTest
 {
-    [Fact]
-    public void Roundtrip()
+    [Test]
+    public async Task Roundtrip()
     {
         var a = new NSEC3PARAMRecord
         {
@@ -22,18 +21,18 @@ public class NSEC3PARAMRecordTest
 
         var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Flags.ShouldBe(b.Flags);
-        a.Iterations.ShouldBe(b.Iterations);
-        a.Salt.ShouldBe(b.Salt);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Flags).IsEqualTo(b.Flags);
+        await Assert.That(a.Iterations).IsEqualTo(b.Iterations);
+        await Assert.That(a.Salt).IsEquivalentTo(b.Salt!);
     }
 
-    [Fact]
-    public void Roundtrip_Master()
+    [Test]
+    public async Task Roundtrip_Master()
     {
         var a = new NSEC3PARAMRecord
         {
@@ -45,21 +44,21 @@ public class NSEC3PARAMRecordTest
             Salt = [0xaa, 0xbb, 0xcc, 0xdd]
         };
 
-        var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString());
+        var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Flags.ShouldBe(b.Flags);
-        a.Iterations.ShouldBe(b.Iterations);
-        a.Salt.ShouldBe(b.Salt);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Flags).IsEqualTo(b.Flags);
+        await Assert.That(a.Iterations).IsEqualTo(b.Iterations);
+        await Assert.That(a.Salt).IsEquivalentTo(b.Salt!);
     }
 
-    [Fact]
-    public void Roundtrip_Master_NullSalt()
+    [Test]
+    public async Task Roundtrip_Master_NullSalt()
     {
         var a = new NSEC3PARAMRecord
         {
@@ -70,21 +69,21 @@ public class NSEC3PARAMRecordTest
             Iterations = 12
         };
 
-        var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString());
+        var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Flags.ShouldBe(b.Flags);
-        a.Iterations.ShouldBe(b.Iterations);
-        b.Salt.ShouldBeNull();
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Flags).IsEqualTo(b.Flags);
+        await Assert.That(a.Iterations).IsEqualTo(b.Iterations);
+        await Assert.That(b.Salt).IsNull();
     }
 
-    [Fact]
-    public void Roundtrip_Master_EmptySalt()
+    [Test]
+    public async Task Roundtrip_Master_EmptySalt()
     {
         var a = new NSEC3PARAMRecord
         {
@@ -96,16 +95,16 @@ public class NSEC3PARAMRecordTest
             Salt = []
         };
 
-        var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString());
+        var b = (NSEC3PARAMRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Flags.ShouldBe(b.Flags);
-        a.Iterations.ShouldBe(b.Iterations);
-        b.Salt.ShouldBeNull();
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Flags).IsEqualTo(b.Flags);
+        await Assert.That(a.Iterations).IsEqualTo(b.Iterations);
+        await Assert.That(b.Salt).IsNull();
     }
 }

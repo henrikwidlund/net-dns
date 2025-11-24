@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 using SimpleBase;
 
 namespace DnsTests;
 
 public class NSEC3RecordTest
 {
-    [Fact]
-    public void Roundtrip()
+    [Test]
+    public async Task Roundtrip()
     {
         var a = new NSEC3Record
         {
@@ -25,20 +24,20 @@ public class NSEC3RecordTest
 
         var b = (NSEC3Record)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Flags.ShouldBe(b.Flags);
-        a.Iterations.ShouldBe(b.Iterations);
-        a.Salt.ShouldBe(b.Salt);
-        a.NextHashedOwnerName.ShouldBe(b.NextHashedOwnerName);
-        a.Types.ShouldBe(b.Types);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Flags).IsEqualTo(b.Flags);
+        await Assert.That(a.Iterations).IsEqualTo(b.Iterations);
+        await Assert.That(a.Salt).IsEquivalentTo(b.Salt!);
+        await Assert.That(a.NextHashedOwnerName).IsEquivalentTo(b.NextHashedOwnerName!);
+        await Assert.That(a.Types).IsEquivalentTo(b.Types);
     }
 
-    [Fact]
-    public void Roundtrip_Master()
+    [Test]
+    public async Task Roundtrip_Master()
     {
         var a = new NSEC3Record
         {
@@ -52,18 +51,18 @@ public class NSEC3RecordTest
             Types = { DnsType.A, DnsType.RRSIG }
         };
 
-        var b = (NSEC3Record)new ResourceRecord().Read(a.ToString());
+        var b = (NSEC3Record)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.HashAlgorithm.ShouldBe(b.HashAlgorithm);
-        a.Flags.ShouldBe(b.Flags);
-        a.Iterations.ShouldBe(b.Iterations);
-        a.Salt.ShouldBe(b.Salt);
-        a.NextHashedOwnerName.ShouldBe(b.NextHashedOwnerName);
-        a.Types.ShouldBe(b.Types);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.HashAlgorithm).IsEqualTo(b.HashAlgorithm);
+        await Assert.That(a.Flags).IsEqualTo(b.Flags);
+        await Assert.That(a.Iterations).IsEqualTo(b.Iterations);
+        await Assert.That(a.Salt).IsEquivalentTo(b.Salt!);
+        await Assert.That(a.NextHashedOwnerName).IsEquivalentTo(b.NextHashedOwnerName!);
+        await Assert.That(a.Types).IsEquivalentTo(b.Types);
     }
 }

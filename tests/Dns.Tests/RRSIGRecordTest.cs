@@ -1,14 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class RRSIGRecordTest
 {
-    [Fact]
-    public void Roundtrip()
+    [Test]
+    public async Task Roundtrip()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
         var a = new RRSIGRecord
@@ -28,23 +27,23 @@ public class RRSIGRecordTest
 
         var b = (RRSIGRecord)new ResourceRecord().Read(a.ToByteArray());
 
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.TypeCovered.ShouldBe(b.TypeCovered);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.Labels.ShouldBe(b.Labels);
-        a.OriginalTTL.ShouldBe(b.OriginalTTL);
-        a.SignatureExpiration.ToUniversalTime().ShouldBe(b.SignatureExpiration);
-        a.SignatureInception.ToUniversalTime().ShouldBe(b.SignatureInception);
-        a.KeyTag.ShouldBe(b.KeyTag);
-        a.SignerName.ShouldBe(b.SignerName);
-        a.Signature.ShouldBe(b.Signature);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.TypeCovered).IsEqualTo(b.TypeCovered);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.Labels).IsEqualTo(b.Labels);
+        await Assert.That(a.OriginalTTL).IsEqualTo(b.OriginalTTL);
+        await Assert.That(a.SignatureExpiration.ToUniversalTime()).IsEqualTo(b.SignatureExpiration);
+        await Assert.That(a.SignatureInception.ToUniversalTime()).IsEqualTo(b.SignatureInception);
+        await Assert.That(a.KeyTag).IsEqualTo(b.KeyTag);
+        await Assert.That(a.SignerName).IsEqualTo(b.SignerName);
+        await Assert.That(a.Signature).IsEquivalentTo(b.Signature!);
     }
 
-    [Fact]
-    public void Roundtrip_Master()
+    [Test]
+    public async Task Roundtrip_Master()
     {
         var now = new DateTime(2018, 8, 13, 23, 59, 59, DateTimeKind.Utc);
         var a = new RRSIGRecord
@@ -62,21 +61,21 @@ public class RRSIGRecordTest
             Signature = [1, 2, 3]
         };
 
-        var b = (RRSIGRecord)new ResourceRecord().Read(a.ToString());
+        var b = (RRSIGRecord)new ResourceRecord().Read(a.ToString())!;
 
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.TypeCovered.ShouldBe(b.TypeCovered);
-        a.Algorithm.ShouldBe(b.Algorithm);
-        a.Labels.ShouldBe(b.Labels);
-        a.OriginalTTL.ShouldBe(b.OriginalTTL);
-        a.SignatureExpiration.ToUniversalTime().ShouldBe(b.SignatureExpiration);
-        a.SignatureInception.ToUniversalTime().ShouldBe(b.SignatureInception);
-        a.KeyTag.ShouldBe(b.KeyTag);
-        a.SignerName.ShouldBe(b.SignerName);
-        a.Signature.ShouldBe(b.Signature);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.TypeCovered).IsEqualTo(b.TypeCovered);
+        await Assert.That(a.Algorithm).IsEqualTo(b.Algorithm);
+        await Assert.That(a.Labels).IsEqualTo(b.Labels);
+        await Assert.That(a.OriginalTTL).IsEqualTo(b.OriginalTTL);
+        await Assert.That(a.SignatureExpiration.ToUniversalTime()).IsEqualTo(b.SignatureExpiration);
+        await Assert.That(a.SignatureInception.ToUniversalTime()).IsEqualTo(b.SignatureInception);
+        await Assert.That(a.KeyTag).IsEqualTo(b.KeyTag);
+        await Assert.That(a.SignerName).IsEqualTo(b.SignerName);
+        await Assert.That(a.Signature).IsEquivalentTo(b.Signature!);
     }
 }

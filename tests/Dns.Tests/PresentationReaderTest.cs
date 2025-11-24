@@ -1,163 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests;
 
 public class PresentationReaderTest
 {
-    [Fact]
-    public void ReadString()
+    [Test]
+    public async Task ReadString()
     {
         var reader = new PresentationReader(new StringReader("  alpha   beta   omega"));
 
-        reader.ReadString().ShouldBe("alpha");
-        reader.ReadString().ShouldBe("beta");
-        reader.ReadString().ShouldBe("omega");
+        await Assert.That(reader.ReadString()).IsEqualTo("alpha");
+        await Assert.That(reader.ReadString()).IsEqualTo("beta");
+        await Assert.That(reader.ReadString()).IsEqualTo("omega");
     }
 
-    [Fact]
-    public void ReadQuotedStrings()
+    [Test]
+    public async Task ReadQuotedStrings()
     {
         var reader = new PresentationReader(new StringReader("  \"a b c\"  \"x y z\""));
 
-        reader.ReadString().ShouldBe("a b c");
-        reader.ReadString().ShouldBe("x y z");
+        await Assert.That(reader.ReadString()).IsEqualTo("a b c");
+        await Assert.That(reader.ReadString()).IsEqualTo("x y z");
     }
 
-    [Fact]
-    public void ReadEscapedStrings()
+    [Test]
+    public async Task ReadEscapedStrings()
     {
         var reader = new PresentationReader(new StringReader("  alpha\\ beta   omega"));
 
-        reader.ReadString().ShouldBe("alpha beta");
-        reader.ReadString().ShouldBe("omega");
+        await Assert.That(reader.ReadString()).IsEqualTo("alpha beta");
+        await Assert.That(reader.ReadString()).IsEqualTo("omega");
     }
 
-    [Fact]
-    public void ReadDecimalEscapedString()
+    [Test]
+    public async Task ReadDecimalEscapedString()
     {
         var reader = new PresentationReader(new StringReader("a\\098c"));
 
-        reader.ReadString().ShouldBe("abc");
+        await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
 
-    [Fact]
-    public void ReadInvalidDecimalEscapedString()
+    [Test]
+    public async Task ReadInvalidDecimalEscapedString()
     {
         var reader = new PresentationReader(new StringReader("a\\256c"));
 
-        Should.Throw<FormatException>(() => reader.ReadString());
+        await Assert.That(() => reader.ReadString()).Throws<FormatException>();
     }
 
-    [Fact]
-    public void ReadResource()
+    [Test]
+    public async Task ReadResource()
     {
         var reader = new PresentationReader(new StringReader("me A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("me");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.A);
-        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        resource.ShouldBeOfType<ARecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("me");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.A);
+        await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(resource).IsTypeOf<ARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithNameOfType()
+    [Test]
+    public async Task ReadResourceWithNameOfType()
     {
         var reader = new PresentationReader(new StringReader("A A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("A");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.A);
-        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        resource.ShouldBeOfType<ARecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("A");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.A);
+        await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(resource).IsTypeOf<ARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithNameOfClass()
+    [Test]
+    public async Task ReadResourceWithNameOfClass()
     {
         var reader = new PresentationReader(new StringReader("CH A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("CH");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.A);
-        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        resource.ShouldBeOfType<ARecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("CH");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.A);
+        await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(resource).IsTypeOf<ARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithClassAndTTL()
+    [Test]
+    public async Task ReadResourceWithClassAndTTL()
     {
         var reader = new PresentationReader(new StringReader("me CH 63 A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("me");
-        resource.Class.ShouldBe(DnsClass.CH);
-        resource.Type.ShouldBe(DnsType.A);
-        resource.TTL.ShouldBe(TimeSpan.FromSeconds(63));
-        resource.ShouldBeOfType<ARecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("me");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.CH);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.A);
+        await Assert.That(resource.TTL).IsEqualTo(TimeSpan.FromSeconds(63));
+        await Assert.That(resource).IsTypeOf<ARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithUnknownClass()
+    [Test]
+    public async Task ReadResourceWithUnknownClass()
     {
         var reader = new PresentationReader(new StringReader("me CLASS1234 A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("me");
-        resource.Class.ShouldBe((DnsClass)1234);
-        resource.Type.ShouldBe(DnsType.A);
-        resource.ShouldBeOfType<ARecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("me");
+        await Assert.That(resource.Class).IsEqualTo((DnsClass)1234);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.A);
+        await Assert.That(resource).IsTypeOf<ARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithUnknownType()
+    [Test]
+    public async Task ReadResourceWithUnknownType()
     {
         var reader = new PresentationReader(new StringReader("me CH TYPE1234 \\# 0"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("me");
-        resource.Class.ShouldBe(DnsClass.CH);
-        resource.Type.ShouldBe((DnsType)1234);
-        resource.ShouldBeOfType<UnknownRecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("me");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.CH);
+        await Assert.That(resource.Type).IsEqualTo((DnsType)1234);
+        await Assert.That(resource).IsTypeOf<UnknownRecord>();
     }
 
-    [Fact]
-    public void ReadResourceMissingName()
+    [Test]
+    public async Task ReadResourceMissingName()
     {
         var reader = new PresentationReader(new StringReader("  NS ns1"));
-        Should.Throw<InvalidDataException>(() => reader.ReadResourceRecord());
+        await Assert.That(() => reader.ReadResourceRecord()).Throws<InvalidDataException>();
     }
 
-    [Fact]
-    public void ReadResourceWithComment()
+    [Test]
+    public async Task ReadResourceWithComment()
     {
         var reader = new PresentationReader(new StringReader("; comment\r\nme A 127.0.0.1"));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("me");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.A);
-        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        resource.ShouldBeOfType<ARecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("me");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.A);
+        await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(resource).IsTypeOf<ARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithOrigin()
+    [Test]
+    public async Task ReadResourceWithOrigin()
     {
         const string text = """
                             $ORIGIN emanon.org. ; no such place\r\n
@@ -166,16 +165,16 @@ public class PresentationReaderTest
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("emanon.org");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.PTR);
-        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        resource.ShouldBeOfType<PTRRecord>();
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("emanon.org");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.PTR);
+        await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(resource).IsTypeOf<PTRRecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithEscapedOrigin()
+    [Test]
+    public async Task ReadResourceWithEscapedOrigin()
     {
         const string text = """
                             $ORIGIN emanon\.org. ; no such place\r\n
@@ -184,18 +183,18 @@ public class PresentationReaderTest
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe(@"emanon\.org");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.PTR);
-        resource.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        resource.ShouldBeOfType<PTRRecord>();
-        resource.Name.ShouldNotBeNull();
-        resource.Name.Labels.Count.ShouldBe(1);
+        await Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo(@"emanon\.org");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.PTR);
+        await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(resource).IsTypeOf<PTRRecord>();
+        await Assert.That(resource.Name).IsNotNull();
+        await Assert.That(resource.Name!.Labels).HasCount(1);
     }
 
-    [Fact]
-    public void ReadResourceWithTTL()
+    [Test]
+    public async Task ReadResourceWithTTL()
     {
         const string text = """
                             $TTL 120 ; 2 minutes\r\n
@@ -204,16 +203,16 @@ public class PresentationReaderTest
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
 
-        resource.ShouldNotBeNull();
-        resource.Name.ShouldBe("emanon.org");
-        resource.Class.ShouldBe(DnsClass.IN);
-        resource.Type.ShouldBe(DnsType.PTR);
-        resource.TTL.ShouldBe(TimeSpan.FromMinutes(2));
-        resource.ShouldBeOfType<PTRRecord>();
+        await  Assert.That(resource).IsNotNull();
+        await Assert.That(resource!.Name).IsEquatableOrEqualTo("emanon.org");
+        await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(resource.Type).IsEqualTo(DnsType.PTR);
+        await Assert.That(resource.TTL).IsEqualTo(TimeSpan.FromMinutes(2));
+        await Assert.That(resource).IsTypeOf<PTRRecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithPreviousDomain()
+    [Test]
+    public async Task ReadResourceWithPreviousDomain()
     {
         const string text = """
                             emanon.org A 127.0.0.1
@@ -222,24 +221,24 @@ public class PresentationReaderTest
         var reader = new PresentationReader(new StringReader(text));
         var a = reader.ReadResourceRecord();
 
-        a.ShouldNotBeNull();
-        a.Name.ShouldBe("emanon.org");
-        a.Class.ShouldBe(DnsClass.IN);
-        a.Type.ShouldBe(DnsType.A);
-        a.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        a.ShouldBeOfType<ARecord>();
+        await Assert.That(a).IsNotNull();
+        await Assert.That(a!.Name).IsEquatableOrEqualTo("emanon.org");
+        await Assert.That(a.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(a.Type).IsEqualTo(DnsType.A);
+        await Assert.That(a.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(a).IsTypeOf<ARecord>();
 
         var aaaa = reader.ReadResourceRecord();
-        aaaa.ShouldNotBeNull();
-        aaaa.Name.ShouldBe("emanon.org");
-        aaaa.Class.ShouldBe(DnsClass.IN);
-        aaaa.Type.ShouldBe(DnsType.AAAA);
-        aaaa.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        aaaa.ShouldBeOfType<AAAARecord>();
+        await Assert.That(aaaa).IsNotNull();
+        await Assert.That(aaaa!.Name).IsEquatableOrEqualTo("emanon.org");
+        await Assert.That(aaaa.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(aaaa.Type).IsEqualTo(DnsType.AAAA);
+        await Assert.That(aaaa.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(aaaa).IsTypeOf<AAAARecord>();
     }
 
-    [Fact]
-    public void ReadResourceWithPreviousEscapedDomain()
+    [Test]
+    public async Task ReadResourceWithPreviousEscapedDomain()
     {
         const string text = """
                             emanon\126.org A 127.0.0.1
@@ -248,44 +247,45 @@ public class PresentationReaderTest
         var reader = new PresentationReader(new StringReader(text));
         var a = reader.ReadResourceRecord();
 
-        a.ShouldNotBeNull();
-        a.Name.ShouldBe("emanon~.org");
-        a.Class.ShouldBe(DnsClass.IN);
-        a.Type.ShouldBe(DnsType.A);
-        a.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        a.ShouldBeOfType<ARecord>();
-        a.Name.ShouldNotBeNull();
-        a.Name.Labels.Count.ShouldBe(2);
+        await Assert.That(a).IsNotNull();
+        await Assert.That(a!.Name).IsEquatableOrEqualTo("emanon~.org");
+        await Assert.That(a.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(a.Type).IsEqualTo(DnsType.A);
+        await Assert.That(a.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(a).IsTypeOf<ARecord>();
+        await Assert.That(a.Name).IsNotNull();
+        await Assert.That(a.Name!.Labels).HasCount(2);
 
         var aaaa = reader.ReadResourceRecord();
-        aaaa.ShouldNotBeNull();
-        aaaa.Name.ShouldBe("emanon~.org");
-        aaaa.Class.ShouldBe(DnsClass.IN);
-        aaaa.Type.ShouldBe(DnsType.AAAA);
-        aaaa.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        aaaa.ShouldBeOfType<AAAARecord>();
-        aaaa.Name.Labels.Count.ShouldBe(2);
+        await  Assert.That(aaaa).IsNotNull();
+        await Assert.That(aaaa!.Name).IsEquatableOrEqualTo("emanon~.org");
+        await Assert.That(aaaa.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(aaaa.Type).IsEqualTo(DnsType.AAAA);
+        await Assert.That(aaaa.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(aaaa).IsTypeOf<AAAARecord>();
+        await Assert.That(aaaa.Name).IsNotNull();
+        await Assert.That(aaaa.Name!.Labels).HasCount(2);
     }
 
-    [Fact]
-    public void ReadResourceWithLeadingEscapedDomainName()
+    [Test]
+    public async Task ReadResourceWithLeadingEscapedDomainName()
     {
         const string text = @"\126emanon.org A 127.0.0.1";
         var reader = new PresentationReader(new StringReader(text));
         var a = reader.ReadResourceRecord();
 
-        a.ShouldNotBeNull();
-        a.Name.ShouldBe("~emanon.org");
-        a.Class.ShouldBe(DnsClass.IN);
-        a.Type.ShouldBe(DnsType.A);
-        a.TTL.ShouldBe(ResourceRecord.DefaultTTL);
-        a.ShouldBeOfType<ARecord>();
-        a.Name.ShouldNotBeNull();
-        a.Name.Labels.Count.ShouldBe(2);
+        await Assert.That(a).IsNotNull();
+        await Assert.That(a!.Name).IsEquatableOrEqualTo("~emanon.org");
+        await Assert.That(a.Class).IsEqualTo(DnsClass.IN);
+        await Assert.That(a.Type).IsEqualTo(DnsType.A);
+        await Assert.That(a.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
+        await Assert.That(a).IsTypeOf<ARecord>();
+        await Assert.That(a.Name).IsNotNull();
+        await Assert.That(a.Name!.Labels).HasCount(2);
     }
 
-    [Fact]
-    public void ReadZoneFile()
+    [Test]
+    public async Task ReadZoneFile()
     {
         const string text = """
                             $ORIGIN example.com.     ; designates the start of this zone file in the namespace
@@ -319,82 +319,82 @@ public class PresentationReaderTest
             resources.Add(r);
         }
 
-        resources.Count.ShouldBe(15);
+        await Assert.That(resources).HasCount(15);
     }
 
-    [Fact]
-    public void ReadResourceData()
+    [Test]
+    public async Task ReadResourceData()
     {
         var reader = new PresentationReader(new StringReader("\\# 0"));
         var rdata = reader.ReadResourceData();
-        rdata.Length.ShouldBe(0);
+        await Assert.That(rdata).HasCount().Zero();
 
         reader = new PresentationReader(new StringReader("\\# 3 abcdef"));
         rdata = reader.ReadResourceData();
-        new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
+        await Assert.That(new byte[] { 0xab, 0xcd, 0xef }).IsEquivalentTo(rdata);
 
         reader = new PresentationReader(new StringReader("\\# 3 ab cd ef"));
         rdata = reader.ReadResourceData();
-        new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
+        await Assert.That(new byte[] { 0xab, 0xcd, 0xef }).IsEquivalentTo(rdata);
 
         reader = new PresentationReader(new StringReader("\\# 3 abcd (\r\n  ef )"));
         rdata = reader.ReadResourceData();
-        new byte[] { 0xab, 0xcd, 0xef }.ShouldBe(rdata);
+        await Assert.That(new byte[] { 0xab, 0xcd, 0xef }).IsEquivalentTo(rdata);
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_MissingLeadin()
     {
         var reader = new PresentationReader(new StringReader("0"));
-        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
+        Assert.Throws<FormatException>(() => reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_BadHex_BadDigit()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 ab cd ez"));
-        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
+        Assert.Throws<FormatException>(() => reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_BadHex_NotEven()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 ab cd e"));
-        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
+        Assert.Throws<FormatException>(() => reader.ReadResourceData());
     }
 
-    [Fact]
+    [Test]
     public void ReadResourceData_BadHex_TooFew()
     {
         var reader = new PresentationReader(new StringReader("\\# 3 abcd"));
-        Should.Throw<FormatException>(() => _ = reader.ReadResourceData());
+        Assert.Throws<FormatException>(() => reader.ReadResourceData());
     }
 
-    [Fact]
-    public void ReadType()
+    [Test]
+    public async Task ReadType()
     {
         var reader = new PresentationReader(new StringReader("A TYPE1 MX"));
-        reader.ReadDnsType().ShouldBe(DnsType.A);
-        reader.ReadDnsType().ShouldBe(DnsType.A);
-        reader.ReadDnsType().ShouldBe(DnsType.MX);
+        await Assert.That(reader.ReadDnsType()).IsEqualTo(DnsType.A);
+        await Assert.That(reader.ReadDnsType()).IsEqualTo(DnsType.A);
+        await Assert.That(reader.ReadDnsType()).IsEqualTo(DnsType.MX);
     }
 
-    [Fact]
+    [Test]
     public void ReadType_BadName()
     {
         var reader = new PresentationReader(new StringReader("BADNAME"));
-        Should.Throw<Exception>(() => reader.ReadDnsType());
+        Assert.Throws<ArgumentException>(() => reader.ReadDnsType());
     }
 
-    [Fact]
+    [Test]
     public void ReadType_BadDigit()
     {
         var reader = new PresentationReader(new StringReader("TYPEX"));
-        Should.Throw<FormatException>(() => reader.ReadDnsType());
+        Assert.Throws<FormatException>(() => reader.ReadDnsType());
     }
 
-    [Fact]
-    public void ReadMultipleStrings()
+    [Test]
+    public async Task ReadMultipleStrings()
     {
         var expected = new List<string> { "abc", "def", "ghi" };
         var reader = new PresentationReader(new StringReader("abc def (\r\nghi)\r\n"));
@@ -402,11 +402,11 @@ public class PresentationReaderTest
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
 
-        actual.ShouldBe(expected);
+        await Assert.That(actual).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void ReadMultipleStrings2()
+    [Test]
+    public async Task ReadMultipleStrings2()
     {
         var expected = new List<string> { "abc", "def", "ghi", "jkl" };
         var reader = new PresentationReader(new StringReader("abc def (\r\nghi) jkl   \r\n"));
@@ -414,11 +414,11 @@ public class PresentationReaderTest
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
 
-        actual.ShouldBe(expected);
+        await Assert.That(actual).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void ReadMultipleStrings3()
+    [Test]
+    public async Task ReadMultipleStrings3()
     {
         var expected = new List<string> { "abc", "def", "ghi" };
         var reader = new PresentationReader(new StringReader("abc def (\rghi)\r"));
@@ -426,11 +426,11 @@ public class PresentationReaderTest
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
 
-        actual.ShouldBe(expected);
+        await Assert.That(actual).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void ReadMultipleStrings_LF()
+    [Test]
+    public async Task ReadMultipleStrings_LF()
     {
         var expected = new List<string> { "abc", "def" };
         var reader = new PresentationReader(new StringReader("abc def\rghi"));
@@ -438,11 +438,11 @@ public class PresentationReaderTest
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
 
-        actual.ShouldBe(expected);
+        await Assert.That(actual).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void ReadMultipleStrings_CRLF()
+    [Test]
+    public async Task ReadMultipleStrings_CRLF()
     {
         var expected = new List<string> { "abc", "def" };
         var reader = new PresentationReader(new StringReader("abc def\r\nghi"));
@@ -450,42 +450,42 @@ public class PresentationReaderTest
         while (!reader.IsEndOfLine())
             actual.Add(reader.ReadString());
 
-        actual.ShouldBe(expected);
+        await Assert.That(actual).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void ReadBase64String()
+    [Test]
+    public async Task ReadBase64String()
     {
         var expected = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
         var reader = new PresentationReader(new StringReader("AAECAwQFBgcICQoLDA0ODw=="));
-        reader.ReadBase64String().ShouldBe(expected);
+        await Assert.That(reader.ReadBase64String()).IsEquivalentTo(expected);
 
         reader = new PresentationReader(new StringReader("AAECAwQFBg  cICQoLDA0ODw=="));
-        reader.ReadBase64String().ShouldBe(expected);
+        await Assert.That(reader.ReadBase64String()).IsEquivalentTo(expected);
 
         reader = new PresentationReader(new StringReader("AAECAwQFBg  (\r\n  cICQo\r\n  LDA0ODw\r\n== )"));
-        reader.ReadBase64String().ShouldBe(expected);
+        await Assert.That(reader.ReadBase64String()).IsEquivalentTo(expected);
     }
 
-    [Fact]
-    public void ReadDateTime()
+    [Test]
+    public async Task ReadDateTime()
     {
         DateTime expected = new(2004, 9, 16, 0, 0, 0, DateTimeKind.Utc);
         var reader = new PresentationReader(new StringReader("1095292800 20040916000000"));
 
-        reader.ReadDateTime().ShouldBe(expected);
-        reader.ReadDateTime().ShouldBe(expected);
+        await Assert.That(reader.ReadDateTime()).IsEqualTo(expected);
+        await Assert.That(reader.ReadDateTime()).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void ReadDomainName_Escaped()
+    [Test]
+    public async Task ReadDomainName_Escaped()
     {
         var foo = new DomainName("foo.com");
         var drSmith = new DomainName(@"dr\. smith.com");
         var reader = new PresentationReader(new StringReader(@"dr\.\032smith.com foo.com"));
 
-        reader.ReadDomainName().ShouldBe(drSmith);
-        reader.ReadDomainName().ShouldBe(foo);
+        await Assert.That(reader.ReadDomainName()).IsEqualTo(drSmith);
+        await Assert.That(reader.ReadDomainName()).IsEqualTo(foo);
     }
 }

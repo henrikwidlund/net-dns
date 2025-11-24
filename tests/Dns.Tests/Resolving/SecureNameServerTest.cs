@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests.Resolving;
 
@@ -14,50 +12,50 @@ public class SecureNameServerTest
 
     public SecureNameServerTest() => _example.IncludeZone(new PresentationReader(new StringReader(SecureCatalogTest.ExampleZoneText)));
 
-    [Fact]
+    [Test]
     public async Task SupportDnssec()
     {
         var resolver = new NameServer { Catalog = _example };
         var request = new Message();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
 
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
-        response.DO.ShouldBeFalse();
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
+        await Assert.That(response.DO).IsFalse();
 
         request.UseDnsSecurity();
-        response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
-        response.DO.ShouldBeTrue();
+        response = await resolver.ResolveAsync(request, TestContext.Current.Execution.CancellationToken);
+        await Assert.That(response.DO).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task QueryWithoutDo()
     {
         var resolver = new NameServer { Catalog = _example };
         var request = new Message();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.DO.ShouldBeFalse();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.DO).IsFalse();
     }
 
-    [Fact]
+    [Test]
     public async Task QueryWithDo()
     {
         var resolver = new NameServer { Catalog = _example };
         var request = new Message().UseDnsSecurity();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.DO.ShouldBeTrue();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.DO).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task SecureQueryHasSignature()
     {
         // See https://tools.ietf.org/html/rfc4035#appendix-B.1
@@ -65,19 +63,19 @@ public class SecureNameServerTest
         var resolver = new NameServer { Catalog = _example };
         var request = new Message().UseDnsSecurity();
         request.Questions.Add(new Question { Name = "x.w.example", Type = DnsType.MX });
-        var response = await resolver.ResolveAsync(request, TestContext.Current.CancellationToken);
+        var response = await resolver.ResolveAsync(request, TestContext.Current!.Execution.CancellationToken);
 
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.DO.ShouldBeTrue();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.DO).IsTrue();
 
-        response.Answers.Count.ShouldBe(2);
-        response.Answers.OfType<MXRecord>().Count().ShouldBe(1);
-        response.Answers.OfType<RRSIGRecord>().Count().ShouldBe(1);
+        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.Answers.OfType<MXRecord>()).HasCount(1);
+        await Assert.That(response.Answers.OfType<RRSIGRecord>()).HasCount(1);
 
-        response.AuthorityRecords.Count.ShouldBe(3);
-        response.AuthorityRecords.OfType<NSRecord>().Count().ShouldBe(2);
-        response.AuthorityRecords.OfType<RRSIGRecord>().Count().ShouldBe(1);
+        await Assert.That(response.AuthorityRecords).HasCount(3);
+        await Assert.That(response.AuthorityRecords.OfType<NSRecord>()).HasCount(2);
+        await Assert.That(response.AuthorityRecords.OfType<RRSIGRecord>()).HasCount(1);
     }
 }

@@ -7,36 +7,36 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace Makaretu.Mdns;
 
+[ParallelLimiter<SingleTestRateLimit>]
 public class MulticastServiceTest
 {
-    [Fact]
-    public void Can_Create()
+    [Test]
+    public async Task Can_Create()
     {
         var mdns = new MulticastService();
-        
-        mdns.ShouldNotBeNull();
-        mdns.IgnoreDuplicateMessages.ShouldBeTrue();
+
+        await Assert.That(mdns).IsNotNull();
+        await Assert.That(mdns.IgnoreDuplicateMessages).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task StartStop()
     {
-        var action = static async () =>
+        await Assert.That((Func<Task>)Action).IsCompletedSuccessfully();
+        return;
+
+        static async Task Action()
         {
             var mdns = new MulticastService();
-            await mdns.Start(TestContext.Current.CancellationToken);
+            await mdns.Start(TestContext.Current!.Execution.CancellationToken);
             mdns.Stop();
-        };
-
-        await action.ShouldNotThrowAsync();
+        }
     }
 
-    [Fact]
+    [Test]
     public async Task SendQuery()
     {
         var ready = new ManualResetEvent(false);
@@ -50,27 +50,25 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        mdns.QueryReceived += e =>
+        mdns.QueryReceived += async e =>
         {
             if ("some-service.local" == e.Message.Questions[0].Name)
             {
                 msg = e.Message;
-                e.IsLegacyUnicast.ShouldBeFalse();
+                await Assert.That(e.IsLegacyUnicast).IsFalse();
                 done.Set();
             }
-
-            return Task.CompletedTask;
         };
         
         try
         {
-            await mdns.Start(TestContext.Current.CancellationToken);
-            ready.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready timeout");
+            await mdns.Start(TestContext.Current!.Execution.CancellationToken);
+            await Assert.That(ready.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("ready timeout");
 
             await mdns.SendQuery("some-service.local");
-            done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
-            msg.Questions[0].Name.ShouldBe("some-service.local");
-            msg.Questions[0].Class.ShouldBe(DnsClass.IN);
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
+            await Assert.That(msg.Questions[0].Name).IsEquatableOrEqualTo("some-service.local");
+            await Assert.That(msg.Questions[0].Class).IsEqualTo(DnsClass.IN);
         }
         finally
         {
@@ -78,7 +76,7 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task SendUnicastQuery()
     {
         var ready = new ManualResetEvent(false);
@@ -101,13 +99,13 @@ public class MulticastServiceTest
         
         try
         {
-            await mdns.Start(TestContext.Current.CancellationToken);
-            ready.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready timeout");
+            await mdns.Start(TestContext.Current!.Execution.CancellationToken);
+            await Assert.That(ready.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("ready timeout");
 
             await mdns.SendUnicastQuery("some-service.local");
-            done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("query timeout");
-            msg.Questions[0].Name.ShouldBe("some-service.local");
-            msg.Questions[0].Class.ShouldBe(DnsClass.IN + 0x8000);
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
+            await Assert.That(msg.Questions[0].Name).IsEquatableOrEqualTo("some-service.local");
+            await Assert.That(msg.Questions[0].Class).IsEqualTo(DnsClass.IN + 0x8000);
         }
         finally
         {
@@ -115,7 +113,7 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task ReceiveAnswer()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -151,18 +149,18 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
-        done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
-        response.ShouldNotBeNull();
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
+        await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("answer timeout");
+        await Assert.That(response).IsNotNull();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
         var a = (ARecord)response.Answers[0];
-        a.Address.ShouldBe(IPAddress.Parse("127.1.1.1"));
+        await Assert.That(a.Address).IsEqualTo(IPAddress.Parse("127.1.1.1"));
     }
 
-    [Fact]
+    [Test]
     public async Task ReceiveLegacyUnicastAnswer()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -200,9 +198,9 @@ public class MulticastServiceTest
             }
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
-        ready.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready timeout");
+        await Assert.That(ready.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("ready timeout");
         MulticastService.IncludeLoopbackInterfaces = false;
         await client.SendAsync(packet, packet.Length, "224.0.0.251", 5353);
         
@@ -211,17 +209,17 @@ public class MulticastServiceTest
 
         var response = new Message();
         response.Read(r.Buffer, 0, r.Buffer.Length);
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
-        response.Questions.Count.ShouldBe(1);
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
+        await Assert.That(response.Questions.Count).IsEqualTo(1);
         var a = (ARecord)response.Answers[0];
-        a.Address.ShouldBe(IPAddress.Parse("127.1.1.1"));
-        a.Name.ShouldBe(service);
-        a.TTL.ShouldBe(TimeSpan.FromSeconds(10));
+        await Assert.That(a.Address).IsEqualTo(IPAddress.Parse("127.1.1.1"));
+        await Assert.That(a.Name).IsEquatableOrEqualTo(service);
+        await Assert.That(a.TTL).IsEqualTo(TimeSpan.FromSeconds(10));
     }
 
-    [Fact]
+    [Test]
     public async Task ReceiveAnswer_IPv4()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -259,18 +257,18 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
-        done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
-        response.ShouldNotBeNull();
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
+        await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("answer timeout");
+        await Assert.That(response).IsNotNull();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
         var a = (ARecord)response.Answers[0];
-        a.Address.ShouldBe(IPAddress.Parse("127.1.1.1"));
+        await Assert.That(a.Address).IsEqualTo(IPAddress.Parse("127.1.1.1"));
     }
 
-    [Fact]
+    [Test]
     public async Task ReceiveAnswer_IPv6()
     {
         if (!Socket.OSSupportsIPv6)
@@ -318,18 +316,18 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
-        done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
-        response.ShouldNotBeNull();
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
+        await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("answer timeout");
+        await Assert.That(response).IsNotNull();
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
         var a = (AAAARecord)response.Answers[0];
-        a.Address.ShouldBe(IPAddress.Parse("::1"));
+        await Assert.That(a.Address).IsEqualTo(IPAddress.Parse("::1"));
     }
 
-    [Fact]
+    [Test]
     public async Task ReceiveErrorAnswer()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -366,8 +364,8 @@ public class MulticastServiceTest
         
         try
         {
-            await mdns.Start(TestContext.Current.CancellationToken);
-            done.WaitOne(TimeSpan.FromSeconds(0.5)).ShouldBeFalse("answer was not ignored");
+            await mdns.Start(TestContext.Current!.Execution.CancellationToken);
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(0.5))).IsFalse().Because("answer was not ignored");
         }
         finally
         {
@@ -375,7 +373,7 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Nics()
     {
         var done = new ManualResetEvent(false);
@@ -389,12 +387,12 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
         try
         {
-            done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("timeout");
-            nics.Any().ShouldBeTrue();
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("timeout");
+            await Assert.That(nics.Any()).IsTrue();
         }
         finally
         {
@@ -402,7 +400,7 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task SendQuery_TooBig()
     {
         var done = new ManualResetEvent(false);
@@ -413,11 +411,11 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
         try
         {
-            done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("no nic");
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("no nic");
 
             var query = new Message();
             query.Questions.Add(new Question { Name = "foo.bar.org" });
@@ -433,7 +431,7 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task SendAnswer_TooBig()
     {
         var done = new ManualResetEvent(false);
@@ -444,11 +442,11 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         
         try
         {
-            done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("no nic");
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("no nic");
             var answer = new Message();
             answer.Answers.Add(new ARecord { Name = "foo.bar.org", Address = IPAddress.Loopback });
             answer.Answers.Add(new NULLRecord { Name = "foo.bar.org", Data = new byte[9000] });
@@ -463,7 +461,7 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Multiple_Services()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -509,15 +507,15 @@ public class MulticastServiceTest
         
         try
         {
-            await a.Start(TestContext.Current.CancellationToken);
-            await b.Start(TestContext.Current.CancellationToken);
+            await a.Start(TestContext.Current!.Execution.CancellationToken);
+            await b.Start(TestContext.Current!.Execution.CancellationToken);
             
-            done.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("answer timeout");
-            response.ShouldNotBeNull();
-            response.IsResponse.ShouldBeTrue();
-            response.Status.ShouldBe(MessageStatus.NoError);
-            response.AA.ShouldBeTrue();
-            response.Answers.Count.ShouldNotBe(0);
+            await Assert.That(done.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("answer timeout");
+            await Assert.That(response).IsNotNull();
+            await Assert.That(response.IsResponse).IsTrue();
+            await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+            await Assert.That(response.AA).IsTrue();
+            await Assert.That(response.Answers.Count).IsNotEqualTo(0);
         }
         finally
         {
@@ -526,27 +524,27 @@ public class MulticastServiceTest
         }
     }
 
-    [Fact]
-    public void IPAddresses()
+    [Test]
+    public async Task IPAddresses()
     {
         var addresses = MulticastService.GetIPAddresses().ToArray();
-        addresses.Length.ShouldNotBe(0);
+        await Assert.That(addresses.Length).IsNotEqualTo(0);
     }
 
-    [Fact]
+    [Test]
     public async Task Disposable()
     {
         using (var mdns = new MulticastService())
-            mdns.ShouldNotBeNull();
+            await Assert.That(mdns).IsNotNull();
 
         using (var mdns = new MulticastService())
         {
-            mdns.ShouldNotBeNull();
-            await mdns.Start(TestContext.Current.CancellationToken);
+            await Assert.That(mdns).IsNotNull();
+            await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Resolve()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -570,18 +568,18 @@ public class MulticastServiceTest
             }
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         var response = await mdns.ResolveAsync(query, cancellation.Token);
         
-        response.ShouldNotBeNull("no response");
-        response.IsResponse.ShouldBeTrue();
-        response.Status.ShouldBe(MessageStatus.NoError);
-        response.AA.ShouldBeTrue();
+        await Assert.That(response).IsNotNull().Because("no response");
+        await Assert.That(response.IsResponse).IsTrue();
+        await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
+        await Assert.That(response.AA).IsTrue();
         var a = (ARecord)response.Answers[0];
-        a.Address.ShouldBe(IPAddress.Parse("127.1.1.1"));
+        await Assert.That(a.Address).IsEqualTo(IPAddress.Parse("127.1.1.1"));
     }
 
-    [Fact]
+    [Test]
     public async Task Resolve_NoAnswer()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -590,14 +588,14 @@ public class MulticastServiceTest
         using var cancellation = new CancellationTokenSource(500);
 
         using var mdns = new MulticastService();
-        await mdns.Start(TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
         await ExceptionAssert.ThrowsAsync<TaskCanceledException>(async () =>
         {
             await mdns.ResolveAsync(query, cancellation.Token);
         });
     }
 
-    [Fact]
+    [Test]
     public async Task DuplicateResponse()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -606,7 +604,7 @@ public class MulticastServiceTest
         mdns.NetworkInterfaceDiscovered += async _ =>
         {
             await mdns.SendQuery(service);
-            await Task.Delay(250, TestContext.Current.CancellationToken);
+            await Task.Delay(250, TestContext.Current!.Execution.CancellationToken);
             await mdns.SendQuery(service);
         };
         
@@ -634,13 +632,13 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
-        await Task.Delay(1000, TestContext.Current.CancellationToken);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
+        await Task.Delay(1000, TestContext.Current!.Execution.CancellationToken);
         
-        answerCount.ShouldBe(1);
+        await Assert.That(answerCount).IsEqualTo(1);
     }
 
-    [Fact]
+    [Test]
     public async Task NoDuplicateResponse()
     {
         var service = $"{Guid.NewGuid()}.local";
@@ -650,7 +648,7 @@ public class MulticastServiceTest
         mdns.NetworkInterfaceDiscovered += async _ =>
         {
             await mdns.SendQuery(service);
-            await Task.Delay(250, TestContext.Current.CancellationToken);
+            await Task.Delay(250, TestContext.Current!.Execution.CancellationToken);
             await mdns.SendQuery(service);
         };
         
@@ -679,16 +677,16 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns.Start(TestContext.Current.CancellationToken);
-        await Task.Delay(2000, TestContext.Current.CancellationToken);
-        answerCount.ShouldBe(1);
+        await mdns.Start(TestContext.Current!.Execution.CancellationToken);
+        await Task.Delay(2000, TestContext.Current!.Execution.CancellationToken);
+        await Assert.That(answerCount).IsEqualTo(1);
 
         await mdns.SendQuery(service);
-        await Task.Delay(2000, TestContext.Current.CancellationToken);
-        answerCount.ShouldBe(2);
+        await Task.Delay(2000, TestContext.Current!.Execution.CancellationToken);
+        await Assert.That(answerCount).IsEqualTo(2);
     }
 
-    [Fact]
+    [Test]
     public async Task Multiple_Listeners()
     {
         var ready1 = new ManualResetEvent(false);
@@ -701,7 +699,7 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns1.Start(TestContext.Current.CancellationToken);
+        await mdns1.Start(TestContext.Current!.Execution.CancellationToken);
 
         mdns2.NetworkInterfaceDiscovered += _ =>
         {
@@ -709,13 +707,13 @@ public class MulticastServiceTest
             return Task.CompletedTask;
         };
         
-        await mdns2.Start(TestContext.Current.CancellationToken);
+        await mdns2.Start(TestContext.Current!.Execution.CancellationToken);
 
-        ready1.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready1 timeout");
-        ready2.WaitOne(TimeSpan.FromSeconds(1)).ShouldBeTrue("ready2 timeout");
+        await Assert.That(ready1.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("ready1 timeout");
+        await Assert.That(ready2.WaitOne(TimeSpan.FromSeconds(1))).IsTrue().Because("ready2 timeout");
     }
 
-    [Fact]
+    [Test]
     public async Task MalformedMessage()
     {
         byte[] malformedMessage = null;
@@ -731,6 +729,6 @@ public class MulticastServiceTest
         var udp = new UdpReceiveResult(msg, endPoint);
         await mdns.OnDnsMessage(udp);
 
-        malformedMessage.ShouldBe(msg);
+        await Assert.That(malformedMessage).IsEqualTo(msg);
     }
 }

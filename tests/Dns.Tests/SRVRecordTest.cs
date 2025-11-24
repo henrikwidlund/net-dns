@@ -1,13 +1,12 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class SRVRecordTest
 {
-    [Fact]
-    public void Roundtrip()
+    [Test]
+    public async Task Roundtrip()
     {
         var a = new SRVRecord
         {
@@ -20,18 +19,18 @@ public class SRVRecordTest
         
         var b = (SRVRecord)new ResourceRecord().Read(a.ToByteArray());
         
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Priority.ShouldBe(b.Priority);
-        a.Weight.ShouldBe(b.Weight);
-        a.Port.ShouldBe(b.Port);
-        a.Target.ShouldBe(b.Target);
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Priority).IsEqualTo(b.Priority);
+        await Assert.That(a.Weight).IsEqualTo(b.Weight);
+        await Assert.That(a.Port).IsEqualTo(b.Port);
+        await Assert.That(a.Target).IsEqualTo(b.Target);
     }
 
-    [Fact]
-    public void Roundtrip_Master()
+    [Test]
+    public async Task Roundtrip_Master()
     {
         var a = new SRVRecord
         {
@@ -42,21 +41,21 @@ public class SRVRecordTest
             Target = "foobar.example.com"
         };
         
-        var b = (SRVRecord)new ResourceRecord().Read(a.ToString());
+        var b = (SRVRecord)new ResourceRecord().Read(a.ToString())!;
         
-        b.ShouldNotBeNull();
-        a.Name.ShouldBe(b.Name);
-        a.Class.ShouldBe(b.Class);
-        a.Type.ShouldBe(b.Type);
-        a.TTL.ShouldBe(b.TTL);
-        a.Priority.ShouldBe(b.Priority);
-        a.Weight.ShouldBe(b.Weight);
-        a.Port.ShouldBe(b.Port);
-        a.Target.ShouldBe(b.Target);
+        await Assert.That(b).IsNotNull();
+        await Assert.That(a.Name).IsEqualTo(b.Name);
+        await Assert.That(a.Class).IsEqualTo(b.Class);
+        await Assert.That(a.Type).IsEqualTo(b.Type);
+        await Assert.That(a.TTL).IsEqualTo(b.TTL);
+        await Assert.That(a.Priority).IsEqualTo(b.Priority);
+        await Assert.That(a.Weight).IsEqualTo(b.Weight);
+        await Assert.That(a.Port).IsEqualTo(b.Port);
+        await Assert.That(a.Target).IsEqualTo(b.Target);
     }
 
-    [Fact]
-    public void Equality()
+    [Test]
+    public async Task Equality()
     {
         var a = new SRVRecord
         {
@@ -77,8 +76,8 @@ public class SRVRecordTest
         };
 
         // ReSharper disable once EqualExpressionComparison
-        a.Equals(a).ShouldBeTrue();
-        a.Equals(b).ShouldBeFalse();
-        a.Equals(null).ShouldBeFalse();
+        await Assert.That(a.Equals(a)).IsTrue();
+        await Assert.That(a.Equals(b)).IsFalse();
+        await Assert.That(a.Equals(null)).IsFalse();
     }
 }

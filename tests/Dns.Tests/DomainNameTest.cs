@@ -1,99 +1,98 @@
-﻿using Makaretu.Dns;
-using Shouldly;
-using Xunit;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 
 namespace DnsTests;
 
 public class DomainNameTest
 {
-    [Fact]
-    public void Standard()
+    [Test]
+    public async Task Standard()
     {
         var name = new DomainName("my.example.org");
 
-        name.Labels.Count.ShouldBe(3);
-        name.Labels[0].ShouldBe("my");
-        name.Labels[1].ShouldBe("example");
-        name.Labels[2].ShouldBe("org");
+        await Assert.That(name.Labels).HasCount(3);
+        await Assert.That(name.Labels[0]).IsEqualTo("my");
+        await Assert.That(name.Labels[1]).IsEqualTo("example");
+        await Assert.That(name.Labels[2]).IsEqualTo("org");
 
-        name.ToString().ShouldBe("my.example.org");
+        await Assert.That(name).IsEquatableOrEqualTo("my.example.org");
     }
 
-    [Fact]
-    public void TopLevelDomain()
+    [Test]
+    public async Task TopLevelDomain()
     {
         var name = new DomainName("org");
 
-        name.Labels.Count.ShouldBe(1);
-        name.Labels[0].ShouldBe("org");
+        await Assert.That(name.Labels).HasCount(1);
+        await Assert.That(name.Labels[0]).IsEqualTo("org");
 
-        name.ToString().ShouldBe("org");
+        await Assert.That(name).IsEquatableOrEqualTo("org");
     }
 
-    [Fact]
-    public void Root()
+    [Test]
+    public async Task Root()
     {
         var name = new DomainName("");
 
-        name.Labels.Count.ShouldBe(0);
-        name.ToString().ShouldBe("");
+        await Assert.That(name.Labels).HasCount().Zero();
+        await Assert.That(name).IsEquatableOrEqualTo("");
     }
 
-    [Fact]
-    public void EscapedDotCharacter()
+    [Test]
+    public async Task EscapedDotCharacter()
     {
         var name = new DomainName(@"my\.example.org");
 
-        name.Labels.Count.ShouldBe(2);
-        name.Labels[0].ShouldBe("my.example");
-        name.Labels[1].ShouldBe("org");
-        name.ToString().ShouldBe(@"my\.example.org");
+        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels[0]).IsEqualTo("my.example");
+        await Assert.That(name.Labels[1]).IsEqualTo("org");
+        await Assert.That(name).IsEquatableOrEqualTo(@"my\.example.org");
     }
 
-    [Fact]
-    public void EscapedDotDigits()
+    [Test]
+    public async Task EscapedDotDigits()
     {
         var name = new DomainName(@"my\046example.org");
 
-        name.Labels.Count.ShouldBe(2);
-        name.Labels[0].ShouldBe("my.example");
-        name.Labels[1].ShouldBe("org");
-        name.ToString().ShouldBe(@"my\.example.org");
+        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels[0]).IsEqualTo("my.example");
+        await Assert.That(name.Labels[1]).IsEqualTo("org");
+        await Assert.That(name).IsEquatableOrEqualTo(@"my\.example.org");
     }
 
-    [Fact]
-    public void ImplicitParsingOfString()
+    [Test]
+    public async Task ImplicitParsingOfString()
     {
         DomainName name = @"my\046example.org";
-        name.Labels.Count.ShouldBe(2);
-        name.Labels[0].ShouldBe("my.example");
-        name.Labels[1].ShouldBe("org");
+        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels[0]).IsEqualTo("my.example");
+        await Assert.That(name.Labels[1]).IsEqualTo("org");
 
         name = @"my\.example.org";
-        name.Labels.Count.ShouldBe(2);
-        name.Labels[0].ShouldBe("my.example");
-        name.Labels[1].ShouldBe("org");
+        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels[0]).IsEqualTo("my.example");
+        await Assert.That(name.Labels[1]).IsEqualTo("org");
 
         name = "my.example.org";
-        name.Labels.Count.ShouldBe(3);
-        name.Labels[0].ShouldBe("my");
-        name.Labels[1].ShouldBe("example");
-        name.Labels[2].ShouldBe("org");
+        await Assert.That(name.Labels).HasCount(3);
+        await Assert.That(name.Labels[0]).IsEqualTo("my");
+        await Assert.That(name.Labels[1]).IsEqualTo("example");
+        await Assert.That(name.Labels[2]).IsEqualTo("org");
     }
 
-    [Fact]
-    public void FromLabels()
+    [Test]
+    public async Task FromLabels()
     {
         var name = new DomainName("my.example", "org");
 
-        name.Labels.Count.ShouldBe(2);
-        name.Labels[0].ShouldBe("my.example");
-        name.Labels[1].ShouldBe("org");
-        name.ToString().ShouldBe(@"my\.example.org");
+        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels[0]).IsEqualTo("my.example");
+        await Assert.That(name.Labels[1]).IsEqualTo("org");
+        await Assert.That(name).IsEquatableOrEqualTo(@"my\.example.org");
     }
 
-    [Fact]
-    public void Equality()
+    [Test]
+    public async Task Equality()
     {
         var a = new DomainName(@"my\.example.org");
         var b = new DomainName("my.example", "org");
@@ -102,39 +101,39 @@ public class DomainNameTest
         var other1 = new DomainName("example.org");
         var other2 = new DomainName("org");
 
-        a.ShouldBe(b);
-        a.ShouldBe(c);
-        a.ShouldBe(d);
-        a.ShouldNotBe(other1);
-        a.ShouldNotBe(other2);
-        a.ShouldNotBe(null);
+        await Assert.That(a).IsEqualTo(b);
+        await Assert.That(a).IsEqualTo(c);
+        await Assert.That(a).IsEqualTo(d);
+        await Assert.That(a).IsNotEqualTo(other1);
+        await Assert.That(a).IsNotEqualTo(other2);
+        await Assert.That(a)!.IsNotEqualTo(null);
 
-        (a == b).ShouldBeTrue();
-        (a == c).ShouldBeTrue();
-        (a == d).ShouldBeTrue();
-        (a == other1).ShouldBeFalse();
-        (a == other2).ShouldBeFalse();
+        await Assert.That(a == b).IsTrue();
+        await Assert.That(a == c).IsTrue();
+        await Assert.That(a == d).IsTrue();
+        await Assert.That(a == other1).IsFalse();
+        await Assert.That(a == other2).IsFalse();
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        (a == null).ShouldBeFalse();
+        await Assert.That(a == null).IsFalse();
 
-        (a != b).ShouldBeFalse();
-        (a != c).ShouldBeFalse();
-        (a != d).ShouldBeFalse();
-        (a != other1).ShouldBeTrue();
-        (a != other2).ShouldBeTrue();
+        await Assert.That(a != b).IsFalse();
+        await Assert.That(a != c).IsFalse();
+        await Assert.That(a != d).IsFalse();
+        await Assert.That(a != other1).IsTrue();
+        await Assert.That(a != other2).IsTrue();
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        (a != null).ShouldBeTrue();
+        await Assert.That(a != null).IsTrue();
 
-        a.Equals(b).ShouldBeTrue();
-        a.Equals(c).ShouldBeTrue();
-        a.Equals(d).ShouldBeTrue();
-        a.Equals(other1).ShouldBeFalse();
-        a.Equals(other2).ShouldBeFalse();
-        a.Equals(null).ShouldBeFalse();
+        await Assert.That(a!.Equals(b)).IsTrue();
+        await Assert.That(a.Equals(c)).IsTrue();
+        await Assert.That(a.Equals(d)).IsTrue();
+        await Assert.That(a.Equals(other1)).IsFalse();
+        await Assert.That(a.Equals(other2)).IsFalse();
+        await Assert.That(a.Equals(null)).IsFalse();
     }
 
-    [Fact]
-    public void HashEquality()
+    [Test]
+    public async Task HashEquality()
     {
         var a = new DomainName(@"my\.example.org");
         var b = new DomainName("my.example", "org");
@@ -143,143 +142,143 @@ public class DomainNameTest
         var other1 = new DomainName("example.org");
         var other2 = new DomainName("org");
 
-        a.GetHashCode().ShouldBe(b.GetHashCode());
-        a.GetHashCode().ShouldBe(c.GetHashCode());
-        a.GetHashCode().ShouldBe(d.GetHashCode());
-        a.GetHashCode().ShouldNotBe(other1.GetHashCode());
-        a.GetHashCode().ShouldNotBe(other2.GetHashCode());
+        await Assert.That(a.GetHashCode()).IsEqualTo(b.GetHashCode());
+        await Assert.That(a.GetHashCode()).IsEqualTo(c.GetHashCode());
+        await Assert.That(a.GetHashCode()).IsEqualTo(d.GetHashCode());
+        await Assert.That(a.GetHashCode()).IsNotEqualTo(other1.GetHashCode());
+        await Assert.That(a.GetHashCode()).IsNotEqualTo(other2.GetHashCode());
     }
 
-    [Fact]
-    public void ToCanonical()
+    [Test]
+    public async Task ToCanonical()
     {
         var a = new DomainName("My.EXAMPLe.ORg");
 
-        a.ToString().ShouldBe("My.EXAMPLe.ORg");
-        a.ToCanonical().ToString().ShouldBe("my.example.org");
+        await Assert.That(a).IsEquatableOrEqualTo("My.EXAMPLe.ORg");
+        await Assert.That(a.ToCanonical()).IsEquatableOrEqualTo("my.example.org");
     }
 
-    [Fact]
-    public void IsSubdomainOf()
+    [Test]
+    public async Task IsSubdomainOf()
     {
         var zone = new DomainName("example.org");
 
-        zone.IsSubdomainOf(zone).ShouldBeFalse();
-        new DomainName("a.example.org").IsSubdomainOf(zone).ShouldBeTrue();
-        new DomainName("a.b.example.org").IsSubdomainOf(zone).ShouldBeTrue();
-        new DomainName("a.Example.org").IsSubdomainOf(zone).ShouldBeTrue();
-        new DomainName("a.b.Example.ORG").IsSubdomainOf(zone).ShouldBeTrue();
-        new DomainName(@"a\.example.org").IsSubdomainOf(zone).ShouldBeFalse();
-        new DomainName(@"a\.b.example.org").IsSubdomainOf(zone).ShouldBeTrue();
-        new DomainName(@"a\.b.example.ORG").IsSubdomainOf(zone).ShouldBeTrue();
-        new DomainName("a.org").IsSubdomainOf(zone).ShouldBeFalse();
-        new DomainName("a.b.org").IsSubdomainOf(zone).ShouldBeFalse();
+        await Assert.That(zone.IsSubdomainOf(zone)).IsFalse();
+        await Assert.That(new DomainName("a.example.org").IsSubdomainOf(zone)).IsTrue();
+        await Assert.That(new DomainName("a.b.example.org").IsSubdomainOf(zone)).IsTrue();
+        await Assert.That(new DomainName("a.Example.org").IsSubdomainOf(zone)).IsTrue();
+        await Assert.That(new DomainName("a.b.Example.ORG").IsSubdomainOf(zone)).IsTrue();
+        await Assert.That(new DomainName(@"a\.example.org").IsSubdomainOf(zone)).IsFalse();
+        await Assert.That(new DomainName(@"a\.b.example.org").IsSubdomainOf(zone)).IsTrue();
+        await Assert.That(new DomainName(@"a\.b.example.ORG").IsSubdomainOf(zone)).IsTrue();
+        await Assert.That(new DomainName("a.org").IsSubdomainOf(zone)).IsFalse();
+        await Assert.That(new DomainName("a.b.org").IsSubdomainOf(zone)).IsFalse();
     }
 
-    [Fact]
-    public void BelongsTo()
+    [Test]
+    public async Task BelongsTo()
     {
         var zone = new DomainName("example.org");
 
-        zone.BelongsTo(zone).ShouldBeTrue();
-        new DomainName("ExamPLE.Org").BelongsTo(zone).ShouldBeTrue();
-        new DomainName("A.ExamPLE.Org").BelongsTo(zone).ShouldBeTrue();
-        new DomainName("a.example.org").BelongsTo(zone).ShouldBeTrue();
-        new DomainName("a.b.example.org").BelongsTo(zone).ShouldBeTrue();
-        new DomainName("a.Example.org").BelongsTo(zone).ShouldBeTrue();
-        new DomainName("a.b.Example.ORG").BelongsTo(zone).ShouldBeTrue();
-        new DomainName(@"a\.example.org").BelongsTo(zone).ShouldBeFalse();
-        new DomainName(@"a\.b.example.org").BelongsTo(zone).ShouldBeTrue();
-        new DomainName(@"a\.b.example.ORG").BelongsTo(zone).ShouldBeTrue();
-        new DomainName("a.org").BelongsTo(zone).ShouldBeFalse();
-        new DomainName("a.b.org").BelongsTo(zone).ShouldBeFalse();
+        await Assert.That(zone.BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("ExamPLE.Org").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("A.ExamPLE.Org").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("a.example.org").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("a.b.example.org").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("a.Example.org").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("a.b.Example.ORG").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName(@"a\.example.org").BelongsTo(zone)).IsFalse();
+        await Assert.That(new DomainName(@"a\.b.example.org").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName(@"a\.b.example.ORG").BelongsTo(zone)).IsTrue();
+        await Assert.That(new DomainName("a.org").BelongsTo(zone)).IsFalse();
+        await Assert.That(new DomainName("a.b.org").BelongsTo(zone)).IsFalse();
     }
 
-    [Fact]
-    public void Parent()
+    [Test]
+    public async Task Parent()
     {
         var name = new DomainName(@"a.b\.c.example.org");
         var expected = new DomainName(@"b\.c.example.org");
-        expected.ShouldBe(name.Parent());
+        await Assert.That(expected).IsEqualTo(name.Parent());
 
         name = new DomainName("org");
         expected = new DomainName("");
-        expected.ShouldBe(name.Parent());
-        expected.Parent().ShouldBeNull();
+        await Assert.That(expected).IsEqualTo(name.Parent());
+        await Assert.That(expected.Parent()).IsNull();
     }
 
-    [Fact]
-    public void Joining()
+    [Test]
+    public async Task Joining()
     {
         var a = new DomainName(@"foo\.bar");
         var b = new DomainName("x.y.z");
         var c = DomainName.Join(a, b);
 
-        c.Labels.Count.ShouldBe(4);
-        c.Labels[0].ShouldBe("foo.bar");
-        c.Labels[1].ShouldBe("x");
-        c.Labels[2].ShouldBe("y");
-        c.Labels[3].ShouldBe("z");
+        await Assert.That(c.Labels.Count).IsEqualTo(4);
+        await Assert.That(c.Labels[0]).IsEqualTo("foo.bar");
+        await Assert.That(c.Labels[1]).IsEqualTo("x");
+        await Assert.That(c.Labels[2]).IsEqualTo("y");
+        await Assert.That(c.Labels[3]).IsEqualTo("z");
     }
 
-    [Fact]
-    public void Rfc4343_Section_2()
+    [Test]
+    public async Task Rfc4343_Section_2()
     {
-        new DomainName("foo.example.net.").ShouldBe(new DomainName("Foo.ExamplE.net."));
-        new DomainName("69.2.0.192.in-addr.arpa.").ShouldBe(new DomainName("69.2.0.192.in-ADDR.ARPA."));
+        await Assert.That(new DomainName("foo.example.net.")).IsEqualTo(new DomainName("Foo.ExamplE.net."));
+        await Assert.That(new DomainName("69.2.0.192.in-addr.arpa.")).IsEqualTo(new DomainName("69.2.0.192.in-ADDR.ARPA."));
     }
 
-    [Fact]
-    public void Rfc4343_Section_21_Backslash()
+    [Test]
+    public async Task Rfc4343_Section_21_Backslash()
     {
         var aslashb = new DomainName(@"a\\b");
 
-        aslashb.Labels.Count.ShouldBe(1);
-        aslashb.Labels[0].ShouldBe(@"a\b");
-        aslashb.ToString().ShouldBe(@"a\092b");
-        aslashb.ShouldBe(new DomainName(@"a\092b"));
+        await Assert.That(aslashb.Labels.Count).IsEqualTo(1);
+        await Assert.That(aslashb.Labels[0]).IsEqualTo(@"a\b");
+        await Assert.That(aslashb).IsEquatableOrEqualTo(@"a\092b");
+        await Assert.That(aslashb).IsEqualTo(new DomainName(@"a\092b"));
     }
 
-    [Fact]
-    public void Rfc4343_Section_21_4Digits()
+    [Test]
+    public async Task Rfc4343_Section_21_4Digits()
     {
         var a = new DomainName(@"a\\4");
         var b = new DomainName(@"a\0924");
 
-        a.ShouldBe(b);
+        await Assert.That(a).IsEqualTo(b);
     }
 
-    [Fact]
-    public void Rfc4343_Section_22_SpacesAndDots()
+    [Test]
+    public async Task Rfc4343_Section_22_SpacesAndDots()
     {
         var a = new DomainName(@"Donald\032E\.\032Eastlake\0323rd.example");
 
-        a.Labels.Count.ShouldBe(2);
-        a.Labels[0].ShouldBe("Donald E. Eastlake 3rd");
-        a.Labels[1].ShouldBe("example");
+        await Assert.That(a.Labels.Count).IsEqualTo(2);
+        await Assert.That(a.Labels[0]).IsEqualTo("Donald E. Eastlake 3rd");
+        await Assert.That(a.Labels[1]).IsEqualTo("example");
     }
 
-    [Fact]
-    public void Rfc4343_Section_22_Binary()
+    [Test]
+    public async Task Rfc4343_Section_22_Binary()
     {
         var a = new DomainName(@"a\000\\\255z.example");
 
-        a.Labels.Count.ShouldBe(2);
-        a.Labels[0][0].ShouldBe('a');
-        a.Labels[0][1].ShouldBe((char)0);
-        a.Labels[0][2].ShouldBe('\\');
-        a.Labels[0][3].ShouldBe((char)0xff);
-        a.Labels[0][4].ShouldBe('z');
-        a.Labels[1].ShouldBe("example");
-        a.ToString().ShouldBe(@"a\000\092\255z.example");
-        a.ShouldBe(new DomainName(a.ToString()));
+        await Assert.That(a.Labels.Count).IsEqualTo(2);
+        await Assert.That(a.Labels[0][0]).IsEqualTo('a');
+        await Assert.That(a.Labels[0][1]).IsEqualTo((char)0);
+        await Assert.That(a.Labels[0][2]).IsEqualTo('\\');
+        await Assert.That(a.Labels[0][3]).IsEqualTo((char)0xff);
+        await Assert.That(a.Labels[0][4]).IsEqualTo('z');
+        await Assert.That(a.Labels[1]).IsEqualTo("example");
+        await Assert.That(a).IsEquatableOrEqualTo(@"a\000\092\255z.example");
+        await Assert.That(a).IsEqualTo(new DomainName(a.ToString()));
     }
 
-    [Fact]
-    public void FormattedString()
+    [Test]
+    public async Task FormattedString()
     {
         var name = new DomainName(@"foo ~ \.bar-12A.org");
 
-        name.ToString().ShouldBe(@"foo\032~\032\.bar-12A.org");
+        await Assert.That(name).IsEquatableOrEqualTo(@"foo\032~\032\.bar-12A.org");
     }
 }

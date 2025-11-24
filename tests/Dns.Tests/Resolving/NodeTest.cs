@@ -1,34 +1,34 @@
-﻿using Makaretu.Dns;
+﻿using System.Threading.Tasks;
+using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
-using Shouldly;
-using Xunit;
 
 namespace DnsTests.Resolving;
 
 public class NodeTest
 {
-    [Fact]
-    public void Defaults()
+    [Test]
+    public async Task Defaults()
     {
         var node = new Node();
 
-        node.Name.ShouldBe(DomainName.Root);
-        node.Resources.Count.ShouldBe(0);
-        node.ToString().ShouldBe("");
+        await Assert.That(node.Name).IsEqualTo(DomainName.Root);
+        await Assert.That(node.Resources).HasCount().Zero();
+        await Assert.That(node.ToString()).IsEqualTo("");
     }
 
-    [Fact]
-    public void DuplicateResources()
+    [Test]
+    public async Task DuplicateResources()
     {
         var node = new Node();
         var a = new PTRRecord { Name = "a", DomainName = "alpha" };
         var b = new PTRRecord { Name = "a", DomainName = "alpha" };
-        a.ShouldBe(b);
+
+        await Assert.That(a).IsEqualTo(b);
 
         node.Resources.Add(a);
         node.Resources.Add(b);
         node.Resources.Add(a);
         node.Resources.Add(b);
-        node.Resources.Count.ShouldBe(1);
+        await Assert.That(node.Resources).HasCount(1);
     }
 }

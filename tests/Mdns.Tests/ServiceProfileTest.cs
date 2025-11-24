@@ -1,76 +1,73 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 using Makaretu.Dns;
-using Shouldly;
-using Xunit;
 
 namespace Makaretu.Mdns;
 
 public class ServiceProfileTest
 {
-    [Fact]
-    public void Defaults()
+    [Test]
+    public async Task Defaults()
     {
         var service = new ServiceProfile();
-        service.Resources.ShouldNotBeNull();
+        await Assert.That(service.Resources).IsNotNull();
     }
 
-    [Fact]
-    public void QualifiedNames()
+    [Test]
+    public async Task QualifiedNames()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
 
-        service.QualifiedServiceName.ShouldBe("_sdtest._udp.local");
-        service.FullyQualifiedName.ShouldBe("x._sdtest._udp.local");
+        await Assert.That(service.QualifiedServiceName).IsEquatableOrEqualTo("_sdtest._udp.local");
+        await Assert.That(service.FullyQualifiedName).IsEquatableOrEqualTo("x._sdtest._udp.local");
     }
 
-    [Fact]
-    public void ResourceRecords()
+    [Test]
+    public async Task ResourceRecords()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
 
-        service.Resources.OfType<SRVRecord>().Any().ShouldBeTrue();
-        service.Resources.OfType<TXTRecord>().Any().ShouldBeTrue();
-        service.Resources.OfType<ARecord>().Any().ShouldBeTrue();
+        await Assert.That(service.Resources).Any(static x => x is SRVRecord);
+        await Assert.That(service.Resources).Any(static x => x is TXTRecord);
+        await Assert.That(service.Resources).Any(static x => x is ARecord);
     }
 
-    [Fact]
-    public void Addresses_Default()
+    [Test]
+    public async Task Addresses_Default()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
-        service.Resources.Any(static r => r.Type is DnsType.A or DnsType.AAAA).ShouldBeTrue();
+        await Assert.That(service.Resources).Any(static r => r.Type is DnsType.A or DnsType.AAAA);
     }
 
-    [Fact]
-    public void Addresses_IPv4()
+    [Test]
+    public async Task Addresses_IPv4()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.Loopback]);
-        service.Resources.Any(static r => r.Type == DnsType.A).ShouldBeTrue();
+        await Assert.That(service.Resources).Any(static r => r.Type == DnsType.A);
     }
 
-    [Fact]
-    public void Addresses_IPv6()
+    [Test]
+    public async Task Addresses_IPv6()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024, [IPAddress.IPv6Loopback]);
-        service.Resources.Any(static r => r.Type == DnsType.AAAA).ShouldBeTrue();
+        await Assert.That(service.Resources).Any(static r => r.Type == DnsType.AAAA);
     }
 
-    [Fact]
-    public void TXTRecords()
+    [Test]
+    public async Task TXTRecords()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
         var txt = service.Resources.OfType<TXTRecord>().First();
         txt.Strings.AddRange(["a=1", "b=2"]);
-        
-        txt.Strings.ShouldContain("txtvers=1");
-        txt.Strings.ShouldContain("a=1");
-        txt.Strings.ShouldContain("b=2");
+
+        await Assert.That(txt.Strings).Contains("txtvers=1").And.Contains("a=1").And.Contains("b=2");
     }
 
-    [Fact]
-    public void AddProperty()
+    [Test]
+    public async Task AddProperty()
     {
         var service = new ServiceProfile
         {
@@ -80,34 +77,34 @@ public class ServiceProfileTest
         service.AddProperty("a", "1");
 
         var txt = service.Resources.OfType<TXTRecord>().First();
-        
-        txt.Name.ShouldBe(service.FullyQualifiedName);
-        txt.Strings.ShouldContain("a=1");
+
+        await Assert.That(txt.Name).IsEqualTo(service.FullyQualifiedName);
+        await Assert.That(txt.Strings).Contains("a=1");
     }
 
-    [Fact]
-    public void TTLs()
+    [Test]
+    public async Task TTLs()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
-        
-        service.Resources.OfType<TXTRecord>().First().TTL.ShouldBe(TimeSpan.FromMinutes(75));
-        service.Resources.OfType<AddressRecord>().First().TTL.ShouldBe(TimeSpan.FromSeconds(120));
+
+        await Assert.That(service.Resources.OfType<TXTRecord>().First().TTL).IsEqualTo(TimeSpan.FromMinutes(75));
+        await Assert.That(service.Resources.OfType<AddressRecord>().First().TTL).IsEqualTo(TimeSpan.FromSeconds(120));
     }
 
-    [Fact]
-    public void Subtypes()
+    [Test]
+    public async Task Subtypes()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
-        service.Subtypes.Count.ShouldBe(0);
+        await Assert.That(service.Subtypes).HasCount().Zero();
     }
 
-    [Fact]
-    public void HostName()
+    [Test]
+    public async Task HostName()
     {
         var service = new ServiceProfile("fred", "_foo._tcp", 1024);
-        service.HostName.ShouldBe("fred.foo.local");
+        await Assert.That(service.HostName).IsEquatableOrEqualTo("fred.foo.local");
 
         service = new ServiceProfile("fred", "_foo_bar._tcp", 1024);
-        service.HostName.ShouldBe("fred.foo-bar.local");
+        await Assert.That(service.HostName).IsEquatableOrEqualTo("fred.foo-bar.local");
     }
 }
