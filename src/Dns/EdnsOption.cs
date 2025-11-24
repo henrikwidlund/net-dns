@@ -38,7 +38,7 @@ public abstract class EdnsOption
     /// <remarks>
     ///   Derived classes must implement this method.
     /// </remarks>
-    public abstract void ReadData(WireReader reader, int length);
+    public abstract void ReadData(WireReader reader, in int length);
 
     /// <summary>
     ///   Write the data that is specific to the resource record <see cref="EdnsOption.Type"/>.

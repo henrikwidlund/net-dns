@@ -9,7 +9,7 @@ public partial class NameServer
     /// <param name="request"></param>
     /// <param name="response"></param>
     /// <returns></returns>
-    private async Task<Message> AddSecurityExtensionsAsync(Message request, Message response)
+    private Message AddSecurityExtensions(Message request, Message response)
     {
         // If requestor doesn't do DNSSEC, then nothing more to do.
         if (!request.DO)
@@ -17,9 +17,9 @@ public partial class NameServer
         
         response.DO = true;
 
-        await AddSecurityResourcesAsync(response.Answers);
-        await AddSecurityResourcesAsync(response.AuthorityRecords);
-        await AddSecurityResourcesAsync(response.AdditionalRecords);
+        AddSecurityResources(response.Answers);
+        AddSecurityResources(response.AuthorityRecords);
+        AddSecurityResources(response.AdditionalRecords);
 
         return response;
     }
@@ -33,7 +33,7 @@ public partial class NameServer
     /// <remarks>
     ///   Add the signature records (RRSIG) for each resource in the set.
     /// </remarks>
-    private async Task AddSecurityResourcesAsync(List<ResourceRecord> rrset)
+    private void AddSecurityResources(List<ResourceRecord> rrset)
     {
         // Get the signature names and types that are needed.  Then
         // add the corresponding RRSIG records to the rrset.
@@ -46,7 +46,7 @@ public partial class NameServer
         {
             var signatures = new Message();
             var question = new Question { Name = need.Name, Class = need.Class, Type = DnsType.RRSIG };
-            if (!await FindAnswerAsync(question, signatures, CancellationToken.None))
+            if (!FindAnswer(question, signatures, CancellationToken.None))
                 continue;
             
             rrset.AddRange(signatures.Answers

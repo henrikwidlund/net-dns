@@ -635,7 +635,7 @@ public class MulticastService : IMulticastService
         }
     }
 
-    private static void UpdateTTL(Message msg, bool legacy)
+    private static void UpdateTTL(Message msg, in bool legacy)
     {
         foreach (var r in msg.Answers)
             UpdateRecord(r, legacy);
@@ -647,7 +647,7 @@ public class MulticastService : IMulticastService
             UpdateRecord(r, legacy);
     }
 
-    private static void UpdateRecord(ResourceRecord record, bool legacy)
+    private static void UpdateRecord(ResourceRecord record, in bool legacy)
     {
         switch (record.Type)
         {

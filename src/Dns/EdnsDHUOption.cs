@@ -44,10 +44,11 @@ public class EdnsDHUOption : EdnsOption
     }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
+        var localLength = length;
         Algorithms.Clear();
-        for (; length > 0; --length)
+        for (; localLength > 0; --localLength)
             Algorithms.Add((DigestType)reader.ReadByte());
     }
 

@@ -38,7 +38,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteByte(byte value, bool appendSpace = true)
+    public void WriteByte(in byte value, in bool appendSpace = true)
     {
         _text.Write(value);
         
@@ -55,7 +55,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteUInt16(ushort? value, bool appendSpace = true)
+    public void WriteUInt16(in ushort? value, in bool appendSpace = true)
     {
         if (value is null)
             return;
@@ -75,7 +75,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteUInt32(uint value, bool appendSpace = true)
+    public void WriteUInt32(in uint value, in bool appendSpace = true)
     {
         _text.Write(value);
         
@@ -95,7 +95,7 @@ public class PresentationWriter
     /// <remarks>
     ///   Quotes and escapes are added as needed.
     /// </remarks>
-    public void WriteString(string? value, bool appendSpace = true)
+    public void WriteString(string? value, in bool appendSpace = true)
     {
         bool needQuote = false;
 
@@ -132,7 +132,7 @@ public class PresentationWriter
     /// <remarks>
     ///   Quotes and escapes are NOT added.
     /// </remarks>
-    public void WriteStringUnencoded(string value, bool appendSpace = true)
+    public void WriteStringUnencoded(string value, in bool appendSpace = true)
     {
         _text.Write(value);
         
@@ -149,7 +149,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteDomainName(DomainName? value, bool appendSpace = true)
+    public void WriteDomainName(DomainName? value, in bool appendSpace = true)
     {
         if (value is not null)
             WriteStringUnencoded(value.ToString(), appendSpace);
@@ -164,7 +164,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteBase16String(byte[] value, bool appendSpace = true) => WriteString(BaseConvert.ToBase16Lower(value), appendSpace);
+    public void WriteBase16String(byte[] value, in bool appendSpace = true) => WriteString(BaseConvert.ToBase16Lower(value), appendSpace);
 
     /// <summary>
     ///   Write bytes encoded in base-64.
@@ -175,7 +175,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteBase64String(byte[]? value, bool appendSpace = true)
+    public void WriteBase64String(byte[]? value, in bool appendSpace = true)
     {
         if (value is null)
             return;
@@ -192,7 +192,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteTimeSpan16(TimeSpan value, bool appendSpace = true) => WriteUInt16((ushort)value.TotalSeconds, appendSpace);
+    public void WriteTimeSpan16(in TimeSpan value, in bool appendSpace = true) => WriteUInt16((ushort)value.TotalSeconds, appendSpace);
 
     /// <summary>
     ///   Write a time span (interval) in 32-bit seconds.
@@ -203,7 +203,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteTimeSpan32(TimeSpan value, bool appendSpace = true) => WriteUInt32((uint)value.TotalSeconds, appendSpace);
+    public void WriteTimeSpan32(in TimeSpan value, in bool appendSpace = true) => WriteUInt32((uint)value.TotalSeconds, appendSpace);
 
     /// <summary>
     ///   Write a date/time.
@@ -214,7 +214,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteDateTime(DateTime value, bool appendSpace = true) =>
+    public void WriteDateTime(in DateTime value, in bool appendSpace = true) =>
         WriteString(value.ToUniversalTime().ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture), appendSpace);
 
     /// <summary>
@@ -226,7 +226,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteIPAddress(IPAddress value, bool appendSpace = true) => WriteString(value.ToString(), appendSpace);
+    public void WriteIPAddress(IPAddress value, in bool appendSpace = true) => WriteString(value.ToString(), appendSpace);
 
     /// <summary>
     ///   Write a DNS Type.
@@ -241,9 +241,9 @@ public class PresentationWriter
     ///   Either the name of a <see cref="DnsType"/> or
     ///   the string "TYPEx".
     /// </remarks>
-    public void WriteDnsType(DnsType value, bool appendSpace = true)
+    public void WriteDnsType(in DnsType value, in bool appendSpace = true)
     {
-        if (!DnsTypeExtensions.IsDefined(value))
+        if (!value.IsDefined())
             _text.Write("TYPE");
         
         _text.Write(value.ToStringFast());
@@ -265,9 +265,9 @@ public class PresentationWriter
     ///   Either the name of a <see cref="DnsClass"/> or
     ///   the string "CLASSx".
     /// </remarks>
-    public void WriteDnsClass(DnsClass value, bool appendSpace = true)
+    public void WriteDnsClass(in DnsClass value, in bool appendSpace = true)
     {
-        if (!DnsClassExtensions.IsDefined(value))
+        if (!value.IsDefined())
             _text.Write("CLASS");
         
         _text.Write(value.ToStringFast());

@@ -23,7 +23,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
@@ -37,7 +37,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "foo.bar.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
@@ -52,7 +52,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.MX };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
@@ -63,7 +63,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.CH };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
@@ -74,7 +74,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Type = DnsType.ANY };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
@@ -87,7 +87,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "ns.example.com", Class = DnsClass.ANY, Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
@@ -100,7 +100,7 @@ public class NameServerTest
     {
         var resolver = new NameServer { Catalog = _dotcom };
         var question = new Question { Name = "www.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.AA).IsTrue();
@@ -119,7 +119,7 @@ public class NameServerTest
         ftp.Resources.Add(new CNAMERecord { Name = ftp.Name, Target = "ftp-server.example.com" });
         resolver.Catalog.TryAdd(ftp.Name, ftp);
         var question = new Question { Name = "ftp.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.AA).IsTrue();
@@ -141,7 +141,7 @@ public class NameServerTest
         bad.Resources.Add(new CNAMERecord { Name = bad.Name, Target = "somewhere-else.org" });
         resolver.Catalog.TryAdd(bad.Name, bad);
         var question = new Question { Name = "bad.example.com", Type = DnsType.A };
-        var response = await resolver.ResolveAsync(question, cancel: TestContext.Current!.Execution.CancellationToken);
+        var response = resolver.Resolve(question, cancel: TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.AA).IsTrue();

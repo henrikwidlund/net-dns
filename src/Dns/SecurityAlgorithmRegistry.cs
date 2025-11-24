@@ -92,11 +92,8 @@ public static class SecurityAlgorithmRegistry
     /// <exception cref="NotImplementedException">
     ///   When the <paramref name="algorithm"/> is not defined.
     /// </exception>
-    public static Metadata GetMetadata(SecurityAlgorithm algorithm)
-    {
-        if (Algorithms.TryGetValue(algorithm, out var metadata))
-            return metadata;
-        
-        throw new NotImplementedException($"The security algorithm '{algorithm}' is not defined.");
-    }
+    public static Metadata GetMetadata(in SecurityAlgorithm algorithm)
+        => Algorithms.TryGetValue(algorithm, out var metadata)
+            ? metadata
+            : throw new NotImplementedException($"The security algorithm '{algorithm}' is not defined.");
 }

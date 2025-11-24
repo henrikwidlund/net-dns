@@ -78,27 +78,30 @@ public static class DnsClassExtensions
         }
     }
 
-    public static bool IsDefined(DnsClass value)
-        => value switch
-        {
-            DnsClass.IN => true,
-            DnsClass.CS => true,
-            DnsClass.CH => true,
-            DnsClass.HS => true,
-            DnsClass.None => true,
-            DnsClass.ANY => true,
-            _ => false
-        };
-    
-    public static string ToStringFast(this DnsClass value)
-        => value switch
-        {
-            DnsClass.IN => nameof(DnsClass.IN),
-            DnsClass.CS => nameof(DnsClass.CS),
-            DnsClass.CH => nameof(DnsClass.CH),
-            DnsClass.HS => nameof(DnsClass.HS),
-            DnsClass.None => nameof(DnsClass.None),
-            DnsClass.ANY => nameof(DnsClass.ANY),
-            _ => value.ToString()
-        };
+    extension(DnsClass value)
+    {
+        public bool IsDefined()
+            => value switch
+            {
+                DnsClass.IN => true,
+                DnsClass.CS => true,
+                DnsClass.CH => true,
+                DnsClass.HS => true,
+                DnsClass.None => true,
+                DnsClass.ANY => true,
+                _ => false
+            };
+
+        public string ToStringFast()
+            => value switch
+            {
+                DnsClass.IN => nameof(DnsClass.IN),
+                DnsClass.CS => nameof(DnsClass.CS),
+                DnsClass.CH => nameof(DnsClass.CH),
+                DnsClass.HS => nameof(DnsClass.HS),
+                DnsClass.None => nameof(DnsClass.None),
+                DnsClass.ANY => nameof(DnsClass.ANY),
+                _ => value.ToString()
+            };
+    }
 }

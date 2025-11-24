@@ -40,7 +40,7 @@ public class NSEC3PARAMRecord : ResourceRecord
     public byte[]? Salt { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         HashAlgorithm = (DigestType)reader.ReadByte();
         Flags = reader.ReadByte();

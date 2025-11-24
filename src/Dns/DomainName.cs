@@ -71,7 +71,7 @@ public sealed class DomainName : IEquatable<DomainName>
     /// <remarks>
     ///   The labels are not parsed; character escaping is not performed.
     /// </remarks>
-    public DomainName(params string[] labels) => _labels.AddRange(labels);
+    public DomainName(params ReadOnlySpan<string> labels) => _labels.AddRange(labels);
 
     /// <summary>
     ///   Combine multiple domain names to form one.
@@ -82,7 +82,7 @@ public sealed class DomainName : IEquatable<DomainName>
     /// <returns>
     ///   A new domain containing all the <paramref name="names"/>.
     /// </returns>
-    public static DomainName Join(params DomainName[] names)
+    public static DomainName Join(params ReadOnlySpan<DomainName> names)
     {
         var joinedName = new DomainName();
         foreach (var name in names)

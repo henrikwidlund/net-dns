@@ -13,7 +13,7 @@ public interface IResolver
     ///   needs to be answered.
     /// </param>
     /// <param name="cancel">
-    ///   Is used to stop the task.  When cancelled, the <see cref="TaskCanceledException"/> is raised.
+    ///   Is used to stop the task.  When canceled, the <see cref="TaskCanceledException"/> is raised.
     /// </param>
     /// <returns>
     ///   A task that represents the asynchronous operation. The task's value is

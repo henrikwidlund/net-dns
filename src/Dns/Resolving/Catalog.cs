@@ -142,8 +142,9 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
         {
             if (hints is null)
                 throw new InvalidOperationException("RootHints not found.");
-            
-            var reader = new PresentationReader(new StreamReader(hints));
+
+            using var streamReader = new StreamReader(hints);
+            var reader = new PresentationReader(streamReader);
             while (reader.ReadResourceRecord() is { } r)
                 Add(r);
         }
@@ -163,7 +164,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
     ///   Indicates if a <see cref="ResourceRecord"/> is authoritative or cached.
     ///   Only used when a <see cref="Node"/> is created.
     /// </param>
-    public void Include(PresentationReader reader, bool authoritative = false)
+    public void Include(PresentationReader reader, in bool authoritative = false)
     {
         while (true)
         {

@@ -86,7 +86,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
     /// <returns>
     ///   <b>true</b> if the resource is no longer valid; otherwise <b>false</b>.
     /// </returns>
-    public bool IsExpired(DateTime? from = null)
+    public bool IsExpired(in DateTime? from = null)
     {
         var now = from ?? DateTime.Now;
         return CreationTime + TTL <= now;
@@ -166,7 +166,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
     /// <remarks>
     ///   Derived classes must implement this method.
     /// </remarks>
-    public virtual void ReadData(WireReader reader, int length) { }
+    public virtual void ReadData(WireReader reader, in int length) { }
 
     /// <inheritdoc />
     public override void Write(WireWriter writer)

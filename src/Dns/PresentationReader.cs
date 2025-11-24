@@ -129,13 +129,10 @@ public class PresentationReader
     /// <summary>
     ///   Read an Internet address.
     /// </summary>
-    /// <param name="length">
-    ///   Ignored.
-    /// </param>
     /// <returns>
     ///   An <see cref="IPAddress"/>.
     /// </returns>
-    public IPAddress ReadIPAddress(int length = 4) => IPAddress.Parse(ReadToken());
+    public IPAddress ReadIPAddress() => IPAddress.Parse(ReadToken());
 
     /// <summary>
     ///   Read a DNS Type.

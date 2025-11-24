@@ -75,7 +75,7 @@ public class SOARecord : ResourceRecord
     public TimeSpan Minimum { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         PrimaryName = reader.ReadDomainName();
         Mailbox = reader.ReadDomainName();

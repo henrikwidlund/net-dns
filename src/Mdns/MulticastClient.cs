@@ -33,7 +33,7 @@ internal class MulticastClient : IDisposable
 
     public Func<UdpReceiveResult, Task>? MessageReceived { get; set; }
 
-    public MulticastClient(bool useIPv4, bool useIpv6, IEnumerable<NetworkInterface> nics, CancellationToken cancellationToken, ILogger<MulticastClient>? logger = null)
+    public MulticastClient(bool useIPv4, bool useIpv6, IEnumerable<NetworkInterface> nics, in CancellationToken cancellationToken, ILogger<MulticastClient>? logger = null)
     {
         _logger = logger;
         // Set up the receivers.
