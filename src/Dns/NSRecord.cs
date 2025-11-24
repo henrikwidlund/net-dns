@@ -29,7 +29,7 @@ public class NSRecord : ResourceRecord
     public DomainName? Authority { get; set; }
     
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length) => Authority = reader.ReadDomainName();
+    public override void ReadData(WireReader reader, in int length) => Authority = reader.ReadDomainName();
 
     /// <inheritdoc />
     public override void ReadData(PresentationReader reader) => Authority = reader.ReadDomainName();

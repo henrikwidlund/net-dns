@@ -125,7 +125,7 @@ public class OPTRecord : ResourceRecord
     public List<EdnsOption> Options { get; set; } = [];
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         var end = reader.Position + length;
         while (reader.Position < end)

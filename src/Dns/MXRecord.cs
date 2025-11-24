@@ -33,7 +33,7 @@ public class MXRecord : ResourceRecord
     public DomainName? Exchange { get; set; }
     
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         Preference = reader.ReadUInt16();
         Exchange = reader.ReadDomainName();

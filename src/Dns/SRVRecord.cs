@@ -48,7 +48,7 @@ public class SRVRecord : ResourceRecord
     public DomainName? Target { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         Priority = reader.ReadUInt16();
         Weight = reader.ReadUInt16();

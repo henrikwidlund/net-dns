@@ -32,7 +32,7 @@ public class DSRecord : ResourceRecord
     /// <exception cref="ArgumentOutOfRangeException">
     ///   The <see cref="ResourceRecord.Name"/> of the <paramref name="key"/> is missing.
     /// </exception>
-    public DSRecord(DNSKEYRecord key, bool force = false) 
+    public DSRecord(DNSKEYRecord key, in bool force = false)
         : this()
     {
         if (key.Algorithm is null)
@@ -94,7 +94,7 @@ public class DSRecord : ResourceRecord
     public byte[]? Digest { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         var end = reader.Position + length;
 

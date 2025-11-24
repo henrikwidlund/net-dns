@@ -40,7 +40,7 @@ public static class BaseConvert
         return sb.ToString();
     }
 
-    private static int GetHexVal(int val) =>
+    private static int GetHexVal(in int val) =>
         val is < 48 or > 57 and < 65 or > 70 and < 97 or > 102
             ? throw new FormatException("Invalid hex character")
             : val - (val < 58 ? 48 : val < 97 ? 55 : 87);
@@ -135,7 +135,7 @@ public static class BaseConvert
         return returnArray;
     }
 
-    private static int CharToValue(char c)
+    private static int CharToValue(in char c)
     {
         int value = c;
 
@@ -151,7 +151,7 @@ public static class BaseConvert
         };
     }
 
-    private static char ValueToChar(byte b) =>
+    private static char ValueToChar(in byte b) =>
         b switch
         {
             < 10 => (char)(b + 48),

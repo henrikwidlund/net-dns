@@ -218,10 +218,9 @@ public class WireReader
     public string ReadString()
     {
         var bytes = ReadByteLengthPrefixedBytes();
-        if (bytes.Any(static c => c > 0x7F))
-            throw new InvalidDataException("Only ASCII characters are allowed.");
-        
-        return Encoding.ASCII.GetString(bytes);
+        return bytes.Any(static c => c > 0x7F)
+            ? throw new InvalidDataException("Only ASCII characters are allowed.")
+            : Encoding.ASCII.GetString(bytes);
     }
 
     /// <summary>
@@ -250,7 +249,7 @@ public class WireReader
     /// <exception cref="EndOfStreamException">
     ///   When no more data is available.
     /// </exception>
-    public string ReadUTF8String(int length) => length == 0 ? string.Empty : Encoding.UTF8.GetString(ReadBytes(length));
+    public string ReadUTF8String(in int length) => length == 0 ? string.Empty : Encoding.UTF8.GetString(ReadBytes(length));
 
     /// <summary>
     ///   Read a time span (interval) with 16-bits.
@@ -293,7 +292,7 @@ public class WireReader
     ///   Use a <paramref name="length"/> of 4 to read an IPv4 address and
     ///   16 to read an IPv6 address.
     /// </remarks>
-    public IPAddress ReadIPAddress(int length = 4)
+    public IPAddress ReadIPAddress(in int length = 4)
     {
         var address = ReadBytes(length);
         return new IPAddress(address);

@@ -36,7 +36,7 @@ public static class DigestRegistry
     ///   When the <paramref name="algorithm"/> or its <see cref="HashAlgorithm"/>
     ///   is not implemented.
     /// </exception>
-    public static byte[] HashData(SecurityAlgorithm algorithm, Stream stream) =>
+    public static byte[] HashData(in SecurityAlgorithm algorithm, Stream stream) =>
         SecurityAlgorithmRegistry.GetMetadata(algorithm).HashAlgorithm switch
         {
             DigestType.Sha1 => SHA1.HashData(stream),

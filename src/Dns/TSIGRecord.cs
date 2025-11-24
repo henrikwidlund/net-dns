@@ -115,7 +115,7 @@ public class TSIGRecord : ResourceRecord
     public byte[]? OtherData { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         Algorithm = reader.ReadDomainName();
         TimeSigned = reader.ReadDateTime48();

@@ -53,7 +53,7 @@ public class NSEC3Record : ResourceRecord
     public List<DnsType> Types { get; set; } = [];
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         var end = reader.Position + length;
 

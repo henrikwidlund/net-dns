@@ -31,7 +31,7 @@ public class EdnsErrorOption : EdnsOption
     public string Text { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         Error = (ExtendedDNSError)reader.ReadUInt16();
         Text = reader.ReadUTF8String(length - 2);

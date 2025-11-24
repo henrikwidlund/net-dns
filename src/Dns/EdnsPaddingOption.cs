@@ -25,7 +25,7 @@ public class EdnsPaddingOption : EdnsOption
     public byte[]? Padding { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length) => Padding = reader.ReadBytes(length);
+    public override void ReadData(WireReader reader, in int length) => Padding = reader.ReadBytes(length);
 
     /// <inheritdoc />
     public override void WriteData(WireWriter writer) => writer.WriteBytes(Padding);

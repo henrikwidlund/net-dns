@@ -31,7 +31,7 @@ public class RPRecord : ResourceRecord
     public DomainName TextName { get; set; } = DomainName.Root;
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         Mailbox = reader.ReadDomainName();
         TextName = reader.ReadDomainName();

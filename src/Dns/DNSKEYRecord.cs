@@ -22,7 +22,7 @@ public class DNSKEYRecord : ResourceRecord
     /// <param name="algorithm">
     ///   The security algorithm to use.  Only RSA types are allowed.
     /// </param>
-    public DNSKEYRecord(RSA key, SecurityAlgorithm algorithm)
+    public DNSKEYRecord(RSA key, in SecurityAlgorithm algorithm)
     {
         if (algorithm is not SecurityAlgorithm.RSAMD5 and
             not SecurityAlgorithm.RSASHA1 and
@@ -153,7 +153,7 @@ public class DNSKEYRecord : ResourceRecord
     }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         var end = reader.Position + length;
 

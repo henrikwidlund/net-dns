@@ -37,7 +37,7 @@ public abstract class AddressRecord : ResourceRecord
         };
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length) => Address = reader.ReadIPAddress(length);
+    public override void ReadData(WireReader reader, in int length) => Address = reader.ReadIPAddress(length);
 
     /// <inheritdoc />
     public override void ReadData(PresentationReader reader) => Address = reader.ReadIPAddress();

@@ -48,7 +48,7 @@ public class ServiceProfile
     /// <remarks>
     ///   The SRV, TXT and A/AAAA resoruce records are added to the <see cref="Resources"/>.
     /// </remarks>
-    public ServiceProfile(DomainName instanceName, DomainName serviceName, ushort port, IEnumerable<IPAddress>? addresses = null, bool sharedProfile = false)
+    public ServiceProfile(DomainName instanceName, DomainName serviceName, in ushort port, IEnumerable<IPAddress>? addresses = null, in bool sharedProfile = false)
     {
         _instanceName = instanceName;
         _serviceName = serviceName;
@@ -170,10 +170,9 @@ public class ServiceProfile
     {
         get
         {
-            if (_serviceName is null)
-                throw new InvalidOperationException($"{nameof(ServiceName)} is not set.");
-            
-            return DomainName.Join(_serviceName, Domain);
+            return _serviceName is null
+                ? throw new InvalidOperationException($"{nameof(ServiceName)} is not set.")
+                : DomainName.Join(_serviceName, Domain);
         }
     }
 

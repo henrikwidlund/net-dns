@@ -22,13 +22,14 @@ public class TXTRecord : ResourceRecord
     public List<string> Strings { get; set; } = [];
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
-        while (length > 0)
+        var localLength = length;
+        while (localLength > 0)
         {
             var s = reader.ReadString();
             Strings.Add(s);
-            length -= Encoding.UTF8.GetByteCount(s) + 1;
+            localLength -= Encoding.UTF8.GetByteCount(s) + 1;
         }
     }
 

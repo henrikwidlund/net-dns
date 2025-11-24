@@ -94,7 +94,7 @@ public class UpdateResourceList : List<ResourceRecord>
     }
 
     /// <summary>
-    ///   Delete the resource records with the specifified name and type.
+    ///   Delete the resource records with the specified name and type.
     /// </summary>
     /// <param name="name">A resource name.</param>
     /// <param name="type">One of the RR TYPE codes.</param>
@@ -111,7 +111,7 @@ public class UpdateResourceList : List<ResourceRecord>
     ///   </para>
     /// </remarks>
     /// <seealso cref="DeleteResource{T}(DomainName)"/>
-    public UpdateResourceList DeleteResource(DomainName name, DnsType type)
+    public UpdateResourceList DeleteResource(DomainName name, in DnsType type)
     {
         var resource = new ResourceRecord
         {
@@ -143,7 +143,7 @@ public class UpdateResourceList : List<ResourceRecord>
     ///   this Update RR will be silently ignored by the primary master.
     ///   </para>
     /// </remarks>
-    /// <seealso cref="DeleteResource(DomainName, DnsType)"/>
+    /// <seealso cref="DeleteResource(DomainName, in DnsType)"/>
     public UpdateResourceList DeleteResource<T>(DomainName name)
         where T : ResourceRecord, new() =>
         DeleteResource(name, new T().Type);

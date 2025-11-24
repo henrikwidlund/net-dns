@@ -11,7 +11,7 @@ public class UnknownRecord : ResourceRecord
     public byte[]? Data { get; set; }
     
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length) => Data = reader.ReadBytes(length);
+    public override void ReadData(WireReader reader, in int length) => Data = reader.ReadBytes(length);
 
     /// <inheritdoc />
     public override void ReadData(PresentationReader reader) => Data = reader.ReadResourceData();

@@ -29,7 +29,7 @@ public partial class NameServer : IResolver
     public bool AnswerAllQuestions { get; set; }
 
     /// <inheritdoc />
-    public async Task<Message> ResolveAsync(
+    public Task<Message> ResolveAsync(
         Message request,
         CancellationToken cancel = default)
     {
@@ -37,7 +37,7 @@ public partial class NameServer : IResolver
 
         foreach (var question in request.Questions)
         {
-            await ResolveAsync(question, response, cancel);
+            Resolve(question, response, cancel);
             if (response.Answers.Count > 0 && !AnswerAllQuestions)
                 break;
         }
@@ -60,7 +60,7 @@ public partial class NameServer : IResolver
                 .ToList();
         }
 
-        return await AddSecurityExtensionsAsync(request, response);
+        return Task.FromResult(AddSecurityExtensions(request, response));
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public partial class NameServer : IResolver
     ///   created.
     /// </param>
     /// <param name="cancel">
-    ///   Is used to stop the task.  When cancelled, the <see cref="TaskCanceledException"/> is raised.
+    ///   Is used to stop the task.  When canceled, the <see cref="TaskCanceledException"/> is raised.
     /// </param>
     /// <returns>
     ///   A task that represents the asynchronous operation. The task's value is
@@ -84,12 +84,12 @@ public partial class NameServer : IResolver
     ///   If the question's domain does not exist, then the closest authority
     ///   (<see cref="SOARecord"/>) is added to the <see cref="Message.AuthorityRecords"/>.
     /// </remarks>
-    public async Task<Message> ResolveAsync(Question question, Message? response = null, CancellationToken cancel = default)
+    public Message Resolve(Question question, Message? response = null, in CancellationToken cancel = default)
     {
         response ??= new Message { QR = true };
 
         // Get answer and details of the domain.
-        var found = await FindAnswerAsync(question, response, cancel);
+        var found = FindAnswer(question, response, cancel);
         var soa = FindAuthority(question.Name);
         if (!found && response.Status == MessageStatus.NoError)
             response.Status = MessageStatus.NameError;
@@ -100,7 +100,7 @@ public partial class NameServer : IResolver
         {
             var res = new Message();
             var q = new Question { Name = soa.Name, Class = soa.Class, Type = DnsType.NS };
-            await FindAnswerAsync(q, res, cancel);
+            FindAnswer(q, res, cancel);
             response.AuthorityRecords.AddRange(res.Answers.OfType<NSRecord>());
         }
 
@@ -109,7 +109,7 @@ public partial class NameServer : IResolver
             response.AuthorityRecords.Add(soa);
 
         // Add additional records.
-        await AddAdditionalRecords(response, cancel);
+        AddAdditionalRecords(response, cancel);
 
         return response;
     }
@@ -133,17 +133,17 @@ public partial class NameServer : IResolver
     /// <remarks>
     ///   Derived classes must implement this method.
     /// </remarks>
-    protected Task<bool> FindAnswerAsync(Question question, Message response, CancellationToken cancel)
+    protected bool FindAnswer(Question question, Message response, in CancellationToken cancel)
     {
         if (cancel.IsCancellationRequested)
-            return Task.FromCanceled<bool>(cancel);
+            return false;
         
         if (question.Name is null)
             throw new InvalidOperationException("Question name is missing.");
         
         // Find a node for the question name.
         if (Catalog is null || !Catalog.TryGetValue(question.Name, out var node))
-            return Task.FromResult(false);
+            return false;
 
         // https://tools.ietf.org/html/rfc1034#section-3.7.1
         response.AA |= node.Authoritative && question.Class != DnsClass.ANY;
@@ -156,7 +156,7 @@ public partial class NameServer : IResolver
         if (resources.Length > 0)
         {
             response.Answers.AddRange(resources);
-            return Task.FromResult(true);
+            return true;
         }
 
         // If node is alias (CNAME), then find answers for the alias' target.
@@ -167,11 +167,11 @@ public partial class NameServer : IResolver
             response.Answers.Add(cname);
             question = question.Clone<Question>();
             question.Name = cname.Target;
-            return FindAnswerAsync(question, response, cancel);
+            return FindAnswer(question, response, cancel);
         }
 
         // Nothing more can be done.
-        return Task.FromResult(false);
+        return false;
     }
 
     private SOARecord? FindAuthority(DomainName? domainName)
@@ -191,7 +191,7 @@ public partial class NameServer : IResolver
         return null;
     }
 
-    private async Task AddAdditionalRecords(Message response, CancellationToken cancellationToken)
+    private void AddAdditionalRecords(Message response, in CancellationToken cancellationToken)
     {
         var extras = new Message();
         var resources = response.Answers
@@ -207,14 +207,14 @@ public partial class NameServer : IResolver
                     question.Class = resource.Class;
                     question.Name = resource.Name;
                     question.Type = DnsType.AAAA;
-                    await FindAnswerAsync(question, extras, cancellationToken);
+                    FindAnswer(question, extras, cancellationToken);
                     break;
 
                 case DnsType.AAAA:
                     question.Class = resource.Class;
                     question.Name = resource.Name;
                     question.Type = DnsType.A;
-                    await FindAnswerAsync(question, extras, cancellationToken);
+                    FindAnswer(question, extras, cancellationToken);
                     break;
 
                 case DnsType.NS:
@@ -223,7 +223,7 @@ public partial class NameServer : IResolver
                     if (domainName is null)
                         throw new InvalidOperationException("NS record has no authority.");
                     
-                    await FindAddresses(domainName, resource.Class, extras, cancellationToken);
+                    FindAddresses(domainName, resource.Class, extras, cancellationToken);
                     break;
 
                 case DnsType.PTR:
@@ -232,7 +232,7 @@ public partial class NameServer : IResolver
                     question.Class = resource.Class;
                     question.Name = ptr.DomainName;
                     question.Type = DnsType.ANY;
-                    await FindAnswerAsync(question, extras, cancellationToken);
+                    FindAnswer(question, extras, cancellationToken);
                     break;
 
                 case DnsType.SOA:
@@ -240,20 +240,20 @@ public partial class NameServer : IResolver
                     if (primaryName is null)
                         throw new InvalidOperationException("SOA record has no primary name.");
                     
-                    await FindAddresses(primaryName, resource.Class, extras, cancellationToken);
+                    FindAddresses(primaryName, resource.Class, extras, cancellationToken);
                     break;
 
                 case DnsType.SRV:
                     question.Class = resource.Class;
                     question.Name = resource.Name;
                     question.Type = DnsType.TXT;
-                    await FindAnswerAsync(question, extras, cancellationToken);
+                    FindAnswer(question, extras, cancellationToken);
 
                     var target = ((SRVRecord)resource).Target;
                     if (target is null)
                         throw new InvalidOperationException("SRV record has no target.");
                     
-                    await FindAddresses(target, resource.Class, extras, cancellationToken);
+                    FindAddresses(target, resource.Class, extras, cancellationToken);
                     break;
             }
         }
@@ -267,10 +267,10 @@ public partial class NameServer : IResolver
 
         // Add additionals for any extras.
         if (extras.Answers.Count > 0)
-            await AddAdditionalRecords(response, cancellationToken);
+            AddAdditionalRecords(response, cancellationToken);
     }
 
-    private async Task FindAddresses(DomainName name, DnsClass dnsClass, Message response, CancellationToken cancel)
+    private void FindAddresses(DomainName name, DnsClass dnsClass, Message response, in CancellationToken cancel)
     {
         var question = new Question
         {
@@ -278,9 +278,9 @@ public partial class NameServer : IResolver
             Class = dnsClass,
             Type = DnsType.A
         };
-        await FindAnswerAsync(question, response, cancel);
+        FindAnswer(question, response, cancel);
 
         question.Type = DnsType.AAAA;
-        await FindAnswerAsync(question, response, cancel);
+        FindAnswer(question, response, cancel);
     }
 }

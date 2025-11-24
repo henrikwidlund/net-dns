@@ -24,7 +24,7 @@ public class PTRRecord : ResourceRecord
     public DomainName? DomainName { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length) => DomainName = reader.ReadDomainName();
+    public override void ReadData(WireReader reader, in int length) => DomainName = reader.ReadDomainName();
 
     /// <inheritdoc />
     public override void ReadData(PresentationReader reader) => DomainName = reader.ReadDomainName();

@@ -87,7 +87,7 @@ public class WireWriter
     /// <summary>
     ///   Write a byte.
     /// </summary>
-    public void WriteByte(byte value)
+    public void WriteByte(in byte value)
     {
         _stream.WriteByte(value);
         ++Position;
@@ -149,7 +149,7 @@ public class WireWriter
     /// <summary>
     ///   Write an unsigned short.
     /// </summary>
-    public void WriteUInt16(ushort value)
+    public void WriteUInt16(in ushort value)
     {
         _stream.WriteByte((byte)(value >> 8));
         _stream.WriteByte((byte)value);
@@ -159,7 +159,7 @@ public class WireWriter
     /// <summary>
     ///   Write an unsigned int.
     /// </summary>
-    public void WriteUInt32(uint value)
+    public void WriteUInt32(in uint value)
     {
         _stream.WriteByte((byte)(value >> 24));
         _stream.WriteByte((byte)(value >> 16));
@@ -171,7 +171,7 @@ public class WireWriter
     /// <summary>
     ///   Write an unsigned long in 48 bits.
     /// </summary>
-    public void WriteUInt48(ulong value)
+    public void WriteUInt48(in ulong value)
     {
         if (value > Uint48MaxValue)
             throw new ArgumentException("Value is greater than 48 bits.", nameof(value));
@@ -207,7 +207,7 @@ public class WireWriter
     ///   that this field may be an odd number of octets; no
     ///   padding is used.
     /// </remarks>
-    public void WriteDomainName(string? name, bool uncompressed = false)
+    public void WriteDomainName(string? name, in bool uncompressed = false)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -336,7 +336,7 @@ public class WireWriter
     /// <remarks>
     ///   The interval is represented as the number of seconds in two bytes.
     /// </remarks>
-    public void WriteTimeSpan16(TimeSpan value) => WriteUInt16((ushort)value.TotalSeconds);
+    public void WriteTimeSpan16(in TimeSpan value) => WriteUInt16((ushort)value.TotalSeconds);
 
     /// <summary>
     ///   Write a time span with 32-bits.
@@ -347,7 +347,7 @@ public class WireWriter
     /// <remarks>
     ///   The interval is represented as the number of seconds in four bytes.
     /// </remarks>
-    public void WriteTimeSpan32(TimeSpan value) => WriteUInt32((uint)value.TotalSeconds);
+    public void WriteTimeSpan32(in TimeSpan value) => WriteUInt32((uint)value.TotalSeconds);
 
     /// <summary>
     ///   Write a date/time.
@@ -364,7 +364,7 @@ public class WireWriter
     ///   since the Unix epoch.  The seconds is represented as 32-bit
     ///   unsigned int
     /// </remarks>
-    public void WriteDateTime32(DateTime value)
+    public void WriteDateTime32(in DateTime value)
     {
         var seconds = (value.ToUniversalTime() - DateTimeOffset.UnixEpoch.UtcDateTime).TotalSeconds;
         WriteUInt32(Convert.ToUInt32(seconds));
@@ -385,7 +385,7 @@ public class WireWriter
     ///   since the Unix epoch.  The seconds is represented as 48-bit
     ///   unsigned int
     /// </remarks>
-    public void WriteDateTime48(DateTime value)
+    public void WriteDateTime48(in DateTime value)
     {
         var seconds = (value.ToUniversalTime() - DateTimeOffset.UnixEpoch.UtcDateTime).TotalSeconds;
         WriteUInt48(Convert.ToUInt64(seconds));

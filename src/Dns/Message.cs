@@ -106,9 +106,8 @@ public class Message : DnsObject
             if ((extendedOpcode & 0xff0) == 0)
             {
                 _opcode4 = (byte)extendedOpcode;
-                if (opt is not null)
-                    opt.Opcode8 = 0;
-                
+                opt?.Opcode8 = 0;
+
                 return;
             }
 
@@ -147,7 +146,7 @@ public class Message : DnsObject
     /// <value>
     ///   <b>true</b> for a truncated message; otherwise, <b>false</b>.
     /// </value>
-    /// <seealso cref="Truncate(int)"/>
+    /// <seealso cref="Truncate(in int)"/>
     public bool TC { get; set; }
 
     /// <summary>
@@ -307,7 +306,7 @@ public class Message : DnsObject
     ///   If it is still too big, then the <see cref="TC"/> bit is set.
     ///   </para>
     /// </remarks>
-    public void Truncate(int length)
+    public void Truncate(in int length)
     {
         while (Length() > length)
         {

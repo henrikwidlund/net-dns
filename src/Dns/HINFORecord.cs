@@ -28,7 +28,7 @@ public class HINFORecord : ResourceRecord
     public string? OS { get; set; }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, int length)
+    public override void ReadData(WireReader reader, in int length)
     {
         Cpu = reader.ReadString();
         OS = reader.ReadString();

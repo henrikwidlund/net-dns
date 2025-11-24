@@ -31,7 +31,7 @@ public class UpdatePrerequisiteList : List<ResourceRecord>
     ///   condition from that of an actual RR whose RDLENGTH is naturally zero
     ///   (0) (e.g., NULL).  TTL is specified as zero(0).
     /// </remarks>
-    public UpdatePrerequisiteList MustExist(DomainName name, DnsType type)
+    public UpdatePrerequisiteList MustExist(DomainName name, in DnsType type)
     {
         var rr = new ResourceRecord
         {
@@ -126,7 +126,7 @@ public class UpdatePrerequisiteList : List<ResourceRecord>
     ///   naturally zero (0) (for example, the NULL RR).  TTL must be specified
     ///   as zero(0).
     /// </remarks>
-    public UpdatePrerequisiteList MustNotExist(DomainName name, DnsType type)
+    public UpdatePrerequisiteList MustNotExist(DomainName name, in DnsType type)
     {
         var rr = new ResourceRecord
         {

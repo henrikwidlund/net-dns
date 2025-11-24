@@ -64,7 +64,7 @@ public static class ResourceRegistry
     private static void RegisterCore<T>(Dictionary<DnsType, Func<ResourceRecord>> records) where T : ResourceRecord, new()
     {
         var rr = new T();
-        if (!DnsTypeExtensions.IsDefined(rr.Type))
+        if (!rr.Type.IsDefined())
             throw new InvalidOperationException($"The RR TYPE {rr.Type} is not defined.");
         
         records.Add(rr.Type, static () => new T());
@@ -83,5 +83,5 @@ public static class ResourceRegistry
     ///   When the <paramref name="type"/> is not implemented, a new
     ///   of <see cref="UnknownRecord"/> is returned.
     /// </remarks>
-    public static ResourceRecord Create(DnsType type) => RecordsPrivate.TryGetValue(type, out var maker) ? maker() : new UnknownRecord();
+    public static ResourceRecord Create(in DnsType type) => RecordsPrivate.TryGetValue(type, out var maker) ? maker() : new UnknownRecord();
 }
