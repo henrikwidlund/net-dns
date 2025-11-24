@@ -8,6 +8,7 @@ using Makaretu.Dns;
 
 namespace Makaretu.Mdns;
 
+[ParallelLimiter<SingleTestRateLimit>]
 public class ServiceDiscoveryTest
 {
     [Test]
