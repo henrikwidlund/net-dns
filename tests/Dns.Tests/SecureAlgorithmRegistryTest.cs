@@ -8,7 +8,7 @@ namespace DnsTests;
 public class SecurityAlgorithmRegistryTest
 {
     [Test]
-    public async Task Exists() => await Assert.That(SecurityAlgorithmRegistry.Algorithms).HasCount().NotEqualTo(0);
+    public async Task Exists() => await Assert.That(SecurityAlgorithmRegistry.Algorithms).Count().IsNotEqualTo(0);
 
     [Test]
     public async Task RSASHA1()

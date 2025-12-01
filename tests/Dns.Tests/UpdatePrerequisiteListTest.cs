@@ -12,7 +12,7 @@ public class UpdatePrerequisiteListTest
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist("www.example.org");
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
@@ -28,7 +28,7 @@ public class UpdatePrerequisiteListTest
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist("www.example.org", DnsType.A);
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
@@ -44,7 +44,7 @@ public class UpdatePrerequisiteListTest
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist<ARecord>("www.example.org");
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
@@ -66,7 +66,7 @@ public class UpdatePrerequisiteListTest
         };
         var prerequisites = new UpdatePrerequisiteList()
             .MustExist(rr);
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
@@ -83,7 +83,7 @@ public class UpdatePrerequisiteListTest
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist("www.example.org");
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
@@ -99,7 +99,7 @@ public class UpdatePrerequisiteListTest
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist("www.example.org", DnsType.A);
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
@@ -115,7 +115,7 @@ public class UpdatePrerequisiteListTest
     {
         var prerequisites = new UpdatePrerequisiteList()
             .MustNotExist<ARecord>("www.example.org");
-        await Assert.That(prerequisites).HasCount(1);
+        await Assert.That(prerequisites).Count().IsEqualTo(1);
         var p = prerequisites[0];
 
         await Assert.That(p).IsNotNull();
