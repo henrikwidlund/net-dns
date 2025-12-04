@@ -19,7 +19,7 @@ public class UpdateResourceListTest
 
         var updates = new UpdateResourceList()
             .AddResource(rr);
-        await Assert.That(updates).HasCount(1);
+        await Assert.That(updates).Count().IsEqualTo(1);
         var p = updates[0];
 
         await Assert.That(p).IsNotNull();
@@ -36,7 +36,7 @@ public class UpdateResourceListTest
     {
         var updates = new UpdateResourceList()
             .DeleteResource("www.example.org");
-        await Assert.That(updates).HasCount(1);
+        await Assert.That(updates).Count().IsEqualTo(1);
         var p = updates[0];
 
         await Assert.That(p).IsNotNull();
@@ -52,7 +52,7 @@ public class UpdateResourceListTest
     {
         var updates = new UpdateResourceList()
             .DeleteResource("www.example.org", DnsType.A);
-        await Assert.That(updates).HasCount(1);
+        await Assert.That(updates).Count().IsEqualTo(1);
         var p = updates[0];
 
         await Assert.That(p).IsNotNull();
@@ -68,7 +68,7 @@ public class UpdateResourceListTest
     {
         var updates = new UpdateResourceList()
             .DeleteResource<ARecord>("www.example.org");
-        await Assert.That(updates).HasCount(1);
+        await Assert.That(updates).Count().IsEqualTo(1);
         var p = updates[0];
 
         await Assert.That(p).IsNotNull();
@@ -91,7 +91,7 @@ public class UpdateResourceListTest
 
         var updates = new UpdateResourceList()
             .DeleteResource(rr);
-        await Assert.That(updates).HasCount(1);
+        await Assert.That(updates).Count().IsEqualTo(1);
         var p = updates[0];
 
         await Assert.That(p).IsNotNull();

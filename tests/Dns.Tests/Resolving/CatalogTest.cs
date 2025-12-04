@@ -139,19 +139,19 @@ public class CatalogTest
         var reader = new PresentationReader(stringReader);
         var zone = catalog.IncludeZone(reader);
         await Assert.That(zone.Name).IsEquatableOrEqualTo("example.com");
-        await Assert.That(catalog).HasCount(7);
+        await Assert.That(catalog).Count().IsEqualTo(7);
 
         using var textReader = new StringReader(ExampleDotOrgZoneText);
         reader = new PresentationReader(textReader);
         zone = catalog.IncludeZone(reader);
         await Assert.That(zone.Name).IsEquatableOrEqualTo("example.org");
-        await Assert.That(catalog).HasCount(14);
+        await Assert.That(catalog).Count().IsEqualTo(14);
 
         catalog.RemoveZone("example.org");
-        await Assert.That(catalog).HasCount(7);
+        await Assert.That(catalog).Count().IsEqualTo(7);
 
         catalog.RemoveZone("example.com");
-        await Assert.That(catalog).HasCount().Zero();
+        await Assert.That(catalog).Count().IsEqualTo(0);
     }
 
     [Test]
@@ -199,7 +199,7 @@ public class CatalogTest
         var n2 = catalog.Add(a);
         await Assert.That(n1).IsSameReferenceAs(n2);
         await Assert.That(n1.Resources).Contains(a);
-        await Assert.That(n1.Resources).HasCount(1);
+        await Assert.That(n1.Resources).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -217,7 +217,7 @@ public class CatalogTest
         await Assert.That(n1).IsSameReferenceAs(n2);
         await Assert.That(n1.Resources).Contains(a);
         await Assert.That(n1.Resources).Contains(b);
-        await Assert.That(n1.Resources).HasCount(1);
+        await Assert.That(n1.Resources).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -238,7 +238,7 @@ public class CatalogTest
         await Assert.That(n1).IsSameReferenceAs(n2);
         await Assert.That(n1.Resources).Contains(a);
         await Assert.That(n1.Resources).Contains(b);
-        await Assert.That(n1.Resources).HasCount(1);
+        await Assert.That(n1.Resources).Count().IsEqualTo(1);
         await Assert.That(n1.Resources.First().CreationTime).IsEqualTo(b.CreationTime);
         await Assert.That(n1.Resources.First().TTL).IsEqualTo(b.TTL);
     }
@@ -316,7 +316,7 @@ public class CatalogTest
         await Assert.That(catalog).ContainsKey("com");
 
         var node = catalog["COM"];
-        await Assert.That(node.Resources).HasCount(3);
+        await Assert.That(node.Resources).Count().IsEqualTo(3);
     }
 
     [Test]

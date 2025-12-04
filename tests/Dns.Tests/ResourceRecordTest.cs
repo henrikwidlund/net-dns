@@ -38,7 +38,7 @@ public class ResourceRecordTest
     {
         var rr = new ResourceRecord();
 
-        await Assert.That(rr.GetData()).HasCount().Zero();
+        await Assert.That(rr.GetData()).Count().IsEqualTo(0);
     }
 
     [Test]
@@ -46,7 +46,7 @@ public class ResourceRecordTest
     {
         var a = new ARecord { Address = IPAddress.Parse("127.0.0.1") };
 
-        await Assert.That(a.GetData()).HasCount().NotEqualTo(0);
+        await Assert.That(a.GetData()).Count().IsNotEqualTo(0);
     }
 
     [Test]

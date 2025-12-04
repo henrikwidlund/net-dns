@@ -190,7 +190,7 @@ public class PresentationReaderTest
         await Assert.That(resource.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
         await Assert.That(resource).IsTypeOf<PTRRecord>();
         await Assert.That(resource.Name).IsNotNull();
-        await Assert.That(resource.Name!.Labels).HasCount(1);
+        await Assert.That(resource.Name!.Labels).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -254,7 +254,7 @@ public class PresentationReaderTest
         await Assert.That(a.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
         await Assert.That(a).IsTypeOf<ARecord>();
         await Assert.That(a.Name).IsNotNull();
-        await Assert.That(a.Name!.Labels).HasCount(2);
+        await Assert.That(a.Name!.Labels).Count().IsEqualTo(2);
 
         var aaaa = reader.ReadResourceRecord();
         await  Assert.That(aaaa).IsNotNull();
@@ -264,7 +264,7 @@ public class PresentationReaderTest
         await Assert.That(aaaa.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
         await Assert.That(aaaa).IsTypeOf<AAAARecord>();
         await Assert.That(aaaa.Name).IsNotNull();
-        await Assert.That(aaaa.Name!.Labels).HasCount(2);
+        await Assert.That(aaaa.Name!.Labels).Count().IsEqualTo(2);
     }
 
     [Test]
@@ -281,7 +281,7 @@ public class PresentationReaderTest
         await Assert.That(a.TTL).IsEqualTo(ResourceRecord.DefaultTTL);
         await Assert.That(a).IsTypeOf<ARecord>();
         await Assert.That(a.Name).IsNotNull();
-        await Assert.That(a.Name!.Labels).HasCount(2);
+        await Assert.That(a.Name!.Labels).Count().IsEqualTo(2);
     }
 
     [Test]
@@ -319,7 +319,7 @@ public class PresentationReaderTest
             resources.Add(r);
         }
 
-        await Assert.That(resources).HasCount(15);
+        await Assert.That(resources).Count().IsEqualTo(15);
     }
 
     [Test]
@@ -327,7 +327,7 @@ public class PresentationReaderTest
     {
         var reader = new PresentationReader(new StringReader("\\# 0"));
         var rdata = reader.ReadResourceData();
-        await Assert.That(rdata).HasCount().Zero();
+        await Assert.That(rdata).Count().IsEqualTo(0);
 
         reader = new PresentationReader(new StringReader("\\# 3 abcdef"));
         rdata = reader.ReadResourceData();

@@ -70,12 +70,12 @@ public class SecureNameServerTest
         await Assert.That(response.AA).IsTrue();
         await Assert.That(response.DO).IsTrue();
 
-        await Assert.That(response.Answers).HasCount(2);
-        await Assert.That(response.Answers.OfType<MXRecord>()).HasCount(1);
-        await Assert.That(response.Answers.OfType<RRSIGRecord>()).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(2);
+        await Assert.That(response.Answers.OfType<MXRecord>()).Count().IsEqualTo(1);
+        await Assert.That(response.Answers.OfType<RRSIGRecord>()).Count().IsEqualTo(1);
 
-        await Assert.That(response.AuthorityRecords).HasCount(3);
-        await Assert.That(response.AuthorityRecords.OfType<NSRecord>()).HasCount(2);
-        await Assert.That(response.AuthorityRecords.OfType<RRSIGRecord>()).HasCount(1);
+        await Assert.That(response.AuthorityRecords).Count().IsEqualTo(3);
+        await Assert.That(response.AuthorityRecords.OfType<NSRecord>()).Count().IsEqualTo(2);
+        await Assert.That(response.AuthorityRecords.OfType<RRSIGRecord>()).Count().IsEqualTo(1);
     }
 }

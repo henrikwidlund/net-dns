@@ -95,7 +95,7 @@ public class ServiceProfileTest
     public async Task Subtypes()
     {
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
-        await Assert.That(service.Subtypes).HasCount().Zero();
+        await Assert.That(service.Subtypes).Count().IsEqualTo(0);
     }
 
     [Test]
