@@ -6,5 +6,5 @@ namespace DnsTests;
 public class DigestRegistryTest
 {
     [Test]
-    public async Task Exists() => await Assert.That(DigestRegistry.Digests).HasCount().NotEqualTo(0);
+    public async Task Exists() => await Assert.That(DigestRegistry.Digests).Count().IsNotEqualTo(0);
 }

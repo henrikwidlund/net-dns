@@ -28,7 +28,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
         await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.A);
     }
 
@@ -42,7 +42,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
 
-        await Assert.That(response.AuthorityRecords).HasCount().GreaterThan(0);
+        await Assert.That(response.AuthorityRecords).Count().IsGreaterThan(0);
         var authority = response.AuthorityRecords.OfType<SOARecord>().First();
         await Assert.That(authority.Name).IsEquatableOrEqualTo("example.com");
     }
@@ -79,7 +79,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.Answers).Count().IsEqualTo(2);
     }
 
     [Test]
@@ -92,7 +92,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsFalse();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -106,7 +106,7 @@ public class NameServerTest
         await Assert.That(response.AA).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
 
-        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.Answers).Count().IsEqualTo(2);
         await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.CNAME);
         await Assert.That(response.Answers[1].Type).IsEqualTo(DnsType.A);
     }
@@ -125,10 +125,10 @@ public class NameServerTest
         await Assert.That(response.AA).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
 
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
         await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.CNAME);
 
-        await Assert.That(response.AuthorityRecords).HasCount(1);
+        await Assert.That(response.AuthorityRecords).Count().IsEqualTo(1);
         var authority = response.AuthorityRecords.OfType<SOARecord>().First();
         await Assert.That(authority.Name).IsEquatableOrEqualTo("example.com");
     }
@@ -147,10 +147,10 @@ public class NameServerTest
         await Assert.That(response.AA).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NameError);
 
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
         await Assert.That(response.Answers[0].Type).IsEqualTo(DnsType.CNAME);
 
-        await Assert.That(response.AuthorityRecords).HasCount().Zero();
+        await Assert.That(response.AuthorityRecords).Count().IsEqualTo(0);
     }
 
     [Test]
@@ -164,7 +164,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -181,7 +181,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -196,7 +196,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.Answers).Count().IsEqualTo(2);
     }
 
     [Test]
@@ -213,8 +213,8 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(2);
-        await Assert.That(response.AuthorityRecords).HasCount(3);
+        await Assert.That(response.Answers).Count().IsEqualTo(2);
+        await Assert.That(response.AuthorityRecords).Count().IsEqualTo(3);
     }
 
     [Test]
@@ -228,9 +228,9 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
 
-        await Assert.That(response.AdditionalRecords).HasCount(2);
+        await Assert.That(response.AdditionalRecords).Count().IsEqualTo(2);
         await Assert.That(response.AdditionalRecords[0].Type).IsEqualTo(DnsType.A);
         await Assert.That(response.AdditionalRecords[0].Name).IsEquatableOrEqualTo("ns1.example.org");
     }
@@ -246,7 +246,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
 
         await Assert.That(response.AdditionalRecords.Any(static a => a.Type == DnsType.SRV)).IsTrue();
         await Assert.That(response.AdditionalRecords.Any(static a => a.Type == DnsType.TXT)).IsTrue();
@@ -264,9 +264,9 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(2);
+        await Assert.That(response.Answers).Count().IsEqualTo(2);
 
-        await Assert.That(response.AdditionalRecords).HasCount(2);
+        await Assert.That(response.AdditionalRecords).Count().IsEqualTo(2);
         await Assert.That(response.AdditionalRecords.All(static r => r.Type == DnsType.A)).IsTrue();
     }
 
@@ -281,9 +281,9 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
 
-        await Assert.That(response.AdditionalRecords).HasCount(2);
+        await Assert.That(response.AdditionalRecords).Count().IsEqualTo(2);
         await Assert.That(response.AdditionalRecords[0].Type).IsEqualTo(DnsType.A);
         await Assert.That(response.AdditionalRecords[0].Name).IsEquatableOrEqualTo("ns1.example.org");
     }
@@ -299,7 +299,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
 
         await Assert.That(response.AdditionalRecords.OfType<TXTRecord>().Any()).IsTrue();
         await Assert.That(response.AdditionalRecords.OfType<ARecord>().Any()).IsTrue();
@@ -316,7 +316,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
         await Assert.That(response.Answers).All(static r => r.Type == DnsType.A);
 
         await Assert.That(response.AdditionalRecords).Any(static r => r.Name == "example.com" && r.Type == DnsType.AAAA);
@@ -333,7 +333,7 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(1);
+        await Assert.That(response.Answers).Count().IsEqualTo(1);
         await Assert.That(response.Answers).All(static r => r.Type == DnsType.AAAA);
 
         await Assert.That(response.AdditionalRecords).Any(static r => r.Name == "example.com" && r.Type == DnsType.A);
@@ -352,9 +352,9 @@ public class NameServerTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Status).IsEqualTo(MessageStatus.NoError);
         await Assert.That(response.AA).IsTrue();
-        await Assert.That(response.Answers).HasCount(4);
+        await Assert.That(response.Answers).Count().IsEqualTo(4);
 
-        await Assert.That(response.AdditionalRecords).HasCount().Zero();
+        await Assert.That(response.AdditionalRecords).Count().IsEqualTo(0);
     }
 
     [Test]

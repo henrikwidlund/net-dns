@@ -16,7 +16,7 @@ public class OPTRecordTest
         await Assert.That(opt.Opcode8).IsEqualTo((byte)0);
         await Assert.That(opt.Version).IsEqualTo((byte)0);
         await Assert.That(opt.DO).IsFalse();
-        await Assert.That(opt.Options).HasCount().Zero();
+        await Assert.That(opt.Options).Count().IsEqualTo(0);
     }
 
     [Test]

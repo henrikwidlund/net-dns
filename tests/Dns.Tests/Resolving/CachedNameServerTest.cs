@@ -113,13 +113,13 @@ public class CachedNameServerTest
         };
         
         var res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
-        await Assert.That(res.Answers).HasCount(1);
+        await Assert.That(res.Answers).Count().IsEqualTo(1);
 
         var cts = cache.PruneContinuously(TimeSpan.FromMilliseconds(200));
         await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.Execution.CancellationToken);
         await cts.CancelAsync();
         await Task.Delay(TimeSpan.FromMilliseconds(40), TestContext.Current.Execution.CancellationToken);
         res = await cache.ResolveAsync(query, TestContext.Current.Execution.CancellationToken);
-        await Assert.That(res.Answers).HasCount().Zero();
+        await Assert.That(res.Answers).Count().IsEqualTo(0);
     }
 }

@@ -33,10 +33,10 @@ public class MessageTest
         msg.Read(bytes, 0, bytes.Length);
 
         await Assert.That(msg.Id).IsEqualTo((ushort)0);
-        await Assert.That(msg.Questions).HasCount(1);
-        await Assert.That(msg.Answers).HasCount().Zero();
-        await Assert.That(msg.AuthorityRecords).HasCount().Zero();
-        await Assert.That(msg.AdditionalRecords).HasCount().Zero();
+        await Assert.That(msg.Questions).Count().IsEqualTo(1);
+        await Assert.That(msg.Answers).Count().IsEqualTo(0);
+        await Assert.That(msg.AuthorityRecords).Count().IsEqualTo(0);
+        await Assert.That(msg.AdditionalRecords).Count().IsEqualTo(0);
 
         var question = msg.Questions[0];
         await Assert.That(question.Name).IsEquatableOrEqualTo("appletv.local");
@@ -64,10 +64,10 @@ public class MessageTest
 
         await Assert.That(msg.IsResponse).IsTrue();
         await Assert.That(msg.AA).IsTrue();
-        await Assert.That(msg.Questions).HasCount().Zero();
-        await Assert.That(msg.Answers).HasCount(1);
-        await Assert.That(msg.AuthorityRecords).HasCount().Zero();
-        await Assert.That(msg.AdditionalRecords).HasCount(2);
+        await Assert.That(msg.Questions).Count().IsEqualTo(0);
+        await Assert.That(msg.Answers).Count().IsEqualTo(1);
+        await Assert.That(msg.AuthorityRecords).Count().IsEqualTo(0);
+        await Assert.That(msg.AdditionalRecords).Count().IsEqualTo(2);
 
         await Assert.That(msg.Answers[0].Name).IsEquatableOrEqualTo("appletv.local");
         await Assert.That(msg.Answers[0].Type).IsEqualTo(DnsType.A);
@@ -133,7 +133,7 @@ public class MessageTest
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Id).IsEqualTo(query.Id);
         await Assert.That(response.Opcode).IsEqualTo(query.Opcode);
-        await Assert.That(response.Questions).HasCount(1);
+        await Assert.That(response.Questions).Count().IsEqualTo(1);
         await Assert.That(response.Questions[0]).IsEqualTo(query.Questions[0]);
     }
 
@@ -163,10 +163,10 @@ public class MessageTest
         await Assert.That(actual.Id).IsEqualTo(expected.Id);
         await Assert.That(actual.IsQuery).IsEqualTo(expected.IsQuery);
         await Assert.That(actual.IsResponse).IsEqualTo(expected.IsResponse);
-        await Assert.That(actual.Questions).HasCount(1);
-        await Assert.That(actual.Answers).HasCount(1);
-        await Assert.That(actual.AuthorityRecords).HasCount(1);
-        await Assert.That(actual.AdditionalRecords).HasCount(1);
+        await Assert.That(actual.Questions).Count().IsEqualTo(1);
+        await Assert.That(actual.Answers).Count().IsEqualTo(1);
+        await Assert.That(actual.AuthorityRecords).Count().IsEqualTo(1);
+        await Assert.That(actual.AdditionalRecords).Count().IsEqualTo(1);
     }
 
     [Test]
@@ -174,7 +174,7 @@ public class MessageTest
     {
         var expected = new Message { Opcode = (MessageOperation)0xfff };
         await Assert.That(expected.Opcode).IsEqualTo((MessageOperation)0xfff);
-        await Assert.That(expected.AdditionalRecords.OfType<OPTRecord>()).HasCount(1);
+        await Assert.That(expected.AdditionalRecords.OfType<OPTRecord>()).Count().IsEqualTo(1);
 
         var actual = (Message)new Message().Read(expected.ToByteArray());
         await Assert.That(actual.Opcode).IsEqualTo(expected.Opcode);
@@ -230,8 +230,8 @@ public class MessageTest
         msg.Truncate(originalLength);
         
         await Assert.That(originalLength).IsEqualTo(msg.Length());
-        await Assert.That(msg.AdditionalRecords).HasCount(1);
-        await Assert.That(msg.AuthorityRecords).HasCount(1);
+        await Assert.That(msg.AdditionalRecords).Count().IsEqualTo(1);
+        await Assert.That(msg.AuthorityRecords).Count().IsEqualTo(1);
         await Assert.That(msg.TC).IsFalse();
     }
 
@@ -248,8 +248,8 @@ public class MessageTest
         msg.Truncate(originalLength);
         
         await Assert.That(originalLength).IsEqualTo(msg.Length());
-        await Assert.That(msg.AdditionalRecords).HasCount().Zero();
-        await Assert.That(msg.AuthorityRecords).HasCount(1);
+        await Assert.That(msg.AdditionalRecords).Count().IsEqualTo(0);
+        await Assert.That(msg.AuthorityRecords).Count().IsEqualTo(1);
         await Assert.That(msg.TC).IsFalse();
     }
 
@@ -278,15 +278,15 @@ public class MessageTest
     {
         var message = new Message();
         await Assert.That(message.DO).IsFalse();
-        await Assert.That(message.AdditionalRecords.OfType<OPTRecord>()).HasCount().Zero();
+        await Assert.That(message.AdditionalRecords.OfType<OPTRecord>()).Count().IsEqualTo(0);
 
         message.DO = false;
         await Assert.That(message.DO).IsFalse();
-        await Assert.That(message.AdditionalRecords.OfType<OPTRecord>()).HasCount(1);
+        await Assert.That(message.AdditionalRecords.OfType<OPTRecord>()).Count().IsEqualTo(1);
 
         message.DO = true;
         await Assert.That(message.DO).IsTrue();
-        await Assert.That(message.AdditionalRecords.OfType<OPTRecord>()).HasCount(1);
+        await Assert.That(message.AdditionalRecords.OfType<OPTRecord>()).Count().IsEqualTo(1);
     }
 
     [Test]

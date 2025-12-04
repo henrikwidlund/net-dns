@@ -10,7 +10,7 @@ public class DomainNameTest
     {
         var name = new DomainName("my.example.org");
 
-        await Assert.That(name.Labels).HasCount(3);
+        await Assert.That(name.Labels).Count().IsEqualTo(3);
         await Assert.That(name.Labels[0]).IsEqualTo("my");
         await Assert.That(name.Labels[1]).IsEqualTo("example");
         await Assert.That(name.Labels[2]).IsEqualTo("org");
@@ -23,7 +23,7 @@ public class DomainNameTest
     {
         var name = new DomainName("org");
 
-        await Assert.That(name.Labels).HasCount(1);
+        await Assert.That(name.Labels).Count().IsEqualTo(1);
         await Assert.That(name.Labels[0]).IsEqualTo("org");
 
         await Assert.That(name).IsEquatableOrEqualTo("org");
@@ -34,7 +34,7 @@ public class DomainNameTest
     {
         var name = new DomainName("");
 
-        await Assert.That(name.Labels).HasCount().Zero();
+        await Assert.That(name.Labels).Count().IsEqualTo(0);
         await Assert.That(name).IsEquatableOrEqualTo("");
     }
 
@@ -43,7 +43,7 @@ public class DomainNameTest
     {
         var name = new DomainName(@"my\.example.org");
 
-        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels).Count().IsEqualTo(2);
         await Assert.That(name.Labels[0]).IsEqualTo("my.example");
         await Assert.That(name.Labels[1]).IsEqualTo("org");
         await Assert.That(name).IsEquatableOrEqualTo(@"my\.example.org");
@@ -54,7 +54,7 @@ public class DomainNameTest
     {
         var name = new DomainName(@"my\046example.org");
 
-        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels).Count().IsEqualTo(2);
         await Assert.That(name.Labels[0]).IsEqualTo("my.example");
         await Assert.That(name.Labels[1]).IsEqualTo("org");
         await Assert.That(name).IsEquatableOrEqualTo(@"my\.example.org");
@@ -64,17 +64,17 @@ public class DomainNameTest
     public async Task ImplicitParsingOfString()
     {
         DomainName name = @"my\046example.org";
-        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels).Count().IsEqualTo(2);
         await Assert.That(name.Labels[0]).IsEqualTo("my.example");
         await Assert.That(name.Labels[1]).IsEqualTo("org");
 
         name = @"my\.example.org";
-        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels).Count().IsEqualTo(2);
         await Assert.That(name.Labels[0]).IsEqualTo("my.example");
         await Assert.That(name.Labels[1]).IsEqualTo("org");
 
         name = "my.example.org";
-        await Assert.That(name.Labels).HasCount(3);
+        await Assert.That(name.Labels).Count().IsEqualTo(3);
         await Assert.That(name.Labels[0]).IsEqualTo("my");
         await Assert.That(name.Labels[1]).IsEqualTo("example");
         await Assert.That(name.Labels[2]).IsEqualTo("org");
@@ -85,7 +85,7 @@ public class DomainNameTest
     {
         var name = new DomainName("my.example", "org");
 
-        await Assert.That(name.Labels).HasCount(2);
+        await Assert.That(name.Labels).Count().IsEqualTo(2);
         await Assert.That(name.Labels[0]).IsEqualTo("my.example");
         await Assert.That(name.Labels[1]).IsEqualTo("org");
         await Assert.That(name).IsEquatableOrEqualTo(@"my\.example.org");

@@ -12,15 +12,15 @@ public class UpdateMessageTest
     {
         var m = new UpdateMessage();
         
-        await Assert.That(m.AdditionalResources).HasCount().Zero();
+        await Assert.That(m.AdditionalResources).Count().IsEqualTo(0);
         await Assert.That(m.Id).IsEqualTo((ushort)0);
         await Assert.That(m.IsResponse).IsFalse();
         await Assert.That(m.IsUpdate).IsTrue();
         await Assert.That(m.Opcode).IsEqualTo(MessageOperation.Update);
-        await Assert.That(m.Prerequisites).HasCount().Zero();
+        await Assert.That(m.Prerequisites).Count().IsEqualTo(0);
         await Assert.That(m.QR).IsFalse();
         await Assert.That(m.Status).IsEqualTo(MessageStatus.NoError);
-        await Assert.That(m.Updates).HasCount().Zero();
+        await Assert.That(m.Updates).Count().IsEqualTo(0);
         await Assert.That(m.Z).IsEqualTo(0);
         await Assert.That(m.Zone).IsNotNull();
         await Assert.That(m.Zone.Type).IsEqualTo(DnsType.SOA);

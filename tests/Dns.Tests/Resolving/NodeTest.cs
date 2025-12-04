@@ -12,7 +12,7 @@ public class NodeTest
         var node = new Node();
 
         await Assert.That(node.Name).IsEqualTo(DomainName.Root);
-        await Assert.That(node.Resources).HasCount().Zero();
+        await Assert.That(node.Resources).Count().IsEqualTo(0);
         await Assert.That(node.ToString()).IsEqualTo("");
     }
 
@@ -29,6 +29,6 @@ public class NodeTest
         node.Resources.Add(b);
         node.Resources.Add(a);
         node.Resources.Add(b);
-        await Assert.That(node.Resources).HasCount(1);
+        await Assert.That(node.Resources).Count().IsEqualTo(1);
     }
 }

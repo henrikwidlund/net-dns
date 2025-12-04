@@ -7,7 +7,7 @@ namespace DnsTests;
 public class ResourceRegistryTest
 {
     [Test]
-    public async Task Exists() => await Assert.That(ResourceRegistry.Records).HasCount().NotEqualTo(0);
+    public async Task Exists() => await Assert.That(ResourceRegistry.Records).Count().IsNotEqualTo(0);
 
     [Test]
     public async Task Create()
