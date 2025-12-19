@@ -10,29 +10,29 @@ internal static partial class MdnsLogger
         Message = "Will send via {localEndpoint}")]
     public static partial void WillSendVia(this ILogger logger, IPEndPoint localEndpoint);
 
-    private static readonly Action<ILogger, IPAddress, Exception> _socketSetupFail = LoggerMessage.Define<IPAddress>(
+    private static readonly Action<ILogger, IPAddress, Exception> SocketSetupFailAction = LoggerMessage.Define<IPAddress>(
         LogLevel.Error,
         new EventId(2, nameof(SocketSetupFail)),
         "Cannot setup send socket for {Address}");
 
     public static void SocketSetupFail(this ILogger logger, Exception exception, IPAddress address) =>
-        _socketSetupFail(logger, address, exception);
+        SocketSetupFailAction(logger, address, exception);
 
-    private static readonly Action<ILogger, IPAddress, Exception> _senderKeyFailure = LoggerMessage.Define<IPAddress>(
+    private static readonly Action<ILogger, IPAddress, Exception> SenderKeyFailureAction = LoggerMessage.Define<IPAddress>(
         LogLevel.Information,
         new EventId(3, nameof(SocketSetupFail)),
         "Sender {Key} failure.");
 
     public static void SenderKeyFailure(this ILogger logger, Exception exception, IPAddress address) =>
-        _senderKeyFailure(logger, address, exception);
+        SenderKeyFailureAction(logger, address, exception);
 
-    private static readonly Action<ILogger, Exception> _receiverFailure = LoggerMessage.Define(
+    private static readonly Action<ILogger, Exception> ReceiverFailureAction = LoggerMessage.Define(
         LogLevel.Error,
         new EventId(4, nameof(ReceiverFailure)),
         "Receiver failure.");
 
     public static void ReceiverFailure(this ILogger logger, Exception exception) =>
-        _receiverFailure(logger, exception);
+        ReceiverFailureAction(logger, exception);
 
     [LoggerMessage(EventId = 5, EventName = nameof(FindingNetworkInterfaces), Level = LogLevel.Debug,
         Message = "Finding network interfaces")]
@@ -46,29 +46,29 @@ internal static partial class MdnsLogger
         Message = "Found nic '{NicName}")]
     public static partial void FoundNic(this ILogger logger, string nicName);
 
-    private static readonly Action<ILogger, Exception> _findNicsFailed = LoggerMessage.Define(
+    private static readonly Action<ILogger, Exception> FindNicsFailedAction = LoggerMessage.Define(
         LogLevel.Error,
         new EventId(8, nameof(FindNicsFailed)),
         "Find Nics failed");
 
     public static void FindNicsFailed(this ILogger logger, Exception exception) =>
-        _findNicsFailed(logger, exception);
+        FindNicsFailedAction(logger, exception);
 
-    private static readonly Action<ILogger, Exception> _receivedMalformedMessage = LoggerMessage.Define(
+    private static readonly Action<ILogger, Exception> ReceivedMalformedMessageAction = LoggerMessage.Define(
         LogLevel.Warning,
         new EventId(9, nameof(ReceivedMalformedMessage)),
         "Received malformed message");
 
     public static void ReceivedMalformedMessage(this ILogger logger, Exception exception) =>
-        _receivedMalformedMessage(logger, exception);
+        ReceivedMalformedMessageAction(logger, exception);
 
-    private static readonly Action<ILogger, Exception> _receiveHandlerFailed = LoggerMessage.Define(
+    private static readonly Action<ILogger, Exception> ReceiveHandlerFailedAtion = LoggerMessage.Define(
         LogLevel.Error,
         new EventId(9, nameof(ReceiveHandlerFailed)),
         "Receive handler failed");
 
     public static void ReceiveHandlerFailed(this ILogger logger, Exception exception) =>
-        _receiveHandlerFailed(logger, exception);
+        ReceiveHandlerFailedAtion(logger, exception);
 
     [LoggerMessage(EventId = 10, EventName = nameof(AnswerFromRemoteEndpoint), Level = LogLevel.Debug,
         Message = "Answer from {RemoteEndPoint}")]
