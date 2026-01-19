@@ -561,7 +561,7 @@ public class ServiceDiscoveryTest
 
         await Assert.That(sd.NameServer.Catalog!).IsNotNull();
 
-        var resourceRecords = sd.NameServer.Catalog.Values.SelectMany(static node => node.Resources);
+        var resourceRecords = sd.NameServer.Catalog!.Values.SelectMany(static node => node.Resources);
         foreach (var r in resourceRecords)
             Console.WriteLine(r.ToString());
     }
