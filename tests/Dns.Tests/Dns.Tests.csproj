@@ -10,13 +10,13 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.7">
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.18">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" PrivateAssets="all" />
         <PackageReference Include="SimpleBase" Version="5.6.0" />
-        <PackageReference Include="TUnit" Version="1.17.36" />
+        <PackageReference Include="TUnit" Version="1.17.54" />
     </ItemGroup>
 
     <ItemGroup>
