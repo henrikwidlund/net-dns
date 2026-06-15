@@ -4,7 +4,6 @@
         <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <DebugType>full</DebugType>
-        <IsTestProject>true</IsTestProject>
         <RootNamespace>DnsTests</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
