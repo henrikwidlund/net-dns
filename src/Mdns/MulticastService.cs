@@ -36,13 +36,13 @@ public class MulticastService : IMulticastService
     /// as well as the usual multicast responses.
     /// </summary>
     public const int UnicastResponseBit = 0x8000;
-    
+
     /// <summary>
     /// If the record is one that has been verified unique, the host sets the most significant bit of the rrclass field of the resource record.
     /// This bit, the cache-flush bit, tells neighboring hosts that this is not a shared record type.
     /// </summary>
     public const int CacheFlushBit = 0x8000;
-    
+
     /// <summary>
     ///   Recently sent messages.
     /// </summary>
@@ -373,7 +373,7 @@ public class MulticastService : IMulticastService
         await SendQuery(request);
 
         return await tsc.Task;
-        
+
         Task CheckResponse(MessageEventArgs e)
         {
             var response = e.Message;
@@ -629,7 +629,7 @@ public class MulticastService : IMulticastService
         {
             var unicastClient = (remoteEndPoint.Address.AddressFamily == AddressFamily.InterNetwork)
                 ? _unicastClientIp4 : _unicastClientIp6;
-            
+
             if (unicastClient != null)
                 await unicastClient.SendAsync(packet, packet.Length, remoteEndPoint);
         }
@@ -664,7 +664,7 @@ public class MulticastService : IMulticastService
                     record.TTL = NonHostTTL;
                 break;
         }
-        
+
         if (legacy && record.TTL > MaxLegacyUnicastTtl)
             record.TTL = MaxLegacyUnicastTtl;
     }
@@ -705,7 +705,7 @@ public class MulticastService : IMulticastService
             _logger?.ReceivedMalformedMessage(e);
             if (MalformedMessage is not null)
                 await MalformedMessage(result.Buffer);
-            
+
             return; // eat the exception
         }
 

@@ -16,7 +16,7 @@ public enum EdnsOptionType : ushort
     /// </summary>
     /// <seealso href="https://tools.ietf.org/html/rfc8764"/>
     LLQ = 1,
-    
+
     /// <summary>
     ///   DNS Name Server Identifier (NSID) Option.
     /// </summary>
@@ -108,5 +108,5 @@ public enum EdnsOptionType : ushort
     ///   Reserved for future expansion.
     /// </summary>
     /// <seealso href="https://tools.ietf.org/html/rfc6891"/>
-    FutureExpansion = 65535 
+    FutureExpansion = 65535
 }

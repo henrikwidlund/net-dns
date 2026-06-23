@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 

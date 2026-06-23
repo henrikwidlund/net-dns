@@ -48,7 +48,7 @@ public partial class NameServer : IResolver
         // Remove duplicate records.
         if (response.Answers.Count > 1)
             response.Answers = response.Answers.Distinct().ToList();
-        
+
         if (response.AuthorityRecords.Count > 1)
             response.AuthorityRecords = response.AuthorityRecords.Distinct().ToList();
 
@@ -137,10 +137,10 @@ public partial class NameServer : IResolver
     {
         if (cancel.IsCancellationRequested)
             return false;
-        
+
         if (question.Name is null)
             throw new InvalidOperationException("Question name is missing.");
-        
+
         // Find a node for the question name.
         if (Catalog is null || !Catalog.TryGetValue(question.Name, out var node))
             return false;
@@ -184,7 +184,7 @@ public partial class NameServer : IResolver
                 var soa = node.Resources.OfType<SOARecord>().FirstOrDefault();
                 if (soa is not null) return soa;
             }
-            
+
             name = name.Parent();
         }
 
@@ -197,7 +197,7 @@ public partial class NameServer : IResolver
         var resources = response.Answers
             .Concat(response.AdditionalRecords)
             .Concat(response.AuthorityRecords);
-        
+
         var question = new Question();
         foreach (var resource in resources)
         {
@@ -222,7 +222,7 @@ public partial class NameServer : IResolver
                     var domainName = ((NSRecord)resource).Authority;
                     if (domainName is null)
                         throw new InvalidOperationException("NS record has no authority.");
-                    
+
                     FindAddresses(domainName, resource.Class, extras, cancellationToken);
                     break;
 
@@ -239,7 +239,7 @@ public partial class NameServer : IResolver
                     var primaryName = ((SOARecord)resource).PrimaryName;
                     if (primaryName is null)
                         throw new InvalidOperationException("SOA record has no primary name.");
-                    
+
                     FindAddresses(primaryName, resource.Class, extras, cancellationToken);
                     break;
 
@@ -252,7 +252,7 @@ public partial class NameServer : IResolver
                     var target = ((SRVRecord)resource).Target;
                     if (target is null)
                         throw new InvalidOperationException("SRV record has no target.");
-                    
+
                     FindAddresses(target, resource.Class, extras, cancellationToken);
                     break;
             }
@@ -262,7 +262,7 @@ public partial class NameServer : IResolver
         extras.Answers = extras.Answers
             .Where(a => !response.Answers.Contains(a) && !response.AdditionalRecords.Contains(a)).Distinct()
             .ToList();
-        
+
         response.AdditionalRecords.AddRange(extras.Answers);
 
         // Add additionals for any extras.

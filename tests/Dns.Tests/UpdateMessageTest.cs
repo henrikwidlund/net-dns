@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -11,7 +12,7 @@ public class UpdateMessageTest
     public async Task Defaults()
     {
         var m = new UpdateMessage();
-        
+
         await Assert.That(m.AdditionalResources).Count().IsEqualTo(0);
         await Assert.That(m.Id).IsEqualTo((ushort)0);
         await Assert.That(m.IsResponse).IsFalse();
@@ -38,10 +39,10 @@ public class UpdateMessageTest
             Z = 0x7F,
             Status = MessageStatus.NotImplemented
         };
-        
+
         var actual = new UpdateMessage();
         actual.Read(expected.ToByteArray());
-        
+
         await Assert.That(actual.Id).IsEqualTo(expected.Id);
         await Assert.That(actual.QR).IsEqualTo(expected.QR);
         await Assert.That(actual.Opcode).IsEqualTo(expected.Opcode);
@@ -57,7 +58,7 @@ public class UpdateMessageTest
     {
         var update = new UpdateMessage { Id = 1234 };
         var response = update.CreateResponse();
-        
+
         await Assert.That(response.IsResponse).IsTrue();
         await Assert.That(response.Id).IsEqualTo(update.Id);
         await Assert.That(response.Opcode).IsEqualTo(update.Opcode);
@@ -74,17 +75,17 @@ public class UpdateMessageTest
                 Name = "emanon.org"
             }
         };
-        
+
         expected.Prerequisites
             .MustExist("foo.emanon.org")
             .MustNotExist("bar.emanon.org");
-        
+
         expected.Updates
             .AddResource(new ARecord { Name = "bar.emanon.org", Address = IPAddress.Parse("127.0.0.1") })
             .DeleteResource("foo.emanon.org");
-        
+
         var actual = (UpdateMessage)new UpdateMessage().Read(expected.ToByteArray());
-        
+
         await Assert.That(actual.Id).IsEqualTo(expected.Id);
         await Assert.That(actual.IsUpdate).IsEqualTo(expected.IsUpdate);
         await Assert.That(actual.IsResponse).IsEqualTo(expected.IsResponse);

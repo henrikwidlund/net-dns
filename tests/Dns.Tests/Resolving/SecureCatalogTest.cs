@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 
@@ -255,7 +256,7 @@ public class SecureCatalogTest
                                                                        asXrpSGOWwSOElghPnMIi8xdF7qtCntr382W
                                                                        GghLahumFIpg4MO3LS/prgzVVWo= )
                                          """;
-    
+
     [Test]
     public async Task IncludeZone()
     {

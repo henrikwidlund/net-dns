@@ -20,7 +20,7 @@ public class DnsObjectTest
         {
             Questions = { new Question { Name = "example.com" } }
         };
-        
+
         var m2 = (Message)m1.Clone();
 
         await Assert.That(m1.ToByteArray()).IsEquivalentTo(m2.ToByteArray());

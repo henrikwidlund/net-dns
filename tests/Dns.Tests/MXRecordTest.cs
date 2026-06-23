@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -55,14 +56,14 @@ public class MXRecordTest
             Preference = 10,
             Exchange = "mail.emanon.org"
         };
-        
+
         var b = new MXRecord
         {
             Name = "emanon.org",
             Preference = 11,
             Exchange = "mailx.emanon.org"
         };
-        
+
         // ReSharper disable once EqualExpressionComparison
         await Assert.That(a.Equals(a)).IsTrue();
         await Assert.That(a.Equals(b)).IsFalse();

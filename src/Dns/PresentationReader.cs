@@ -106,7 +106,7 @@ public class PresentationReader
         var sb = new StringBuilder();
         while (!IsEndOfLine())
             sb.Append(ReadToken());
-        
+
         return Convert.FromBase64String(sb.ToString());
     }
 
@@ -186,7 +186,7 @@ public class PresentationReader
         var leadin = ReadToken();
         if (!leadin.Equals("#", StringComparison.Ordinal))
             throw new FormatException($"Expected RDATA leadin '\\#', not '{leadin}'.");
-        
+
         var length = ReadUInt32();
         if (length == 0)
             return [];
@@ -198,13 +198,13 @@ public class PresentationReader
             var word = ReadToken();
             if (word.Length == 0)
                 break;
-            
+
             if (word.Length % 2 != 0)
                 throw new FormatException($"The hex word ('{word}') must have an even number of digits.");
-            
+
             sb.Append(word);
         }
-        
+
         if (sb.Length != length * 2)
             throw new FormatException("Wrong number of RDATA hex digits.");
 
@@ -288,7 +288,7 @@ public class PresentationReader
                 type = (DnsType)ushort.Parse(token.AsSpan(4), CultureInfo.InvariantCulture);
                 continue;
             }
-            
+
             if (!token.Equals("any", StringComparison.InvariantCultureIgnoreCase) && Enum.TryParse<DnsType>(token, out var t))
             {
                 type = t;
@@ -391,7 +391,7 @@ public class PresentationReader
                     incomment = false;
                     skipWhitespace = true;
                 }
-                
+
                 _previousChar = c;
                 continue;
             }
@@ -403,7 +403,7 @@ public class PresentationReader
                 {
                     if (sb.Length == 0)
                         _tokenStartsNewLine = _previousChar is '\r' or '\n';
-                    
+
                     sb.Append((char)c);
                     _previousChar = c;
 
@@ -413,7 +413,7 @@ public class PresentationReader
                         sb.Append((char)c);
                         _previousChar = c;
                     }
-                    
+
                     continue;
                 }
                 _previousChar = c;
@@ -428,20 +428,20 @@ public class PresentationReader
                     {
                         _text.Read();
                         ddd = ddd * 10 + (c - '0');
-                        
+
                         if (ddd > 0xFF)
                             throw new FormatException("Invalid value.");
                     }
                     else
                         break;
                 }
-                
+
                 c = ndigits > 0 ? ddd : _text.Read();
 
                 sb.Append((char)c);
                 skipWhitespace = false;
                 _previousChar = (char)c;
-                
+
                 continue;
             }
 
@@ -455,7 +455,7 @@ public class PresentationReader
                 _previousChar = c;
                 continue;
             }
-            
+
             if (c == '"')
             {
                 inquote = true;
@@ -469,7 +469,7 @@ public class PresentationReader
                 ++_parenLevel;
                 c = ' ';
             }
-            
+
             if (c == ')')
             {
                 --_parenLevel;
@@ -484,7 +484,7 @@ public class PresentationReader
                     _previousChar = c;
                     continue;
                 }
-                
+
                 skipWhitespace = false;
             }
 
@@ -507,7 +507,7 @@ public class PresentationReader
             // Default handling, use the character as part of the token.
             if (sb.Length == 0)
                 _tokenStartsNewLine = _previousChar is '\r' or '\n';
-            
+
             sb.Append((char)c);
             _previousChar = c;
         }

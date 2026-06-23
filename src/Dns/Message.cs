@@ -68,7 +68,7 @@ public class Message : DnsObject
     ///   <b>false</b> for a query; otherwise, <b>true</b> for a response.
     /// </value>
     public bool IsResponse => QR;
-    
+
     /// <summary>
     ///   The requested operation. 
     /// </summary>
@@ -117,7 +117,7 @@ public class Message : DnsObject
                 opt = new OPTRecord();
                 AdditionalRecords.Add(opt);
             }
-            
+
             _opcode4 = (byte)(extendedOpcode & 0xf);
             opt.Opcode8 = (byte)((extendedOpcode >> 4) & 0xff);
         }
@@ -229,7 +229,7 @@ public class Message : DnsObject
                 opt = new OPTRecord();
                 AdditionalRecords.Add(opt);
             }
-            
+
             opt.DO = value;
         }
     }
@@ -264,7 +264,7 @@ public class Message : DnsObject
     /// <value>
     ///   A list of authority resource records.
     /// </value>
-    public List<ResourceRecord> AuthorityRecords { get; set;  } = [];
+    public List<ResourceRecord> AuthorityRecords { get; set; } = [];
 
     /// <summary>
     ///   The list of additional records.
@@ -272,7 +272,7 @@ public class Message : DnsObject
     /// <value>
     ///   A list of additional resource records.
     /// </value>
-    public List<ResourceRecord> AdditionalRecords { get; set;  } = [];
+    public List<ResourceRecord> AdditionalRecords { get; set; } = [];
 
     /// <summary>
     ///   Create a response for the query message.
@@ -288,7 +288,7 @@ public class Message : DnsObject
             Opcode = Opcode,
             QR = true
         };
-        
+
         response.Questions.AddRange(Questions);
         return response;
     }
@@ -345,7 +345,7 @@ public class Message : DnsObject
     public override IWireSerializer Read(WireReader reader)
     {
         Id = reader.ReadUInt16();
-        
+
         var flags = reader.ReadUInt16();
         QR = (flags & 0x8000) == 0x8000;
         AA = (flags & 0x0400) == 0x0400;
@@ -357,30 +357,30 @@ public class Message : DnsObject
         AD = (flags & 0x0020) == 0x0020;
         CD = (flags & 0x0010) == 0x0010;
         Status = (MessageStatus)(flags & 0x000F);
-        
+
         var qdcount = reader.ReadUInt16();
         var ancount = reader.ReadUInt16();
         var nscount = reader.ReadUInt16();
         var arcount = reader.ReadUInt16();
-        
+
         for (var i = 0; i < qdcount; ++i)
         {
-            var question = (Question) new Question().Read(reader);
+            var question = (Question)new Question().Read(reader);
             Questions.Add(question);
         }
-        
+
         for (var i = 0; i < ancount; ++i)
         {
-            var rr = (ResourceRecord) new ResourceRecord().Read(reader);
+            var rr = (ResourceRecord)new ResourceRecord().Read(reader);
             Answers.Add(rr);
         }
-        
+
         for (var i = 0; i < nscount; ++i)
         {
             var rr = (ResourceRecord)new ResourceRecord().Read(reader);
             AuthorityRecords.Add(rr);
         }
-        
+
         for (var i = 0; i < arcount; ++i)
         {
             var rr = (ResourceRecord)new ResourceRecord().Read(reader);
@@ -396,7 +396,7 @@ public class Message : DnsObject
         writer.WriteUInt16(Id);
         var flags =
             (Convert.ToInt32(QR) << 15) |
-            ((_opcode4 & 0xf)<< 11) |
+            ((_opcode4 & 0xf) << 11) |
             (Convert.ToInt32(AA) << 10) |
             (Convert.ToInt32(TC) << 9) |
             (Convert.ToInt32(RD) << 8) |
@@ -405,13 +405,13 @@ public class Message : DnsObject
             (Convert.ToInt32(AD) << 5) |
             (Convert.ToInt32(CD) << 4) |
             ((ushort)Status & 0xf);
-        
+
         writer.WriteUInt16((ushort)flags);
         writer.WriteUInt16((ushort)Questions.Count);
         writer.WriteUInt16((ushort)Answers.Count);
         writer.WriteUInt16((ushort)AuthorityRecords.Count);
         writer.WriteUInt16((ushort)AdditionalRecords.Count);
-        
+
         foreach (var r in Questions) r.Write(writer);
         foreach (var r in Answers) r.Write(writer);
         foreach (var r in AuthorityRecords) r.Write(writer);

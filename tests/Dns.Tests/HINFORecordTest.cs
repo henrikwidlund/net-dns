@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -14,9 +15,9 @@ public class HINFORecordTest
             Cpu = "DEC-2020",
             OS = "TOPS20"
         };
-        
+
         var b = (HINFORecord)new ResourceRecord().Read(a.ToByteArray());
-        
+
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
         await Assert.That(a.Type).IsEqualTo(b.Type);
@@ -34,9 +35,9 @@ public class HINFORecordTest
             Cpu = "DEC-2020",
             OS = "TOPS20"
         };
-        
+
         var b = (HINFORecord)new ResourceRecord().Read(a.ToString())!;
-        
+
         await Assert.That(b).IsNotNull();
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
@@ -55,7 +56,7 @@ public class HINFORecordTest
             Cpu = "DEC-2020",
             OS = "TOPS20"
         };
-        
+
         var b = new HINFORecord
         {
             Name = "emanaon.org",

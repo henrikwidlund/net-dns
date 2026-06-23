@@ -36,7 +36,7 @@ public static class SecurityAlgorithmRegistry
     ///   The value is th <see cref="Metadata"/>.
     /// </remarks>
     public static readonly IReadOnlyDictionary<SecurityAlgorithm, Metadata> Algorithms = InitAlgorithms();
-    
+
     private static Dictionary<SecurityAlgorithm, Metadata> InitAlgorithms()
     {
         var algorithms = new Dictionary<SecurityAlgorithm, Metadata>
@@ -75,7 +75,7 @@ public static class SecurityAlgorithmRegistry
 
         algorithms.Add(SecurityAlgorithm.RSASHA1NSEC3SHA1, algorithms[SecurityAlgorithm.RSASHA1]);
         algorithms.Add(SecurityAlgorithm.DSANSEC3SHA1, algorithms[SecurityAlgorithm.DSA]);
-        
+
         return algorithms;
     }
 

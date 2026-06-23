@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 
@@ -59,7 +60,7 @@ public class CachedNameServerTest
                 new Question { Name = "foo.org", Type = DnsType.AAAA }
             }
         };
-        
+
         var res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(res.Answers).Contains(static a => a.Name == "foo.org" && a.Type == DnsType.A);
@@ -86,7 +87,7 @@ public class CachedNameServerTest
                 new Question { Name = "foo.org", Type = DnsType.AAAA }
             }
         };
-        
+
         var res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
 
         await Assert.That(res.Answers).DoesNotContain(static a => a.Name == "foo.org" && a.Type == DnsType.A);
@@ -111,7 +112,7 @@ public class CachedNameServerTest
                 new Question { Name = "a.foo.org", Type = DnsType.A }
             }
         };
-        
+
         var res = await cache.ResolveAsync(query, TestContext.Current!.Execution.CancellationToken);
         await Assert.That(res.Answers).Count().IsEqualTo(1);
 

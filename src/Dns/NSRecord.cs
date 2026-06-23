@@ -27,7 +27,7 @@ public class NSRecord : ResourceRecord
     ///   authoritative for the specified class and domain.
     /// </summary>
     public DomainName? Authority { get; set; }
-    
+
     /// <inheritdoc />
     public override void ReadData(WireReader reader, in int length) => Authority = reader.ReadDomainName();
 

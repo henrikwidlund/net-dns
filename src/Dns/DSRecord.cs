@@ -37,7 +37,7 @@ public class DSRecord : ResourceRecord
     {
         if (key.Algorithm is null)
             throw new ArgumentOutOfRangeException(nameof(key), "Algorithm is missing.");
-        
+
         // Check the key.
         if (!force)
         {
@@ -56,7 +56,7 @@ public class DSRecord : ResourceRecord
             ms.Position = 0;
             digest = DigestRegistry.HashData(key.Algorithm.Value, ms);
         }
-        
+
         Algorithm = key.Algorithm;
         Class = key.Class;
         KeyTag = key.KeyTag();
@@ -74,7 +74,7 @@ public class DSRecord : ResourceRecord
     /// <summary>
     ///   The <see cref="SecurityAlgorithm"/> of the referenced <see cref="DNSKEYRecord"/>.
     /// </summary>
-    public SecurityAlgorithm? Algorithm {get; set; }
+    public SecurityAlgorithm? Algorithm { get; set; }
 
     /// <summary>
     ///   The cryptographic hash algorithm used to create the 
@@ -109,13 +109,13 @@ public class DSRecord : ResourceRecord
     {
         if (KeyTag is null)
             throw new InvalidOperationException("KeyTag is missing.");
-        
+
         if (Algorithm is null)
             throw new InvalidOperationException("Algorithm is missing.");
-        
+
         if (HashAlgorithm is null)
             throw new InvalidOperationException("HashAlgorithm is missing.");
-        
+
         writer.WriteUInt16(KeyTag.Value);
         writer.WriteByte((byte)Algorithm);
         writer.WriteByte((byte)HashAlgorithm);
@@ -133,7 +133,7 @@ public class DSRecord : ResourceRecord
         var sb = new StringBuilder();
         while (!reader.IsEndOfLine())
             sb.Append(reader.ReadString());
-        
+
         Digest = BaseConvert.FromBase16(sb.ToString());
     }
 
@@ -142,16 +142,16 @@ public class DSRecord : ResourceRecord
     {
         if (KeyTag is null)
             throw new InvalidOperationException("KeyTag is missing.");
-        
+
         if (Algorithm is null)
             throw new InvalidOperationException("Algorithm is missing.");
-        
+
         if (HashAlgorithm is null)
             throw new InvalidOperationException("HashAlgorithm is missing.");
-        
+
         if (Digest is null)
             throw new InvalidOperationException("Digest is missing.");
-        
+
         writer.WriteUInt16(KeyTag.Value);
         writer.WriteByte((byte)Algorithm);
         writer.WriteByte((byte)HashAlgorithm);

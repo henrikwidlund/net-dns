@@ -46,10 +46,10 @@ public class HINFORecord : ResourceRecord
     {
         if (Cpu is null)
             throw new InvalidDataException("Cpu is required.");
-        
+
         if (OS is null)
             throw new InvalidDataException("OS is required.");
-        
+
         writer.WriteString(Cpu);
         writer.WriteString(OS);
     }
@@ -59,10 +59,10 @@ public class HINFORecord : ResourceRecord
     {
         if (Cpu is null)
             throw new InvalidDataException("Cpu is required.");
-        
+
         if (OS is null)
             throw new InvalidDataException("OS is required.");
-            
+
         writer.WriteString(Cpu);
         writer.WriteString(OS, appendSpace: false);
     }

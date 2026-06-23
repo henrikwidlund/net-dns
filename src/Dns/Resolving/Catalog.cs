@@ -35,21 +35,21 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
             var r = reader.ReadResourceRecord();
             if (r is null)
                 break;
-            
+
             resources.Add(r);
         }
 
         // Validation
         if (resources.Count == 0)
             throw new InvalidDataException("No resources.");
-        
+
         if (resources[0].Type != DnsType.SOA)
             throw new InvalidDataException("First resource record must be a SOA.");
-        
+
         var soa = (SOARecord)resources[0];
         if (soa.Name is null)
             throw new InvalidDataException("SOA name is missing.");
-        
+
         if (resources.Any(r => !r.Name?.BelongsTo(soa.Name!) ?? false))
             throw new InvalidDataException("All resource records must belong to the zone.");
 
@@ -62,7 +62,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
                 Resources = new ConcurrentSet<ResourceRecord>(results)
             }
         );
-        
+
         foreach (var node in nodes)
         {
             if (!TryAdd(node.Name, node))
@@ -171,7 +171,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
             var r = reader.ReadResourceRecord();
             if (r is null)
                 break;
-            
+
             Add(r, authoritative);
         }
     }
@@ -207,7 +207,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
             .Where(static node => node.Authoritative)
             .SelectMany(static node => node.Resources.OfType<AddressRecord>())
             .Where(static a => a.Address is not null);
-        
+
         foreach (var a in addressRecords)
         {
             var ptr = new PTRRecord
@@ -217,7 +217,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
                 DomainName = a.Name,
                 TTL = a.TTL
             };
-            Add(ptr, authoritative:  true);
+            Add(ptr, authoritative: true);
         }
     }
 }

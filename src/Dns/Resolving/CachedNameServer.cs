@@ -53,7 +53,7 @@ public class CachedNameServer : NameServer
 
         return cts;
     }
-    
+
     /// <summary>
     ///   Cache the response.
     /// </summary>
@@ -71,7 +71,7 @@ public class CachedNameServer : NameServer
         var resources = response
             .Answers.Concat(response.AdditionalRecords)
             .Where(static r => r.TTL > TimeSpan.Zero);
-        
+
         foreach (var resource in resources)
             Catalog?.Add(resource);
     }

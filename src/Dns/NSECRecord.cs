@@ -33,7 +33,7 @@ public class NSECRecord : ResourceRecord
     {
         var end = reader.Position + length;
         NextOwnerName = reader.ReadDomainName();
-        
+
         while (reader.Position < end)
             Types.AddRange(reader.ReadBitmap().Cast<DnsType>());
     }
@@ -49,7 +49,7 @@ public class NSECRecord : ResourceRecord
     public override void ReadData(PresentationReader reader)
     {
         NextOwnerName = reader.ReadDomainName();
-        
+
         while (!reader.IsEndOfLine())
             Types.Add(reader.ReadDnsType());
     }
@@ -64,7 +64,7 @@ public class NSECRecord : ResourceRecord
         {
             if (next)
                 writer.WriteSpace();
-            
+
             writer.WriteDnsType(type, appendSpace: false);
             next = true;
         }

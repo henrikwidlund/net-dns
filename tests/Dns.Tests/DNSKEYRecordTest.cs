@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -99,7 +100,7 @@ public class DNSKEYRecordTest
             Exponent = publicExponent,
             Modulus = modulus
         };
-        
+
         using var publicKey = RSA.Create();
         publicKey.ImportParameters(parameters);
 
@@ -127,7 +128,7 @@ public class DNSKEYRecordTest
             Exponent = publicExponent,
             Modulus = modulus
         };
-        
+
         var publicKey = RSA.Create();
         publicKey.ImportParameters(parameters);
 
@@ -186,7 +187,7 @@ public class DNSKEYRecordTest
                 Y = qy
             }
         };
-        
+
         ECDsa publicKey;
         try
         {
@@ -229,7 +230,7 @@ public class DNSKEYRecordTest
                 Y = qy
             }
         };
-        
+
         ECDsa publicKey;
         try
         {

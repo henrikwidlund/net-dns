@@ -21,7 +21,7 @@ public class DSRecordTest
             HashAlgorithm = DigestType.Sha1,
             Digest = Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray()
         };
-        
+
         var b = (DSRecord)new ResourceRecord().Read(a.ToByteArray());
 
         await Assert.That(a.Name).IsEqualTo(b.Name);
@@ -46,7 +46,7 @@ public class DSRecordTest
             HashAlgorithm = DigestType.Sha1,
             Digest = Base16.Decode("2BB183AF5F22588179A53B0A98631FAD1A292118").ToArray()
         };
-        
+
         var b = (DSRecord)new ResourceRecord().Read(a.ToString())!;
 
         await Assert.That(b).IsNotNull();
@@ -82,7 +82,7 @@ public class DSRecordTest
                     ljwvFw==
                 """)
         };
-        
+
         var ds = new DSRecord(key, force: true);
 
         await Assert.That(key.Name).IsEqualTo(ds.Name);
@@ -115,7 +115,7 @@ public class DSRecordTest
                     ljwvFw==
                 """)
         };
-        
+
         await ExceptionAssert.Throws<ArgumentException>(() =>
         {
             _ = new DSRecord(key);
@@ -142,7 +142,7 @@ public class DSRecordTest
                     ljwvFw==
                 """)
         };
-        
+
         await ExceptionAssert.Throws<ArgumentException>(() =>
         {
             _ = new DSRecord(key);

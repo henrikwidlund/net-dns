@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -13,9 +14,9 @@ public class PTRRecordTest
             Name = "emanon.org",
             DomainName = "somewhere.else.org"
         };
-        
+
         var b = (PTRRecord)new ResourceRecord().Read(a.ToByteArray());
-        
+
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
         await Assert.That(a.Type).IsEqualTo(b.Type);
@@ -31,9 +32,9 @@ public class PTRRecordTest
             Name = "emanon.org",
             DomainName = "somewhere.else.org"
         };
-        
+
         var b = (PTRRecord)new ResourceRecord().Read(a.ToString())!;
-        
+
         await Assert.That(b).IsNotNull();
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
@@ -50,7 +51,7 @@ public class PTRRecordTest
             Name = "emanon.org",
             DomainName = "somewhere.else.org"
         };
-        
+
         var b = new PTRRecord
         {
             Name = "emanon.org",

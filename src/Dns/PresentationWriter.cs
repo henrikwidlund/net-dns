@@ -41,7 +41,7 @@ public class PresentationWriter
     public void WriteByte(in byte value, in bool appendSpace = true)
     {
         _text.Write(value);
-        
+
         if (appendSpace)
             WriteSpace();
     }
@@ -59,9 +59,9 @@ public class PresentationWriter
     {
         if (value is null)
             return;
-        
+
         _text.Write(value.ToString());
-        
+
         if (appendSpace)
             WriteSpace();
     }
@@ -78,7 +78,7 @@ public class PresentationWriter
     public void WriteUInt32(in uint value, in bool appendSpace = true)
     {
         _text.Write(value);
-        
+
         if (appendSpace)
             WriteSpace();
     }
@@ -100,22 +100,22 @@ public class PresentationWriter
         bool needQuote = false;
 
         value ??= string.Empty;
-        
+
         if (value == string.Empty)
             needQuote = true;
-        
+
         value = value.Replace("\\", @"\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal);
         if (value.Contains(' ', StringComparison.Ordinal))
             needQuote = true;
-        
+
         if (needQuote)
             _text.Write('"');
-        
+
         _text.Write(value);
-        
+
         if (needQuote)
             _text.Write('"');
-        
+
         if (appendSpace)
             WriteSpace();
     }
@@ -135,7 +135,7 @@ public class PresentationWriter
     public void WriteStringUnencoded(string value, in bool appendSpace = true)
     {
         _text.Write(value);
-        
+
         if (appendSpace)
             WriteSpace();
     }
@@ -179,7 +179,7 @@ public class PresentationWriter
     {
         if (value is null)
             return;
-        
+
         WriteString(Convert.ToBase64String(value), appendSpace);
     }
 
@@ -245,9 +245,9 @@ public class PresentationWriter
     {
         if (!value.IsDefined())
             _text.Write("TYPE");
-        
+
         _text.Write(value.ToStringFast());
-        
+
         if (appendSpace)
             WriteSpace();
     }
@@ -269,9 +269,9 @@ public class PresentationWriter
     {
         if (!value.IsDefined())
             _text.Write("CLASS");
-        
+
         _text.Write(value.ToStringFast());
-        
+
         if (appendSpace)
             WriteSpace();
     }

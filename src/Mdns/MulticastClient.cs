@@ -137,7 +137,7 @@ internal class MulticastClient : IDisposable
             }
         }
     }
-    
+
     private async Task Listen(UdpClient receiver, CancellationToken cancellationToken)
     {
         try
@@ -157,7 +157,7 @@ internal class MulticastClient : IDisposable
             _logger?.ReceiverFailure(ex);
         }
     }
-    
+
     private static IEnumerable<IPAddress> GetNetworkInterfaceLocalAddresses(NetworkInterface nic)
     {
         return nic

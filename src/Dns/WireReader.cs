@@ -37,10 +37,10 @@ public class WireReader
     public byte ReadByte()
     {
         var value = _stream.ReadByte();
-        
+
         if (value < 0)
             throw new EndOfStreamException();
-        
+
         ++Position;
         return (byte)value;
     }
@@ -314,7 +314,7 @@ public class WireReader
         var block = ReadByte();
         var length = ReadByte();
         var offset = block * 256;
-        
+
         for (var i = 0; i < length; ++i, offset += 8)
         {
             var bits = ReadByte();
@@ -324,7 +324,7 @@ public class WireReader
                     values.Add((ushort)(offset + bit));
             }
         }
-        
+
         return values;
     }
 

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;

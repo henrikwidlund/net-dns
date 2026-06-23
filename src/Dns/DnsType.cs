@@ -317,7 +317,7 @@ public enum DnsType : ushort
 public static class DnsTypeExtensions
 {
 #pragma warning disable CS0618 // Type or member is obsolete
-    
+
     public static DnsType Parse(
         [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
         string? name) =>

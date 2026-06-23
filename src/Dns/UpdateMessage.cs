@@ -151,33 +151,33 @@ public class UpdateMessage : DnsObject
     public override IWireSerializer Read(WireReader reader)
     {
         Id = reader.ReadUInt16();
-        
+
         var flags = reader.ReadUInt16();
         QR = (flags & 0x8000) == 0x8000;
         Opcode = (MessageOperation)((flags & 0x7800) >> 11);
         Z = (flags & 0x07F0) >> 4;
         Status = (MessageStatus)(flags & 0x000F);
-        
+
         var zocount = reader.ReadUInt16();
         var prcount = reader.ReadUInt16();
         var upcount = reader.ReadUInt16();
         var arcount = reader.ReadUInt16();
-        
+
         for (var i = 0; i < zocount; ++i)
-            Zone = (Question) new Question().Read(reader);
-        
+            Zone = (Question)new Question().Read(reader);
+
         for (var i = 0; i < prcount; ++i)
         {
-            var rr = (ResourceRecord) new ResourceRecord().Read(reader);
+            var rr = (ResourceRecord)new ResourceRecord().Read(reader);
             Prerequisites.Add(rr);
         }
-        
+
         for (var i = 0; i < upcount; ++i)
         {
             var rr = (ResourceRecord)new ResourceRecord().Read(reader);
             Updates.Add(rr);
         }
-        
+
         for (var i = 0; i < arcount; ++i)
         {
             var rr = (ResourceRecord)new ResourceRecord().Read(reader);
@@ -191,21 +191,21 @@ public class UpdateMessage : DnsObject
     public override void Write(WireWriter writer)
     {
         writer.WriteUInt16(Id);
-        
+
         var flags =
             (Convert.ToInt32(QR) << 15) |
             (((ushort)Opcode & 0xf) << 11) |
             ((Z & 0x7F) << 4) |
             ((ushort)Status & 0xf);
         writer.WriteUInt16((ushort)flags);
-        
+
         writer.WriteUInt16(1);
         writer.WriteUInt16((ushort)Prerequisites.Count);
         writer.WriteUInt16((ushort)Updates.Count);
         writer.WriteUInt16((ushort)AdditionalResources.Count);
-        
+
         Zone.Write(writer);
-        
+
         foreach (var r in Prerequisites) r.Write(writer);
         foreach (var r in Updates) r.Write(writer);
         foreach (var r in AdditionalResources) r.Write(writer);

@@ -40,7 +40,7 @@ public interface IMulticastService : IResolver, IDisposable
     ///   Any exception throw by the event handler is simply logged and
     ///   then forgotten.
     /// </remarks>
-    public Func<MessageEventArgs, Task>? AnswerReceived  { get; set; }
+    public Func<MessageEventArgs, Task>? AnswerReceived { get; set; }
 
     /// <summary>
     ///   Raised when a DNS message is received that cannot be decoded.
@@ -48,7 +48,7 @@ public interface IMulticastService : IResolver, IDisposable
     /// <value>
     ///   The DNS message as a byte array.
     /// </value>
-    public Func<byte[], Task>? MalformedMessage  { get; set; }
+    public Func<byte[], Task>? MalformedMessage { get; set; }
 
     /// <summary>
     ///   Raised when one or more network interfaces are discovered.
@@ -56,7 +56,7 @@ public interface IMulticastService : IResolver, IDisposable
     /// <value>
     ///   Contains the network interface(s).
     /// </value>
-    public Func<NetworkInterfaceEventArgs, Task>? NetworkInterfaceDiscovered  { get; set; }
+    public Func<NetworkInterfaceEventArgs, Task>? NetworkInterfaceDiscovered { get; set; }
 
     /// <summary>
     ///   Send and receive on IPv4.

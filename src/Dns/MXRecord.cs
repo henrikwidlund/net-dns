@@ -31,7 +31,7 @@ public class MXRecord : ResourceRecord
     ///   The name of an mail exchange.
     /// </value>
     public DomainName? Exchange { get; set; }
-    
+
     /// <inheritdoc />
     public override void ReadData(WireReader reader, in int length)
     {
@@ -51,7 +51,7 @@ public class MXRecord : ResourceRecord
     {
         if (Preference is null)
             throw new InvalidOperationException("Preference is required.");
-        
+
         writer.WriteUInt16(Preference.Value);
         writer.WriteDomainName(Exchange);
     }
@@ -61,7 +61,7 @@ public class MXRecord : ResourceRecord
     {
         if (Preference is null)
             throw new InvalidOperationException("Preference is required.");
-        
+
         writer.WriteUInt16(Preference.Value);
         writer.WriteDomainName(Exchange, appendSpace: false);
     }

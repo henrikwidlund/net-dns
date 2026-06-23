@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace Makaretu.Mdns;
@@ -30,7 +31,7 @@ public class ServiceDiscoveryTest
         var mdns = new MulticastService();
         mdns.NetworkInterfaceDiscovered += _ =>
             mdns.SendQuery(ServiceDiscovery.ServiceName, DnsClass.IN, DnsType.PTR);
-        
+
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
@@ -39,10 +40,10 @@ public class ServiceDiscoveryTest
 
             if (msg.Answers.OfType<PTRRecord>().Any(p => p.DomainName == service.QualifiedServiceName))
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
@@ -62,7 +63,7 @@ public class ServiceDiscoveryTest
     {
         var service = new ServiceProfile("x", "_sdtest-1._udp", 1024, [IPAddress.Loopback], true);
         var done = new TaskCompletionSource<bool>();
-        
+
         await Assert.That(service.SharedProfile).IsTrue().Because("Shared Profile was not set");
 
         using var mdns = new MulticastService();
@@ -72,19 +73,19 @@ public class ServiceDiscoveryTest
             var msg = e.Message;
             if (msg.Answers.OfType<PTRRecord>().Any(p => p.DomainName == service.QualifiedServiceName && ((int)p.Class & MulticastService.CacheFlushBit) != 0))
                 Assert.Fail("shared PTR records should not have cache-flush set");
-            
+
             if (msg.AdditionalRecords.OfType<SRVRecord>().Any(s => (s.Name == service.FullyQualifiedName && ((int)s.Class & MulticastService.CacheFlushBit) == 0)))
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
         }
         finally
@@ -106,12 +107,12 @@ public class ServiceDiscoveryTest
                 if (await sd.Probe(service))
                     done.SetResult(true);
             };
-        
+
         try
         {
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(3))).IsTrue().Because("Probe timeout");
         }
         finally
@@ -128,14 +129,14 @@ public class ServiceDiscoveryTest
         using var sd = await ServiceDiscovery.CreateInstance(cancellationToken: TestContext.Current!.Execution.CancellationToken);
         sd.Advertise(service);
         await sd.Mdns!.Start(TestContext.Current!.Execution.CancellationToken);
-        
+
         var mdns = new MulticastService();
         using var sd2 = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
         mdns.NetworkInterfaceDiscovered += async _ =>
         {
             await Assert.That(await sd2.Probe(service)).IsTrue();
         };
-        
+
         try
         {
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
@@ -157,7 +158,7 @@ public class ServiceDiscoveryTest
         {
             await Assert.That(await sd.Probe(service)).IsFalse();
         };
-        
+
         try
         {
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
@@ -181,16 +182,16 @@ public class ServiceDiscoveryTest
             var msg = e.Message;
             if (msg.Answers.OfType<PTRRecord>().Any(p => p.DomainName == service.FullyQualifiedName))
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
         }
         finally
@@ -212,7 +213,7 @@ public class ServiceDiscoveryTest
             var msg = e.Message;
             if (msg.Answers.OfType<ARecord>().Any(p => p.Name == service.HostName))
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
         try
@@ -220,7 +221,7 @@ public class ServiceDiscoveryTest
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
         }
         finally
@@ -243,16 +244,16 @@ public class ServiceDiscoveryTest
             var msg = e.Message;
             if (msg.Answers.OfType<PTRRecord>().Any(p => p.DomainName == service.FullyQualifiedName))
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
         }
         finally
@@ -274,15 +275,15 @@ public class ServiceDiscoveryTest
         {
             if (serviceName == service.QualifiedServiceName)
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("DNS-SD query timeout");
         }
         finally
@@ -304,14 +305,14 @@ public class ServiceDiscoveryTest
         {
             if (serviceName == service.QualifiedServiceName)
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
         try
         {
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("DNS-SD query timeout");
         }
         finally
@@ -341,12 +342,12 @@ public class ServiceDiscoveryTest
                 done.SetResult(true);
             }
         };
-        
+
         try
         {
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("instance not found");
         }
         finally
@@ -378,13 +379,13 @@ public class ServiceDiscoveryTest
                 done.SetResult(true);
             }
         };
-        
+
         try
         {
             sd.Advertise(service1);
             sd.Advertise(service2);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("instance not found");
         }
         finally
@@ -414,12 +415,12 @@ public class ServiceDiscoveryTest
                 done.SetResult(true);
             }
         };
-        
+
         try
         {
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("instance not found");
         }
         finally
@@ -437,7 +438,7 @@ public class ServiceDiscoveryTest
         using var mdns = new MulticastService();
         using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
         sd.AnswersContainsAdditionalRecords = true;
-        
+
         Message discovered = null;
 
         mdns.NetworkInterfaceDiscovered += async _ =>
@@ -485,10 +486,10 @@ public class ServiceDiscoveryTest
         {
             if (e.ServiceInstanceName == service.FullyQualifiedName)
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             sd.Advertise(service);
@@ -501,7 +502,7 @@ public class ServiceDiscoveryTest
             mdns.Stop();
         }
     }
-    
+
     [Test]
     public async Task ReverseAddressMapping()
     {
@@ -520,16 +521,16 @@ public class ServiceDiscoveryTest
                 response = msg;
                 done.SetResult(true);
             }
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
             sd.Advertise(service);
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(1))).IsTrue().Because("query timeout");
 
             var answers = response.Answers
@@ -578,10 +579,10 @@ public class ServiceDiscoveryTest
             var msg = e.Message;
             if (msg.Answers.OfType<PTRRecord>().Any(p => p.DomainName == service.FullyQualifiedName))
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
@@ -590,7 +591,7 @@ public class ServiceDiscoveryTest
                 await Assert.That(await sd.Probe(service)).IsFalse();
                 await sd.Announce(service);
             };
-            
+
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
 
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(3))).IsTrue().Because("announce timeout");
@@ -614,17 +615,17 @@ public class ServiceDiscoveryTest
             //Remove Cache-Flush bit
             foreach (var answer in e.Message.Answers)
                 answer.Class = (DnsClass)((ushort)answer.Class & ~MulticastService.CacheFlushBit);
-            
+
             if (service.Resources.Any(r => !msg.Answers.Contains(r)))
             {
                 return Task.CompletedTask;
             }
-            
+
             done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
@@ -633,7 +634,7 @@ public class ServiceDiscoveryTest
                     await Assert.That(await sd.Probe(service)).IsFalse();
                     await sd.Announce(service);
                 };
-            
+
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
 
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(3))).IsTrue().Because("announce timeout");
@@ -651,21 +652,21 @@ public class ServiceDiscoveryTest
         var done = new TaskCompletionSource<bool>();
         var nanswers = 0;
         var stopWatch = new Stopwatch();
-        
+
         using var mdns = new MulticastService
         {
             IgnoreDuplicateMessages = false
         };
-        
+
         mdns.AnswerReceived += e =>
         {
             var msg = e.Message;
             if (msg.Answers.OfType<PTRRecord>().Any(p => p.DomainName == service.FullyQualifiedName) && ++nanswers == 3)
                 done.SetResult(true);
-            
+
             return Task.CompletedTask;
         };
-        
+
         try
         {
             using var sd = await ServiceDiscovery.CreateInstance(mdns, cancellationToken: TestContext.Current!.Execution.CancellationToken);
@@ -677,7 +678,7 @@ public class ServiceDiscoveryTest
             };
 
             await mdns.Start(TestContext.Current!.Execution.CancellationToken);
-            
+
             await Assert.That(done.Task.WaitAsync(TimeSpan.FromSeconds(4))).IsTrue().Because("announce timeout");
             stopWatch.Stop();
             if (stopWatch.ElapsedMilliseconds < 3000)

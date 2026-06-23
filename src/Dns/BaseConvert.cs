@@ -36,7 +36,7 @@ public static class BaseConvert
         var sb = new StringBuilder();
         foreach (var b in bytes)
             sb.Append(b.ToString("x2"));
-        
+
         return sb.ToString();
     }
 
@@ -56,7 +56,7 @@ public static class BaseConvert
             throw new ArgumentNullException(nameof(bytes));
 
         var charCount = (int)Math.Ceiling(bytes.Length / 5d) * 8;
-        
+
         var returnArray = ArrayPool<char>.Shared.Rent(charCount);
 
         try
@@ -99,7 +99,7 @@ public static class BaseConvert
     public static byte[] FromBase32Hex(string base32)
     {
         ArgumentException.ThrowIfNullOrEmpty(base32);
-        
+
         var base32Span = base32.AsSpan().TrimEnd('=');
         var byteCount = base32Span.Length * 5 / 8;
 

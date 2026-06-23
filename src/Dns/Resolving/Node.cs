@@ -33,7 +33,7 @@ public class Node
     /// <remarks>
     ///   Duplicate resources are silently ignored.
     /// </remarks>
-    public ConcurrentSet<ResourceRecord> Resources { get; set;  } = [];
+    public ConcurrentSet<ResourceRecord> Resources { get; set; } = [];
 
     /// <summary>
     ///   Indicates that the node's resources contains the complete information for

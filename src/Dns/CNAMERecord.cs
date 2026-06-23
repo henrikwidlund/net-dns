@@ -20,7 +20,7 @@ public class CNAMERecord : ResourceRecord
     ///  name for the owner. The owner name is an alias.
     /// </summary>
     public DomainName? Target { get; set; }
-    
+
     /// <inheritdoc />
     public override void ReadData(WireReader reader, in int length) => Target = reader.ReadDomainName();
 

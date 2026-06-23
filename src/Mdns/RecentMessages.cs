@@ -13,7 +13,7 @@ namespace Makaretu.Dns;
 public class RecentMessages(TimeProvider timeProvider)
 {
     private readonly TimeProvider _timeProvider = timeProvider;
-    
+
     /// <summary>
     ///   Recent messages.
     /// </summary>
@@ -29,12 +29,12 @@ public class RecentMessages(TimeProvider timeProvider)
     /// The number of messages.
     /// </summary>
     public int Count => _messages.Count;
-    
+
     /// <summary>
     ///   The time interval used to determine if a message is recent.
     /// </summary>
     public TimeSpan Interval { get; init; } = TimeSpan.FromSeconds(1);
-    
+
     /// <summary>
     /// Checks if a message has been added to the recent message list.
     /// </summary>

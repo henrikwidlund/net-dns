@@ -53,13 +53,13 @@ public class NSEC3PARAMRecord : ResourceRecord
     {
         if (HashAlgorithm is null)
             throw new InvalidOperationException("HashAlgorithm is required.");
-        
+
         if (Flags is null)
             throw new InvalidOperationException("Flags is required.");
-        
+
         if (Iterations is null)
             throw new InvalidOperationException("Iterations is required.");
-        
+
         writer.WriteByte((byte)HashAlgorithm);
         writer.WriteByte(Flags.Value);
         writer.WriteUInt16(Iterations.Value);
@@ -83,13 +83,13 @@ public class NSEC3PARAMRecord : ResourceRecord
     {
         if (HashAlgorithm is null)
             throw new InvalidOperationException("HashAlgorithm is required.");
-        
+
         if (Flags is null)
             throw new InvalidOperationException("Flags is required.");
-        
+
         if (Iterations is null)
             throw new InvalidOperationException("Iterations is required.");
-        
+
         writer.WriteByte((byte)HashAlgorithm);
         writer.WriteByte((byte)Flags);
         writer.WriteUInt16(Iterations.Value);

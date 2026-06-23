@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -17,9 +18,9 @@ public class TXTRecordTest
                 "colour=false"
             ]
         };
-        
+
         var b = (TXTRecord)new ResourceRecord().Read(a.ToByteArray());
-        
+
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
         await Assert.That(a.Type).IsEqualTo(b.Type);
@@ -42,9 +43,9 @@ public class TXTRecordTest
                 "foo3=a\""
             ]
         };
-        
+
         var b = (TXTRecord)new ResourceRecord().Read(a.ToString())!;
-        
+
         await Assert.That(b).IsNotNull();
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
@@ -60,9 +61,9 @@ public class TXTRecordTest
         {
             Name = "the.printer.local"
         };
-        
+
         var b = (TXTRecord)new ResourceRecord().Read(a.ToByteArray());
-        
+
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
         await Assert.That(a.Type).IsEqualTo(b.Type);
@@ -82,7 +83,7 @@ public class TXTRecordTest
                 "colour=false"
             ]
         };
-        
+
         var b = new TXTRecord
         {
             Name = "the.printer.local",

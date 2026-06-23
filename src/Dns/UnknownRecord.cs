@@ -9,7 +9,7 @@ public class UnknownRecord : ResourceRecord
     ///    Specific data for the resource.
     /// </summary>
     public byte[]? Data { get; set; }
-    
+
     /// <inheritdoc />
     public override void ReadData(WireReader reader, in int length) => Data = reader.ReadBytes(length);
 

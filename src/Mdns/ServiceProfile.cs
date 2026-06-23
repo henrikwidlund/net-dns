@@ -105,9 +105,9 @@ public class ServiceProfile
     ///   protocols that run over TCP) or "_udp" (for all others). 
     /// </remarks>
     public DomainName? ServiceName
-    { 
-        get => _serviceName; 
-        init 
+    {
+        get => _serviceName;
+        init
         {
             _serviceName = value;
             if (_instanceName != null && _serviceName != null)
@@ -209,7 +209,7 @@ public class ServiceProfile
         {
             if (_instanceName is null || _serviceName is null)
                 throw new InvalidOperationException($"{nameof(InstanceName)} and {nameof(ServiceName)} must be set.");
-            
+
             return DomainName.Join(_instanceName, _serviceName, Domain);
         }
     }

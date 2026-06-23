@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Net;
 using System.Text;
-using System.Collections;
 
 namespace Makaretu.Dns;
 
@@ -74,7 +74,7 @@ public class WireWriter
     {
         var lp = _stream;
         var length = (ushort)lp.Position;
-        
+
         _stream = _scopes.Pop();
         WriteUInt16(length);
         Position -= 2;
@@ -215,7 +215,7 @@ public class WireWriter
             ++Position;
             return;
         }
-        
+
         WriteDomainName(new DomainName(name), uncompressed);
     }
 
@@ -272,7 +272,7 @@ public class WireWriter
                 WriteUInt16((ushort)(0xC000 | pointer));
                 return;
             }
-            
+
             if (Position <= MaxPointer)
                 _pointers[qn] = Position;
 
@@ -431,7 +431,7 @@ public class WireWriter
             {
                 if (mask[i] != 0)
                     break;
-                
+
                 mask.RemoveAt(i);
             }
 
@@ -451,17 +451,17 @@ public class WireWriter
         {
             if (bitValue)
                 outByte |= MSB ? 1 << bitCount : 1 << (7 - bitCount);
-            
+
             if (bitCount == 0)
             {
                 yield return (byte)outByte;
                 bitCount = 8;
                 outByte = 0;
             }
-            
+
             bitCount--;
         }
-        
+
         // Last partially decoded byte
         if (bitCount < 7)
             yield return (byte)outByte;

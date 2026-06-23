@@ -161,7 +161,7 @@ public class OPTRecord : ResourceRecord
 
         foreach (var option in Options)
             sb.AppendLine(option.ToString());
-        
+
         return sb.ToString();
     }
 }

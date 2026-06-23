@@ -39,7 +39,7 @@ public class TXTRecord : ResourceRecord
         while (!reader.IsEndOfLine())
             Strings.Add(reader.ReadString());
     }
-    
+
     /// <inheritdoc />
     public override void WriteData(WireWriter writer)
     {
@@ -55,7 +55,7 @@ public class TXTRecord : ResourceRecord
         {
             if (next)
                 writer.WriteSpace();
-            
+
             writer.WriteString(s, appendSpace: false);
             next = true;
         }

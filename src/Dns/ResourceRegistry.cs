@@ -7,7 +7,7 @@
 public static class ResourceRegistry
 {
     private static readonly Dictionary<DnsType, Func<ResourceRecord>> RecordsPrivate = InitRecords();
-    
+
     private static Dictionary<DnsType, Func<ResourceRecord>> InitRecords()
     {
         var dictionary = new Dictionary<DnsType, Func<ResourceRecord>>();
@@ -37,7 +37,7 @@ public static class ResourceRegistry
 
         return dictionary;
     }
-    
+
     /// <summary>
     ///   All the resource records.
     /// </summary>
@@ -60,13 +60,13 @@ public static class ResourceRegistry
     {
         RegisterCore<T>(RecordsPrivate);
     }
-    
+
     private static void RegisterCore<T>(Dictionary<DnsType, Func<ResourceRecord>> records) where T : ResourceRecord, new()
     {
         var rr = new T();
         if (!rr.Type.IsDefined())
             throw new InvalidOperationException($"The RR TYPE {rr.Type} is not defined.");
-        
+
         records.Add(rr.Type, static () => new T());
     }
 

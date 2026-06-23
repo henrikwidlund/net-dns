@@ -51,7 +51,7 @@ public class ServiceDiscovery : IServiceDiscovery
 
         return instance;
     }
-    
+
     /// <summary>
     ///   Creates a new instance of the <see cref="ServiceDiscovery"/> class.
     /// </summary>
@@ -211,7 +211,7 @@ public class ServiceDiscovery : IServiceDiscovery
     {
         if (Mdns is null)
             return;
-        
+
         var name = DomainName.Join(
             new DomainName(subtype),
             SubName,
@@ -375,7 +375,7 @@ public class ServiceDiscovery : IServiceDiscovery
 
         if (Mdns is null)
             return;
-        
+
         for (int i = 0; i < numberOfTimes; i++)
         {
             if (i > 0)
@@ -530,7 +530,7 @@ public class ServiceDiscovery : IServiceDiscovery
         Mdns.AnswerReceived -= OnAnswer;
         if (_instantiatedMdns)
             Mdns.Dispose();
-        
+
         Mdns = null;
     }
 

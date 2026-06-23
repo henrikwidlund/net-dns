@@ -106,7 +106,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
         using var ms = new MemoryStream();
         var writer = new WireWriter(ms);
         WriteData(writer);
-        return (int) ms.Length;
+        return (int)ms.Length;
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
 
         // Find a specific class for the TYPE or default
         // to UnknownRecord.
-        var specific = ResourceRegistry.Create(Type); 
+        var specific = ResourceRegistry.Create(Type);
         specific.Name = Name;
         specific.Type = Type;
         specific.Class = Class;
@@ -147,7 +147,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
         // Read the specific properties of the resource record.
         var end = reader.Position + length;
         specific.ReadData(reader, length);
-        
+
         if (reader.Position != end)
             throw new InvalidDataException("Found extra data while decoding RDATA.");
 
@@ -214,7 +214,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
 
         return false;
     }
-    
+
     /// <inheritdoc />
     /// <remarks>
     ///   Two Resource Records are considered equal if their <see cref="Name"/>, 
@@ -235,7 +235,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
 
         return x.Name == y.Name && x.Class == y.Class && x.Type == y.Type && x.GetData().SequenceEqual(y.GetData());
     }
-    
+
     /// <summary>
     ///   Value equality.
     /// </summary>
@@ -301,7 +301,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
         writer.WriteDomainName(Name);
         if (TTL != DefaultTTL)
             writer.WriteTimeSpan32(TTL);
-        
+
         writer.WriteDnsClass(Class);
         writer.WriteDnsType(Type);
 
@@ -328,10 +328,10 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
     {
         var rdata = GetData();
         var hasData = rdata.Length > 0;
-        
+
         writer.WriteStringUnencoded("\\#");
         writer.WriteUInt32((uint)rdata.Length, appendSpace: hasData);
-        
+
         if (hasData)
             writer.WriteBase16String(rdata, appendSpace: false);
     }

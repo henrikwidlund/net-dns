@@ -51,7 +51,7 @@ public class CatalogTest
                                                 mail3         IN  A     192.0.2.5             ; IPv4 address for mail3.example.com
 
                                                 """;
-    
+
     [Test]
     public async Task IncludeZone()
     {
@@ -309,7 +309,7 @@ public class CatalogTest
                            ;; MSG SIZE  rcvd: 743
 
                            """;
-        
+
         var catalog = new Catalog();
         var reader = new PresentationReader(new StringReader(dig));
         catalog.Include(reader);

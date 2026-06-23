@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -15,14 +16,14 @@ public class NameCompressionTest
         writer.WriteDomainName("b");
         writer.WriteDomainName("b");
         var bytes = ms.ToArray();
-        
+
         var expected = new byte[]
         {
             0x01, (byte)'a', 0,
             0x01, (byte)'b', 0,
             0XC0, 3
         };
-        
+
         await Assert.That(bytes).IsEquivalentTo(expected);
     }
 
@@ -37,7 +38,7 @@ public class NameCompressionTest
         writer.WriteDomainName("c");
         writer.WriteDomainName("x.b.c");
         var bytes = ms.ToArray();
-        
+
         var expected = new byte[]
         {
             0x01, (byte)'a', 0x01, (byte)'b', 0x01, (byte)'c', 00,
@@ -78,7 +79,7 @@ public class NameCompressionTest
             0xC0, 0x04,
             0x01, (byte)'x', 0xC0, 0x02
         };
-        
+
         using var ms = new MemoryStream(bytes);
         var reader = new WireReader(ms);
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a.b.c");
@@ -97,7 +98,7 @@ public class NameCompressionTest
             0x01, (byte)'b', 0,
             0XC0, 3
         };
-        
+
         using var ms = new MemoryStream(bytes);
         var reader = new WireReader(ms);
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a");

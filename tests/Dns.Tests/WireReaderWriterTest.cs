@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -31,7 +32,7 @@ public class WireReaderWriterTest
         writer.WriteDateTime48(someDate);
         ms.Position = 0;
         var reader = new WireReader(ms);
-        
+
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("emanon.org");
         await Assert.That(reader.ReadString()).IsEqualTo("alpha");
         await Assert.That(reader.ReadTimeSpan32()).IsEqualTo(TimeSpan.FromHours(3));
@@ -54,7 +55,7 @@ public class WireReaderWriterTest
         var writer = new WireWriter(ms);
         writer.WriteDomainName("a.b");
         ms.Position = 0;
-        
+
         await Assert.That(ms.ReadByte()).IsEqualTo(1);
         await Assert.That((char)ms.ReadByte()).IsEqualTo('a');
         await Assert.That(ms.ReadByte()).IsEqualTo(1);
@@ -69,7 +70,7 @@ public class WireReaderWriterTest
         var writer = new WireWriter(ms);
         writer.WriteDomainName(@"a\.b");
         ms.Position = 0;
-        
+
         await Assert.That(ms.ReadByte()).IsEqualTo(3);
         await Assert.That((char)ms.ReadByte()).IsEqualTo('a');
         await Assert.That((char)ms.ReadByte()).IsEqualTo('.');
@@ -82,7 +83,7 @@ public class WireReaderWriterTest
     {
         using var ms = new MemoryStream([]);
         var reader = new WireReader(ms);
-        
+
         await Assert.That(() => reader.ReadByte()).Throws<EndOfStreamException>();
     }
 
@@ -91,7 +92,7 @@ public class WireReaderWriterTest
     {
         using var ms = new MemoryStream([1, 2]);
         var reader = new WireReader(ms);
-        
+
         await Assert.That(() => reader.ReadBytes(3)).Throws<EndOfStreamException>();
     }
 
@@ -100,7 +101,7 @@ public class WireReaderWriterTest
     {
         using var ms = new MemoryStream([1, (byte)'a']);
         var reader = new WireReader(ms);
-        
+
         await Assert.That(() => reader.ReadDomainName()).Throws<EndOfStreamException>();
     }
 
@@ -109,7 +110,7 @@ public class WireReaderWriterTest
     {
         using var ms = new MemoryStream([10, 1]);
         var reader = new WireReader(ms);
-        
+
         await Assert.That(() => reader.ReadString()).Throws<EndOfStreamException>();
     }
 
@@ -118,7 +119,7 @@ public class WireReaderWriterTest
     {
         var bytes = new byte[byte.MaxValue + 1];
         var writer = new WireWriter(new MemoryStream());
-        
+
         await Assert.That(() => writer.WriteByteLengthPrefixedBytes(bytes)).Throws<ArgumentException>();
     }
 
@@ -135,7 +136,7 @@ public class WireReaderWriterTest
 
         ms.Position = 0;
         var reader = new WireReader(ms);
-        
+
         await Assert.That(reader.ReadString()).IsEqualTo("abc");
         await Assert.That(reader.ReadUInt16()).IsEqualTo((ushort)5);
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("a");
@@ -152,7 +153,7 @@ public class WireReaderWriterTest
 
         ms.Position = 0;
         var reader = new WireReader(ms);
-        
+
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("");
         await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
@@ -182,7 +183,7 @@ public class WireReaderWriterTest
 
         ms.Position = 0;
         var reader = new WireReader(ms);
-        
+
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("");
         await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
@@ -197,7 +198,7 @@ public class WireReaderWriterTest
 
         ms.Position = 0;
         var reader = new WireReader(ms);
-        
+
         await Assert.That(reader.ReadDomainName()).IsEquatableOrEqualTo("");
         await Assert.That(reader.ReadString()).IsEqualTo("abc");
     }
@@ -213,7 +214,7 @@ public class WireReaderWriterTest
         ms.Position = 0;
         var reader = new WireReader(ms);
         var name = reader.ReadDomainName();
-        
+
         await Assert.That(name).IsEquatableOrEqualTo(domainName);
     }
 
@@ -229,7 +230,7 @@ public class WireReaderWriterTest
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x20
         };
-        
+
         using var ms1 = new MemoryStream(wire, false);
         var reader = new WireReader(ms1);
         var first = new ushort[] { 1, 15, 46, 47 };
@@ -258,7 +259,7 @@ public class WireReaderWriterTest
         var expected = new DateTime(1997, 1, 21, 0, 0, 0, DateTimeKind.Utc);
         using var ms = new MemoryStream([0x00, 0x00, 0x32, 0xe4, 0x07, 0x00]);
         var reader = new WireReader(ms);
-        
+
         await Assert.That(reader.ReadDateTime48()).IsEqualTo(expected);
     }
 

@@ -87,7 +87,7 @@ public sealed class DomainName : IEquatable<DomainName>
         var joinedName = new DomainName();
         foreach (var name in names)
             joinedName._labels.AddRange(name.Labels);
-        
+
         return joinedName;
     }
 
@@ -174,10 +174,10 @@ public sealed class DomainName : IEquatable<DomainName>
     {
         if (domain is null)
             return false;
-        
+
         if (_labels.Count <= domain._labels.Count)
             return false;
-        
+
         var i = _labels.Count - 1;
         var j = domain._labels.Count - 1;
         for (; 0 <= j; --i, --j)
@@ -185,7 +185,7 @@ public sealed class DomainName : IEquatable<DomainName>
             if (!LabelsEqual(_labels[i], domain._labels[j]))
                 return false;
         }
-        
+
         return true;
     }
 
@@ -236,7 +236,7 @@ public sealed class DomainName : IEquatable<DomainName>
             // Just part of the label.
             label.Append(c);
         }
-        
+
         if (label.Length > 0)
             _labels.Add(label.ToString());
     }
@@ -256,17 +256,17 @@ public sealed class DomainName : IEquatable<DomainName>
     {
         if (that is null)
             return false;
-        
+
         var n = _labels.Count;
         if (n != that._labels.Count)
             return false;
-            
+
         for (var i = 0; i < n; ++i)
         {
             if (!LabelsEqual(_labels[i], that._labels[i]))
                 return false;
         }
-        
+
         return true;
     }
 
@@ -277,7 +277,7 @@ public sealed class DomainName : IEquatable<DomainName>
     {
         if (ReferenceEquals(a, b)) return true;
         if (a is null) return false;
-        
+
         return b is not null && a.Equals(b);
     }
 

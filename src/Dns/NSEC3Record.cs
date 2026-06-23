@@ -72,13 +72,13 @@ public class NSEC3Record : ResourceRecord
     {
         if (HashAlgorithm is null)
             throw new InvalidOperationException("HashAlgorithm is required.");
-        
+
         if (Flags is null)
             throw new InvalidOperationException("Flags is required.");
-        
+
         if (Iterations is null)
             throw new InvalidOperationException("Iterations is required.");
-        
+
         writer.WriteByte((byte)HashAlgorithm.Value);
         writer.WriteByte((byte)Flags.Value);
         writer.WriteUInt16(Iterations.Value);
@@ -109,16 +109,16 @@ public class NSEC3Record : ResourceRecord
     {
         if (HashAlgorithm is null)
             throw new InvalidOperationException("HashAlgorithm is required.");
-        
+
         if (Flags is null)
             throw new InvalidOperationException("Flags is required.");
-        
+
         if (Iterations is null)
             throw new InvalidOperationException("Iterations is required.");
-        
+
         if (NextHashedOwnerName is null)
             throw new InvalidOperationException("NextHashedOwnerName is required.");
-        
+
         writer.WriteByte((byte)HashAlgorithm.Value);
         writer.WriteByte((byte)Flags.Value);
         writer.WriteUInt16(Iterations.Value);
@@ -135,7 +135,7 @@ public class NSEC3Record : ResourceRecord
         {
             if (next)
                 writer.WriteSpace();
-            
+
             writer.WriteDnsType(type, appendSpace: false);
             next = true;
         }

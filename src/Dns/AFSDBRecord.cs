@@ -29,7 +29,7 @@ public class AFSDBRecord : ResourceRecord
     ///   The name of an AFS server.
     /// </value>
     public DomainName? Target { get; set; }
-    
+
     /// <inheritdoc />
     public override void ReadData(WireReader reader, in int length)
     {

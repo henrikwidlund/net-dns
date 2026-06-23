@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -203,7 +204,7 @@ public class PresentationReaderTest
         var reader = new PresentationReader(new StringReader(text));
         var resource = reader.ReadResourceRecord();
 
-        await  Assert.That(resource).IsNotNull();
+        await Assert.That(resource).IsNotNull();
         await Assert.That(resource!.Name).IsEquatableOrEqualTo("emanon.org");
         await Assert.That(resource.Class).IsEqualTo(DnsClass.IN);
         await Assert.That(resource.Type).IsEqualTo(DnsType.PTR);
@@ -257,7 +258,7 @@ public class PresentationReaderTest
         await Assert.That(a.Name!.Labels).Count().IsEqualTo(2);
 
         var aaaa = reader.ReadResourceRecord();
-        await  Assert.That(aaaa).IsNotNull();
+        await Assert.That(aaaa).IsNotNull();
         await Assert.That(aaaa!.Name).IsEquatableOrEqualTo("emanon~.org");
         await Assert.That(aaaa.Class).IsEqualTo(DnsClass.IN);
         await Assert.That(aaaa.Type).IsEqualTo(DnsType.AAAA);

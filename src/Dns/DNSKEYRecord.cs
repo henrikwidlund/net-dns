@@ -30,14 +30,14 @@ public class DNSKEYRecord : ResourceRecord
             not SecurityAlgorithm.RSASHA256 and
             not SecurityAlgorithm.RSASHA512)
             throw new ArgumentException($"Security algorithm '{algorithm}' is not allowed for a RSA key.", nameof(algorithm));
-        
+
         Algorithm = algorithm;
 
         using var ms = new MemoryStream();
         var p = key.ExportParameters(includePrivateParameters: false);
         if (p.Exponent is null)
             throw new InvalidOperationException("The RSA key does not have an exponent.");
-            
+
         if (p.Modulus is null)
             throw new InvalidOperationException("The RSA key does not have a modulus.");
 
@@ -46,7 +46,7 @@ public class DNSKEYRecord : ResourceRecord
         ms.Write(p.Modulus, 0, p.Modulus.Length);
         PublicKey = ms.ToArray();
     }
-    
+
     /// <summary>
     ///   Creates a new instance of the <see cref="DNSKEYRecord"/> class
     ///   from the specified ECDSA key.
@@ -70,21 +70,21 @@ public class DNSKEYRecord : ResourceRecord
     {
         var p = key.ExportParameters(includePrivateParameters: false);
         p.Validate();
-        
+
         if (p.Q.Y is null)
             throw new InvalidOperationException("The ECDSA key does not have a Y value.");
-        
+
         if (p.Q.X is null)
             throw new InvalidOperationException("The ECDSA key does not have a X value.");
 
         if (!p.Curve.IsNamed)
             throw new ArgumentException("Only named ECDSA curves are allowed.", nameof(key));
-        
+
         Algorithm = SecurityAlgorithmRegistry.Algorithms
             .Where(alg => alg.Value.OtherNames.Contains(p.Curve.Oid.FriendlyName, StringComparer.Ordinal))
             .Select(static alg => alg.Key)
             .FirstOrDefault();
-        
+
         if (Algorithm == 0)
             throw new ArgumentException($"ECDSA curve '{p.Curve.Oid.FriendlyName} is not known'.", nameof(key));
 
@@ -147,9 +147,9 @@ public class DNSKEYRecord : ResourceRecord
 
         for (var i = 0; i < length; ++i)
             ac += (i & 1) == 1 ? key[i] : key[i] << 8;
-        
+
         ac += (ac >> 16) & 0xFFFF;
-        return (ushort) (ac & 0xFFFF);
+        return (ushort)(ac & 0xFFFF);
     }
 
     /// <inheritdoc />

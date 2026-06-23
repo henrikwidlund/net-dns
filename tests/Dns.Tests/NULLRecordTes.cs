@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using Makaretu.Dns;
 
 namespace DnsTests;
@@ -13,9 +14,9 @@ public class NULLRecordTest
             Name = "emanon.org",
             Data = [1, 2, 3, 4]
         };
-        
+
         var b = (NULLRecord)new ResourceRecord().Read(a.ToByteArray());
-        
+
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
         await Assert.That(a.Type).IsEqualTo(b.Type);
@@ -31,9 +32,9 @@ public class NULLRecordTest
             Name = "emanon.org",
             Data = [1, 2, 3, 4]
         };
-        
+
         var b = (NULLRecord)new ResourceRecord().Read(a.ToString())!;
-        
+
         await Assert.That(b).IsNotNull();
         await Assert.That(a.Name).IsEqualTo(b.Name);
         await Assert.That(a.Class).IsEqualTo(b.Class);
@@ -50,13 +51,13 @@ public class NULLRecordTest
             Name = "emanon.org",
             Data = [1, 2, 3, 4]
         };
-        
+
         var b = new NULLRecord
         {
             Name = "emanon.org",
             Data = [1, 2, 3, 40]
         };
-        
+
         // ReSharper disable once EqualExpressionComparison
         await Assert.That(a.Equals(a)).IsTrue();
         await Assert.That(a.Equals(b)).IsFalse();

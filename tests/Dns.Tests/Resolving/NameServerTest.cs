@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+
 using Makaretu.Dns;
 using Makaretu.Dns.Resolving;
 
@@ -187,7 +188,7 @@ public class NameServerTest
     [Test]
     public async Task MultipleQuestions_AnswerAll()
     {
-        var resolver = new NameServer { Catalog = _dotcom, AnswerAllQuestions = true};
+        var resolver = new NameServer { Catalog = _dotcom, AnswerAllQuestions = true };
         var request = new Message();
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.A });
         request.Questions.Add(new Question { Name = "ns.example.com", Type = DnsType.AAAA });
@@ -342,7 +343,7 @@ public class NameServerTest
     [Test]
     public async Task AdditionalRecords_NoDuplicates()
     {
-        var resolver = new NameServer { Catalog = _dotorg,  AnswerAllQuestions = true };
+        var resolver = new NameServer { Catalog = _dotorg, AnswerAllQuestions = true };
         var request = new Message();
         request.Questions.Add(new Question { Name = "example.org", Type = DnsType.NS });
         request.Questions.Add(new Question { Name = "ns1.example.org", Type = DnsType.A });
