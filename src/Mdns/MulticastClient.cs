@@ -152,6 +152,10 @@ internal class MulticastClient : IDisposable
                 }
             }
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            //Ignore
+        }
         catch (Exception ex)
         {
             _logger?.ReceiverFailure(ex);
