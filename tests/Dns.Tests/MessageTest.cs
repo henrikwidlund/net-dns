@@ -310,22 +310,20 @@ public class MessageTest
         });
 
         var text = m.ToString();
-        const string expected = """
-                                 ;; Header: QR AA RCODE=NoError
-
-                                 ;; Question
-                                 emanon.org IN A
-
-                                 ;; Answer
-                                 emanon.org IN A 127.0.0.1
-
-                                 ;; Authority
-                                 emanon.org 0 IN SOA erehwon hostmaster.emanon.org 0 0 0 0 0
-
-                                 ;; Additional
-                                 ;;  (empty)
-
-                                 """;
+        const string expected =
+            ";; Header: QR AA RCODE=NoError\n" +
+            "\n" +
+            ";; Question\n" +
+            "emanon.org IN A\n" +
+            "\n" +
+            ";; Answer\n" +
+            "emanon.org IN A 127.0.0.1\n" +
+            "\n" +
+            ";; Authority\n" +
+            "emanon.org 0 IN SOA erehwon hostmaster.emanon.org 0 0 0 0 0\n" +
+            "\n" +
+            ";; Additional\n" +
+            ";;  (empty)\n";
         await Assert.That(text).IsEqualTo(expected);
     }
 
@@ -340,25 +338,23 @@ public class MessageTest
         m.Read(buffer2);
 
         var text = m.ToString();
-        const string expected = """
-                                 ;; Header: RD RCODE=NoError
-
-                                 ;; Question
-                                 ipfs.io IN TXT
-
-                                 ;; Answer
-                                 ;;  (empty)
-
-                                 ;; Authority
-                                 ;;  (empty)
-
-                                 ;; Additional
-                                 ; EDNS: version: 0, udp 1280
-                                 ;   Keepalive = 01:30:46.4000000
-                                 ;   Padding = 80
-
-
-                                 """;
+        const string expected =
+            ";; Header: RD RCODE=NoError\n" +
+            "\n" +
+            ";; Question\n" +
+            "ipfs.io IN TXT\n" +
+            "\n" +
+            ";; Answer\n" +
+            ";;  (empty)\n" +
+            "\n" +
+            ";; Authority\n" +
+            ";;  (empty)\n" +
+            "\n" +
+            ";; Additional\n" +
+            "; EDNS: version: 0, udp 1280\n" +
+            ";   Keepalive = 01:30:46.4000000\n" +
+            ";   Padding = 80\n" +
+            "\n";
         await Assert.That(text).IsEqualTo(expected);
     }
 

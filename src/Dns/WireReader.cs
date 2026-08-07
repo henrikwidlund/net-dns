@@ -57,8 +57,16 @@ public class WireReader
     /// <exception cref="EndOfStreamException">
     ///   When no more data is available.
     /// </exception>
+    /// <exception cref="InvalidDataException">
+    ///   When <paramref name="length"/> is negative. This happens when a preceding
+    ///   variable-length field (e.g. a compressed domain name) in the same RDATA read
+    ///   more bytes than the record's declared length allowed for.
+    /// </exception>
     public byte[] ReadBytes(int length)
     {
+        if (length < 0)
+            throw new InvalidDataException($"Cannot read a negative number of bytes ({length}); the data is likely truncated or malformed.");
+
         var buffer = new byte[length];
         _stream.ReadExactly(buffer);
         Position += length;
@@ -93,7 +101,7 @@ public class WireReader
     ///   Read an unsigned short.
     /// </summary>
     /// <returns>
-    ///   The two byte little-endian value as an unsigned short.
+    ///   The two byte big-endian (network byte order) value as an unsigned short.
     /// </returns>
     /// <exception cref="EndOfStreamException">
     ///   When no more data is available.
@@ -109,7 +117,7 @@ public class WireReader
     ///   Read an unsigned int.
     /// </summary>
     /// <returns>
-    ///   The four byte little-endian value as an unsigned int.
+    ///   The four byte big-endian (network byte order) value as an unsigned int.
     /// </returns>
     /// <exception cref="EndOfStreamException">
     ///   When no more data is available.
@@ -127,7 +135,7 @@ public class WireReader
     ///   Read an unsigned long from 48 bits.
     /// </summary>
     /// <returns>
-    ///   The six byte little-endian value as an unsigned long.
+    ///   The six byte big-endian (network byte order) value as an unsigned long.
     /// </returns>
     /// <exception cref="EndOfStreamException">
     ///   When no more data is available.
@@ -180,7 +188,8 @@ public class WireReader
         if ((length & 0xC0) == 0xC0)
         {
             var cpointer = (length ^ 0xC0) << 8 | ReadByte();
-            var cname = _names[cpointer];
+            if (!_names.TryGetValue(cpointer, out var cname))
+                throw new InvalidDataException($"Compression pointer at position {pointer} refers to an unknown position {cpointer}.");
             _names[pointer] = cname;
             return cname;
         }
