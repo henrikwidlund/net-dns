@@ -9,12 +9,12 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.123">
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.144">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="SimpleBase" Version="5.6.2" />
-        <PackageReference Include="TUnit" Version="1.61.38" />
+        <PackageReference Include="SimpleBase" Version="5.6.4" />
+        <PackageReference Include="TUnit" Version="1.64.13" />
     </ItemGroup>
 
     <ItemGroup>

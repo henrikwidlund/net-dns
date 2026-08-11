@@ -426,7 +426,7 @@ public class PresentationReader
                     c = _text.Peek();
                     if (c is >= '0' and <= '9')
                     {
-                        _text.Read();
+                        _ = _text.Read();
                         ddd = ddd * 10 + (c - '0');
 
                         if (ddd > 0xFF)
