@@ -166,7 +166,7 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
     /// <remarks>
     ///   Derived classes must implement this method.
     /// </remarks>
-    public virtual void ReadData(WireReader reader, in int length) { }
+    public virtual void ReadData(WireReader reader, int length) { }
 
     /// <inheritdoc />
     public override void Write(WireWriter writer)

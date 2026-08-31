@@ -43,7 +43,7 @@ public class EdnsDAUOption : EdnsOption
     }
 
     /// <inheritdoc />
-    public override void ReadData(WireReader reader, in int length)
+    public override void ReadData(WireReader reader, int length)
     {
         var localLength = length;
         Algorithms.Clear();

@@ -146,7 +146,7 @@ public class Message : DnsObject
     /// <value>
     ///   <b>true</b> for a truncated message; otherwise, <b>false</b>.
     /// </value>
-    /// <seealso cref="Truncate(in int)"/>
+    /// <seealso cref="Truncate(int)"/>
     public bool TC { get; set; }
 
     /// <summary>
@@ -306,7 +306,7 @@ public class Message : DnsObject
     ///   If it is still too big, then the <see cref="TC"/> bit is set.
     ///   </para>
     /// </remarks>
-    public void Truncate(in int length)
+    public void Truncate(int length)
     {
         while (Length() > length)
         {
