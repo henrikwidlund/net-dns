@@ -84,7 +84,7 @@ public partial class NameServer : IResolver
     ///   If the question's domain does not exist, then the closest authority
     ///   (<see cref="SOARecord"/>) is added to the <see cref="Message.AuthorityRecords"/>.
     /// </remarks>
-    public Message Resolve(Question question, Message? response = null, in CancellationToken cancel = default)
+    public Message Resolve(Question question, Message? response = null, CancellationToken cancel = default)
     {
         response ??= new Message { QR = true };
 
@@ -133,7 +133,7 @@ public partial class NameServer : IResolver
     /// <remarks>
     ///   Derived classes must implement this method.
     /// </remarks>
-    protected bool FindAnswer(Question question, Message response, in CancellationToken cancel)
+    protected bool FindAnswer(Question question, Message response, CancellationToken cancel)
     {
         if (cancel.IsCancellationRequested)
             return false;
@@ -191,7 +191,7 @@ public partial class NameServer : IResolver
         return null;
     }
 
-    private void AddAdditionalRecords(Message response, in CancellationToken cancellationToken)
+    private void AddAdditionalRecords(Message response, CancellationToken cancellationToken)
     {
         var extras = new Message();
         var resources = response.Answers
@@ -270,7 +270,7 @@ public partial class NameServer : IResolver
             AddAdditionalRecords(response, cancellationToken);
     }
 
-    private void FindAddresses(DomainName name, DnsClass dnsClass, Message response, in CancellationToken cancel)
+    private void FindAddresses(DomainName name, DnsClass dnsClass, Message response, CancellationToken cancel)
     {
         var question = new Question
         {

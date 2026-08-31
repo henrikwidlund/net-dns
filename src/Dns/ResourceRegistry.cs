@@ -83,5 +83,5 @@ public static class ResourceRegistry
     ///   When the <paramref name="type"/> is not implemented, a new
     ///   of <see cref="UnknownRecord"/> is returned.
     /// </remarks>
-    public static ResourceRecord Create(in DnsType type) => RecordsPrivate.TryGetValue(type, out var maker) ? maker() : new UnknownRecord();
+    public static ResourceRecord Create(DnsType type) => RecordsPrivate.TryGetValue(type, out var maker) ? maker() : new UnknownRecord();
 }

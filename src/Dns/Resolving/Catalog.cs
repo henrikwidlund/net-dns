@@ -164,7 +164,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
     ///   Indicates if a <see cref="ResourceRecord"/> is authoritative or cached.
     ///   Only used when a <see cref="Node"/> is created.
     /// </param>
-    public void Include(PresentationReader reader, in bool authoritative = false)
+    public void Include(PresentationReader reader, bool authoritative = false)
     {
         while (true)
         {
