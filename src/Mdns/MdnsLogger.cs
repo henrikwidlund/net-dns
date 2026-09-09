@@ -6,91 +6,51 @@ namespace Makaretu.Dns;
 
 internal static partial class MdnsLogger
 {
-    [LoggerMessage(EventId = 1, EventName = nameof(WillSendVia), Level = LogLevel.Debug,
-        Message = "Will send via {localEndpoint}")]
+    [LoggerMessage(EventId = 1, Level = LogLevel.Debug, Message = "Will send via {localEndpoint}")]
     public static partial void WillSendVia(this ILogger logger, IPEndPoint localEndpoint);
 
-    private static readonly Action<ILogger, IPAddress, Exception> SocketSetupFailAction = LoggerMessage.Define<IPAddress>(
-        LogLevel.Error,
-        new EventId(2, nameof(SocketSetupFail)),
-        "Cannot setup send socket for {Address}");
+    [LoggerMessage(EventId = 2, Level = LogLevel.Error, Message = "Cannot setup send socket for {Address}")]
+    public static partial void SocketSetupFail(this ILogger logger, IPAddress address, Exception exception);
 
-    public static void SocketSetupFail(this ILogger logger, Exception exception, IPAddress address) =>
-        SocketSetupFailAction(logger, address, exception);
+    [LoggerMessage(EventId = 3, Level = LogLevel.Information, Message = "Sender {Key} failure.")]
+    public static partial void SenderKeyFailure(this ILogger logger, IPAddress key, Exception exception);
 
-    private static readonly Action<ILogger, IPAddress, Exception> SenderKeyFailureAction = LoggerMessage.Define<IPAddress>(
-        LogLevel.Information,
-        new EventId(3, nameof(SocketSetupFail)),
-        "Sender {Key} failure.");
+    [LoggerMessage(EventId = 4, Level = LogLevel.Error, Message = "Receiver failure.")]
+    public static partial void ReceiverFailure(this ILogger logger, Exception exception);
 
-    public static void SenderKeyFailure(this ILogger logger, Exception exception, IPAddress address) =>
-        SenderKeyFailureAction(logger, address, exception);
-
-    private static readonly Action<ILogger, Exception> ReceiverFailureAction = LoggerMessage.Define(
-        LogLevel.Error,
-        new EventId(4, nameof(ReceiverFailure)),
-        "Receiver failure.");
-
-    public static void ReceiverFailure(this ILogger logger, Exception exception) =>
-        ReceiverFailureAction(logger, exception);
-
-    [LoggerMessage(EventId = 5, EventName = nameof(FindingNetworkInterfaces), Level = LogLevel.Debug,
-        Message = "Finding network interfaces")]
+    [LoggerMessage(EventId = 5, Level = LogLevel.Debug, Message = "Finding network interfaces")]
     public static partial void FindingNetworkInterfaces(this ILogger logger);
 
-    [LoggerMessage(EventId = 6, EventName = nameof(RemovedNic), Level = LogLevel.Debug,
-        Message = "Removed nic '{NicName}'.")]
+    [LoggerMessage(EventId = 6, Level = LogLevel.Debug, Message = "Removed nic '{NicName}'.")]
     public static partial void RemovedNic(this ILogger logger, string nicName);
 
-    [LoggerMessage(EventId = 7, EventName = nameof(FoundNic), Level = LogLevel.Debug,
-        Message = "Found nic '{NicName}")]
+    [LoggerMessage(EventId = 7, Level = LogLevel.Debug, Message = "Found nic '{NicName}")]
     public static partial void FoundNic(this ILogger logger, string nicName);
 
-    private static readonly Action<ILogger, Exception> FindNicsFailedAction = LoggerMessage.Define(
-        LogLevel.Error,
-        new EventId(8, nameof(FindNicsFailed)),
-        "Find Nics failed");
+    [LoggerMessage(EventId = 8, Level = LogLevel.Error, Message = "Find Nics failed")]
+    public static partial void FindNicsFailed(this ILogger logger, Exception exception);
 
-    public static void FindNicsFailed(this ILogger logger, Exception exception) =>
-        FindNicsFailedAction(logger, exception);
+    [LoggerMessage(EventId = 9, Level = LogLevel.Warning, Message = "Received malformed message")]
+    public static partial void ReceivedMalformedMessage(this ILogger logger, Exception exception);
 
-    private static readonly Action<ILogger, Exception> ReceivedMalformedMessageAction = LoggerMessage.Define(
-        LogLevel.Warning,
-        new EventId(9, nameof(ReceivedMalformedMessage)),
-        "Received malformed message");
+    [LoggerMessage(EventId = 16, Level = LogLevel.Error, Message = "Receive handler failed")]
+    public static partial void ReceiveHandlerFailed(this ILogger logger, Exception exception);
 
-    public static void ReceivedMalformedMessage(this ILogger logger, Exception exception) =>
-        ReceivedMalformedMessageAction(logger, exception);
-
-    private static readonly Action<ILogger, Exception> ReceiveHandlerFailedAtion = LoggerMessage.Define(
-        LogLevel.Error,
-        new EventId(9, nameof(ReceiveHandlerFailed)),
-        "Receive handler failed");
-
-    public static void ReceiveHandlerFailed(this ILogger logger, Exception exception) =>
-        ReceiveHandlerFailedAtion(logger, exception);
-
-    [LoggerMessage(EventId = 10, EventName = nameof(AnswerFromRemoteEndpoint), Level = LogLevel.Debug,
-        Message = "Answer from {RemoteEndPoint}")]
+    [LoggerMessage(EventId = 10, Level = LogLevel.Debug, Message = "Answer from {RemoteEndPoint}")]
     public static partial void AnswerFromRemoteEndpoint(this ILogger logger, IPEndPoint remoteEndpoint);
 
-    [LoggerMessage(EventId = 11, EventName = nameof(AnswerMessageReceived), Level = LogLevel.Trace,
-        Message = "{@Message}")]
+    [LoggerMessage(EventId = 11, Level = LogLevel.Trace, Message = "{@Message}")]
     public static partial void AnswerMessageReceived(this ILogger logger, Message message);
 
-    [LoggerMessage(EventId = 12, EventName = nameof(QueryFromRemoteEndpoint), Level = LogLevel.Debug,
-        Message = "Query from {RemoteEndPoint}")]
+    [LoggerMessage(EventId = 12, Level = LogLevel.Debug, Message = "Query from {RemoteEndPoint}")]
     public static partial void QueryFromRemoteEndpoint(this ILogger logger, IPEndPoint remoteEndpoint);
 
-    [LoggerMessage(EventId = 13, EventName = nameof(QueryMessageReceived), Level = LogLevel.Trace,
-        Message = "{@Message}")]
+    [LoggerMessage(EventId = 13, Level = LogLevel.Trace, Message = "{@Message}")]
     public static partial void QueryMessageReceived(this ILogger logger, Message message);
 
-    [LoggerMessage(EventId = 14, EventName = nameof(SendingAnswer), Level = LogLevel.Debug,
-        Message = "Sending answer")]
+    [LoggerMessage(EventId = 14, Level = LogLevel.Debug, Message = "Sending answer")]
     public static partial void SendingAnswer(this ILogger logger);
 
-    [LoggerMessage(EventId = 15, EventName = nameof(SendingQueryAnswer), Level = LogLevel.Trace,
-        Message = "{@Message}")]
+    [LoggerMessage(EventId = 15, Level = LogLevel.Trace, Message = "{@Message}")]
     public static partial void SendingQueryAnswer(this ILogger logger, Message message);
 }

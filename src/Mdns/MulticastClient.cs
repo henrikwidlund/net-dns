@@ -107,7 +107,7 @@ internal class MulticastClient : IDisposable
             }
             catch (Exception e)
             {
-                _logger?.SocketSetupFail(e, address);
+                _logger?.SocketSetupFail(address, e);
                 sender.Dispose();
             }
         }
@@ -132,7 +132,7 @@ internal class MulticastClient : IDisposable
             }
             catch (Exception e)
             {
-                _logger?.SenderKeyFailure(e, sender.Key);
+                _logger?.SenderKeyFailure(sender.Key, e);
                 // eat it.
             }
         }
