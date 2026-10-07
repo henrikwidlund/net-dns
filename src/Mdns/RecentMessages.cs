@@ -18,10 +18,13 @@ public class RecentMessages(TimeProvider timeProvider)
     ///   Recent messages.
     /// </summary>
     /// <value>
-    ///   The key is the Base64 encoding of the MD5 hash of 
+    ///   The key is the Base64 encoding of the SHA-1 hash of
     ///   a message and the value is when the message was seen.
     /// </value>
-    private readonly ConcurrentDictionary<string, DateTimeOffset> _messages = new(StringComparer.OrdinalIgnoreCase);
+    /// <remarks>
+    ///   Base64 is case-sensitive, so the keys must be compared ordinally.
+    /// </remarks>
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _messages = new(StringComparer.Ordinal);
 
     public RecentMessages() : this(TimeProvider.System) { }
 
@@ -81,7 +84,7 @@ public class RecentMessages(TimeProvider timeProvider)
     ///   The binary representation of a message.
     /// </param>
     /// <returns>
-    ///   The Base64 encoding of the MD5 hash of the <paramref name="message"/>.
+    ///   The Base64 encoding of the SHA-1 hash of the <paramref name="message"/>.
     /// </returns>
     public static string GetId(byte[] message) => Convert.ToBase64String(SHA1.HashData(message));
 }
