@@ -42,8 +42,8 @@ DNS data model with serializer/deserializer for the wire and "master file" forma
     - [RFC 6891](https://tools.ietf.org/html/rfc6891) Extension Mechanisms for DNS (EDNS(0))
     - [RFC 7828](https://tools.ietf.org/html/rfc7828) The edns-tcp-keepalive EDNS0 Option
     - [RFC 7830](https://tools.ietf.org/html/rfc7830) The EDNS(0) Padding Option
-- Targets .Net Framework 4.5 and 4.7.2 and .NET Standard 1.4 and 2.0
-- CI on Travis (Ubuntu Trusty and OSX) and AppVeyor (Windows Server 2016)
+- Targets .NET 10 and .NET 11
+- CI on GitHub Actions
 
 ## Getting started
 
@@ -132,9 +132,9 @@ service or service instance.
 
 ## Features
 
-- Targets Framework 4.6.1, .NET Standard 1.4 and 2.0
+- Targets .NET 10 and .NET 11
 - Supports IPv6 and IPv4 platforms
-- CI on Circle (Debian GNU/Linux), Travis (Ubuntu Xenial and OSX) and AppVeyor (Windows Server 2016)
+- CI on GitHub Actions
 - Detects new and/or removed network interfaces
 - Supports multicasting on multiple network interfaces
 - Supports reverse address mapping
