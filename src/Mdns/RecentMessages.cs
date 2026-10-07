@@ -21,7 +21,7 @@ public class RecentMessages(TimeProvider timeProvider)
     ///   The key is the Base64 encoding of the MD5 hash of 
     ///   a message and the value is when the message was seen.
     /// </value>
-    private readonly ConcurrentDictionary<string, DateTime> _messages = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _messages = new(StringComparer.OrdinalIgnoreCase);
 
     public RecentMessages() : this(TimeProvider.System) { }
 
@@ -54,7 +54,7 @@ public class RecentMessages(TimeProvider timeProvider)
     public bool TryAdd(byte[] message)
     {
         Prune();
-        return _messages.TryAdd(GetId(message), _timeProvider.GetLocalNow().DateTime);
+        return _messages.TryAdd(GetId(message), _timeProvider.GetUtcNow());
     }
 
     /// <summary>
@@ -68,7 +68,8 @@ public class RecentMessages(TimeProvider timeProvider)
     /// </remarks>
     public int Prune()
     {
-        var dead = _timeProvider.GetLocalNow().DateTime - Interval;
+        // UTC, local time would jump around daylight saving time changes
+        var dead = _timeProvider.GetUtcNow() - Interval;
 
         return _messages.Count(x => x.Value < dead && _messages.TryRemove(x.Key, out _));
     }

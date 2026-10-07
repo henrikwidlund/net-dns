@@ -13,12 +13,12 @@ public abstract class DnsObject : IWireSerializer, ICloneable
     ///   When the object was created.
     /// </summary>
     /// <value>
-    ///   Local time.
+    ///   UTC time.
     /// </value>
     /// <remarks>
     ///   Cloning does not alter the value.
     /// </remarks>
-    public DateTime CreationTime { get; set; } = DateTime.Now;
+    public DateTime CreationTime { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     ///   Length in bytes of the object when serialised.

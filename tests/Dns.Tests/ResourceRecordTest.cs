@@ -173,9 +173,9 @@ public class ResourceRecordTest
     [Test]
     public async Task CreationTime()
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         var rr = new ResourceRecord();
-        await Assert.That(rr.CreationTime.Kind).IsEqualTo(DateTimeKind.Local);
+        await Assert.That(rr.CreationTime.Kind).IsEqualTo(DateTimeKind.Utc);
         await Assert.That(rr.CreationTime).IsGreaterThanOrEqualTo(now);
 
         await Task.Delay(50, TestContext.Current!.Execution.CancellationToken);
@@ -191,6 +191,8 @@ public class ResourceRecordTest
         await Assert.That(rr.IsExpired()).IsFalse();
         await Assert.That(rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(-3))).IsFalse();
         await Assert.That(rr.IsExpired(DateTime.Now + TimeSpan.FromSeconds(3))).IsTrue();
+        await Assert.That(rr.IsExpired(DateTime.UtcNow + TimeSpan.FromSeconds(-3))).IsFalse();
+        await Assert.That(rr.IsExpired(DateTime.UtcNow + TimeSpan.FromSeconds(3))).IsTrue();
     }
 
     [Test]
