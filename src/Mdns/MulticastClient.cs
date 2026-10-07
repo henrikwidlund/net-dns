@@ -148,7 +148,7 @@ internal class MulticastClient : IDisposable
 
                 if (MessageReceived is not null)
                 {
-                    await MessageReceived(result).ConfigureAwait(false);
+                    await MessageReceived(result);
                 }
             }
         }

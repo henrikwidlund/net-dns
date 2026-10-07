@@ -95,23 +95,28 @@ public class PresentationWriter
     /// <remarks>
     ///   Quotes and escapes are added as needed.
     /// </remarks>
-    public void WriteString(string? value, bool appendSpace = true)
+    public void WriteString(ReadOnlySpan<char> value, bool appendSpace = true)
     {
-        bool needQuote = false;
-
-        value ??= string.Empty;
-
-        if (value == string.Empty)
-            needQuote = true;
-
-        value = value.Replace("\\", @"\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal);
-        if (value.Contains(' ', StringComparison.Ordinal))
-            needQuote = true;
+        var needQuote = value.IsEmpty || value.Contains(' ');
 
         if (needQuote)
             _text.Write('"');
 
-        _text.Write(value);
+        // Escape backslashes and quotes while writing
+        while (!value.IsEmpty)
+        {
+            var index = value.IndexOfAny('\\', '"');
+            if (index < 0)
+            {
+                _text.Write(value);
+                break;
+            }
+
+            _text.Write(value[..index]);
+            _text.Write('\\');
+            _text.Write(value[index]);
+            value = value[(index + 1)..];
+        }
 
         if (needQuote)
             _text.Write('"');
@@ -132,7 +137,7 @@ public class PresentationWriter
     /// <remarks>
     ///   Quotes and escapes are NOT added.
     /// </remarks>
-    public void WriteStringUnencoded(string value, bool appendSpace = true)
+    public void WriteStringUnencoded(ReadOnlySpan<char> value, bool appendSpace = true)
     {
         _text.Write(value);
 
@@ -164,7 +169,7 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteBase16String(byte[] value, bool appendSpace = true) => WriteString(BaseConvert.ToBase16Lower(value), appendSpace);
+    public void WriteBase16String(ReadOnlySpan<byte> value, bool appendSpace = true) => WriteString(BaseConvert.ToBase16Lower(value), appendSpace);
 
     /// <summary>
     ///   Write bytes encoded in base-64.
@@ -175,9 +180,9 @@ public class PresentationWriter
     /// <param name="appendSpace">
     ///   Write a space after the value.
     /// </param>
-    public void WriteBase64String(byte[]? value, bool appendSpace = true)
+    public void WriteBase64String(ReadOnlySpan<byte> value, bool appendSpace = true)
     {
-        if (value is null)
+        if (value.IsEmpty)
             return;
 
         WriteString(Convert.ToBase64String(value), appendSpace);

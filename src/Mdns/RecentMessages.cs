@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 
 namespace Makaretu.Dns;
@@ -24,7 +25,7 @@ public class RecentMessages(TimeProvider timeProvider)
     /// <remarks>
     ///   Base64 is case-sensitive, so the keys must be compared ordinally.
     /// </remarks>
-    private readonly ConcurrentDictionary<string, DateTimeOffset> _messages = new(StringComparer.Ordinal);
+    private readonly ConcurrentDictionary<UInt128, DateTimeOffset> _messages = [];
 
     public RecentMessages() : this(TimeProvider.System) { }
 
@@ -42,7 +43,7 @@ public class RecentMessages(TimeProvider timeProvider)
     /// Checks if a message has been added to the recent message list.
     /// </summary>
     /// <param name="message">The message to look for.</param>
-    public bool HasMessage(byte[] message) => _messages.ContainsKey(GetId(message));
+    public bool HasMessage(ReadOnlySpan<byte> message) => _messages.ContainsKey(GetId(message));
 
     /// <summary>
     ///   Try adding a message to the recent message list.
@@ -54,7 +55,7 @@ public class RecentMessages(TimeProvider timeProvider)
     ///   <b>true</b> if the message, did not already exist; otherwise,
     ///   <b>false</b> the message exists within the <see cref="Interval"/>.
     /// </returns>
-    public bool TryAdd(byte[] message)
+    public bool TryAdd(ReadOnlySpan<byte> message)
     {
         Prune();
         return _messages.TryAdd(GetId(message), _timeProvider.GetUtcNow());
@@ -86,5 +87,11 @@ public class RecentMessages(TimeProvider timeProvider)
     /// <returns>
     ///   The Base64 encoding of the SHA-1 hash of the <paramref name="message"/>.
     /// </returns>
-    public static string GetId(byte[] message) => Convert.ToBase64String(SHA1.HashData(message));
+    public static UInt128 GetId(ReadOnlySpan<byte> message)
+    {
+        Span<byte> hash = stackalloc byte[SHA1.HashSizeInBytes];
+        SHA1.HashData(message, hash);
+        // The first 128 bits are plenty to tell recent messages apart
+        return BinaryPrimitives.ReadUInt128LittleEndian(hash);
+    }
 }

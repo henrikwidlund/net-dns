@@ -159,6 +159,6 @@ public class TSIGRecord : ResourceRecord
         writer.WriteBase64String(MAC);
         writer.WriteUInt16(OriginalMessageId);
         writer.WriteUInt16((ushort)Error);
-        writer.WriteBase64String(OtherData ?? [], appendSpace: false);
+        writer.WriteBase64String(OtherData, appendSpace: false);
     }
 }

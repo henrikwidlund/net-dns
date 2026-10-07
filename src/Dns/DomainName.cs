@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Makaretu.Dns;
@@ -56,10 +57,27 @@ public sealed class DomainName : IEquatable<DomainName>
     ///   See <see href="https://tools.ietf.org/html/rfc4343">RFC 4343</see> 
     ///   for the character escaping rules.
     ///   <note>
-    ///   To use us backslash in a domain name (highly unusaual), you must use a double backslash.
+    ///   To use us backslash in a domain name (highly unusual), you must use a double backslash.
     ///   </note>
     /// </remarks>
-    public DomainName(string name) => Parse(name);
+    public DomainName(string name) : this(name.AsSpan()) { }
+
+    /// <summary>
+    ///   Creates a new instance of the <see cref="DomainName"/> class from
+    ///   the specified name.
+    /// </summary>
+    /// <param name="name">
+    ///   The dot separated labels; such as "example.org".
+    /// </param>
+    /// <remarks>
+    ///   The name can contain backslash to escape a character.
+    ///   See <see href="https://tools.ietf.org/html/rfc4343">RFC 4343</see>
+    ///   for the character escaping rules.
+    ///   <note>
+    ///   To use us backslash in a domain name (highly unusual), you must use a double backslash.
+    ///   </note>
+    /// </remarks>
+    public DomainName(ReadOnlySpan<char> name) => Parse(name);
 
     /// <summary>
     ///   Creates a new instance of the <see cref="DomainName"/> class from
@@ -100,10 +118,28 @@ public sealed class DomainName : IEquatable<DomainName>
     /// <remarks>
     ///   If a label contains a dot or backslash, then it is escaped with a backslash.
     /// </remarks>
-    public override string ToString() => string.Join(DotChar, Labels.Select(EscapeLabel));
+    public override string ToString()
+    {
+        var labels = CollectionsMarshal.AsSpan(_labels);
+        foreach (var label in labels)
+        {
+            if (NeedsEscaping(label))
+                return string.Join(DotChar, _labels.Select(EscapeLabel));
+        }
+
+        // Common case, nothing to escape
+        return string.Join(DotChar, labels);
+    }
+
+    // Printable ASCII except '.' and '\' doesn't need escaping, see EscapeLabel
+    private static bool NeedsEscaping(ReadOnlySpan<char> label) =>
+        label.ContainsAnyExceptInRange('!', '~') || label.ContainsAny(DotChar, BackslashChar);
 
     private static string EscapeLabel(string label)
     {
+        if (!NeedsEscaping(label))
+            return label;
+
         var sb = new StringBuilder();
         foreach (var c in label)
         {
@@ -196,9 +232,9 @@ public sealed class DomainName : IEquatable<DomainName>
     ///   The domain name of the parent or <b>null</b> if
     ///   there is no parent; e.g. this is the root.
     /// </returns>
-    public DomainName? Parent() => _labels.Count == 0 ? null : new DomainName(_labels.Skip(1).ToArray());
+    public DomainName? Parent() => _labels.Count == 0 ? null : new DomainName(CollectionsMarshal.AsSpan(_labels)[1..]);
 
-    private void Parse(string name)
+    private void Parse(ReadOnlySpan<char> name)
     {
         _labels.Clear();
         var label = new StringBuilder();
@@ -242,7 +278,15 @@ public sealed class DomainName : IEquatable<DomainName>
     }
 
     /// <inheritdoc />
-    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(ToString().ToLowerInvariant());
+    public override int GetHashCode()
+    {
+        // Must match LabelsEqual
+        var hash = new HashCode();
+        foreach (var label in CollectionsMarshal.AsSpan(_labels))
+            hash.Add(label, StringComparer.OrdinalIgnoreCase);
+
+        return hash.ToHashCode();
+    }
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
@@ -312,5 +356,5 @@ public sealed class DomainName : IEquatable<DomainName>
     /// <remarks>
     ///   Uses a case-insenstive algorithm, where 'A-Z' are equivalent to 'a-z'.
     /// </remarks>
-    public static bool LabelsEqual(string a, string b) => string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+    public static bool LabelsEqual(string a, string b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 }

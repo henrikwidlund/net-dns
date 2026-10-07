@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Makaretu.Dns;
@@ -175,8 +176,7 @@ public class WireReader
     public DomainName ReadDomainName()
     {
         var labels = ReadLabels();
-        var name = new DomainName(labels.ToArray());
-        return name;
+        return new DomainName(CollectionsMarshal.AsSpan(labels));
     }
 
     private List<string> ReadLabels()
@@ -200,7 +200,12 @@ public class WireReader
             return labels;
 
         // Read current label and remaining labels.
-        labels.Add(ReadUTF8String(length));
+        // The length byte is below 0xC0 here, so the label always fits the buffer.
+        Span<byte> buffer = stackalloc byte[byte.MaxValue];
+        var labelBytes = buffer[..length];
+        _stream.ReadExactly(labelBytes);
+        Position += length;
+        labels.Add(Encoding.UTF8.GetString(labelBytes));
         labels.AddRange(ReadLabels());
 
         // Add to compressed names.
@@ -227,7 +232,7 @@ public class WireReader
     public string ReadString()
     {
         var bytes = ReadByteLengthPrefixedBytes();
-        return bytes.Any(static c => c > 0x7F)
+        return !Ascii.IsValid(bytes)
             ? throw new InvalidDataException("Only ASCII characters are allowed.")
             : Encoding.ASCII.GetString(bytes);
     }

@@ -187,6 +187,6 @@ public class DNSKEYRecord : ResourceRecord
         writer.WriteUInt16(Flags.HasValue ? (ushort)Flags : default);
         writer.WriteByte(Protocol);
         writer.WriteByte(Algorithm.HasValue ? (byte)Algorithm : default);
-        writer.WriteBase64String(PublicKey ?? [], appendSpace: false);
+        writer.WriteBase64String(PublicKey, appendSpace: false);
     }
 }

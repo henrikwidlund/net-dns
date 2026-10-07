@@ -36,22 +36,35 @@ public class CachedNameServer : NameServer
     /// <returns>
     ///   Allows cancellation of the background task.
     /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="interval"/> is zero or negative.</exception>
     /// <seealso cref="Prune"/>
     public CancellationTokenSource PruneContinuously(TimeSpan interval)
     {
-        var cts = new CancellationTokenSource();
-        var token = cts.Token;
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(interval, TimeSpan.Zero);
 
-        _ = Task.Run(async () =>
+        var cts = new CancellationTokenSource();
+        _ = PruneContinuouslyAsync(interval, cts.Token);
+        return cts;
+    }
+
+    private async Task PruneContinuouslyAsync(TimeSpan interval, CancellationToken cancellationToken)
+    {
+        // Prune in the background, not on the caller's thread
+        await Task.Yield();
+
+        using var timer = new PeriodicTimer(interval);
+        try
         {
-            while (!token.IsCancellationRequested)
+            do
             {
                 Prune();
-                await Task.Delay(interval, token);
             }
-        }, token);
-
-        return cts;
+            while (await timer.WaitForNextTickAsync(cancellationToken));
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Stopped by the caller
+        }
     }
 
     /// <summary>
