@@ -81,15 +81,18 @@ public class ResourceRecord : DnsObject, IPresentationSerializer, IEqualityCompa
     /// </summary>
     /// <param name="from">
     ///   The time to compare against.  If <b>null</b>, the default value, then
-    ///   <see cref="DateTime.Now"/> is used.
+    ///   <see cref="DateTime.UtcNow"/> is used.
     /// </param>
     /// <returns>
     ///   <b>true</b> if the resource is no longer valid; otherwise <b>false</b>.
     /// </returns>
+    /// <remarks>
+    ///   Both times are compared in UTC, so local times keep working and daylight saving time changes don't skew the result.
+    /// </remarks>
     public bool IsExpired(in DateTime? from = null)
     {
-        var now = from ?? DateTime.Now;
-        return CreationTime + TTL <= now;
+        var now = (from ?? DateTime.UtcNow).ToUniversalTime();
+        return CreationTime.ToUniversalTime() + TTL <= now;
     }
 
     /// <summary>

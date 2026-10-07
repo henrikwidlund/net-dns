@@ -10,14 +10,14 @@ public class CachedNameServer : NameServer
     /// </summary>
     /// <param name="now">
     ///   The time to use to determine if a resource record is expired.
-    ///   Defaults to <see cref="DateTime.Now"/>.
+    ///   Defaults to <see cref="DateTime.UtcNow"/>.
     /// </param>
     /// <remarks>
     ///   Authoritative nodes are not pruned.
     /// </remarks>
     public void Prune(DateTime? now = null)
     {
-        now ??= DateTime.Now;
+        now ??= DateTime.UtcNow;
 
         var nodes = Catalog?.Values.Where(static node => !node.Authoritative) ?? [];
         foreach (var resources in nodes.Select(static node => node.Resources))
