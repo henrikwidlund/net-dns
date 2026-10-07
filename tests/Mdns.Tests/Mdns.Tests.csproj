@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
+        <!-- Not needed to run the tests, and the net10.0 apphost isn't available when building with the .NET 11 SDK in Qodana -->
+        <UseAppHost>false</UseAppHost>
         <IsPackable>false</IsPackable>
         <RootNamespace>Makaretu.Mdns</RootNamespace>
         <LangVersion>latest</LangVersion>
@@ -9,12 +11,12 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.231">
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.294">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="TUnit" Version="1.69.0" />
+        <PackageReference Include="TUnit" Version="1.73.0" />
     </ItemGroup>
     
     <ItemGroup>
