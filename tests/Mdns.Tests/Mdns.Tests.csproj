@@ -2,6 +2,8 @@
     
     <PropertyGroup>
         <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
+        <!-- Runtime async only exists on .NET 11 -->
+        <Features Condition="'$(TargetFramework)' == 'net11.0'">runtime-async=on</Features>
         <!-- Not needed to run the tests, and the net10.0 apphost isn't available when building with the .NET 11 SDK in Qodana -->
         <UseAppHost>false</UseAppHost>
         <IsPackable>false</IsPackable>
