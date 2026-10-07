@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Buffers;
+using System.Collections;
 using System.Net;
 using System.Text;
 
@@ -10,6 +11,7 @@ namespace Makaretu.Dns;
 public class WireWriter
 {
     private const int MaxPointer = 0x3FFF;
+    private const int MaxLabelLength = 63;
     private const ulong Uint48MaxValue = 0XFFFFFFFFFFFFul;
 
     private Stream _stream;
@@ -97,33 +99,29 @@ public class WireWriter
     ///   Write a sequence of bytes.
     /// </summary>
     /// <param name="bytes">
-    ///   A sequence of bytes to write.
+    ///   The bytes to write.
     /// </param>
-    public void WriteBytes(byte[]? bytes)
+    public void WriteBytes(ReadOnlySpan<byte> bytes)
     {
-        if (bytes != null)
-        {
-            _stream.Write(bytes, 0, bytes.Length);
-            Position += bytes.Length;
-        }
+        _stream.Write(bytes);
+        Position += bytes.Length;
     }
 
     /// <summary>
     ///   Write a sequence of bytes prefixed with the length as a byte.
     /// </summary>
     /// <param name="bytes">
-    ///   A sequence of bytes to write.
+    ///   The bytes to write.
     /// </param>
     /// <exception cref="ArgumentException">
     ///   When the length is greater than <see cref="byte.MaxValue"/>.
     /// </exception>
-    public void WriteByteLengthPrefixedBytes(byte[]? bytes)
+    public void WriteByteLengthPrefixedBytes(ReadOnlySpan<byte> bytes)
     {
-        var length = bytes?.Length ?? 0;
-        if (length > byte.MaxValue)
+        if (bytes.Length > byte.MaxValue)
             throw new ArgumentException($"Length can not exceed {byte.MaxValue}.", nameof(bytes));
 
-        WriteByte((byte)length);
+        WriteByte((byte)bytes.Length);
         WriteBytes(bytes);
     }
 
@@ -136,9 +134,9 @@ public class WireWriter
     /// <exception cref="ArgumentException">
     ///   When the length is greater than <see cref="ushort.MaxValue"/>.
     /// </exception>
-    public void WriteUint16LengthPrefixedBytes(byte[]? bytes)
+    public void WriteUint16LengthPrefixedBytes(ReadOnlySpan<byte> bytes)
     {
-        var length = bytes?.Length ?? 0;
+        var length = bytes.IsEmpty ? 0 : bytes.Length;
         if (length > ushort.MaxValue)
             throw new ArgumentException($"Bytes length can not exceed {ushort.MaxValue}.", nameof(bytes));
 
@@ -256,28 +254,33 @@ public class WireWriter
             name = name.ToCanonical();
         }
 
-        var labels = name.Labels.ToArray();
-        var n = labels.Length;
-        for (var i = 0; i < n; ++i)
+        var labels = name.Labels;
+        // The qualified name of each remaining part is a slice of the full name, so compression lookups don't allocate
+        var qualifiedName = string.Join('.', labels);
+        var pointers = _pointers.GetAlternateLookup<ReadOnlySpan<char>>();
+        Span<byte> labelBytes = stackalloc byte[MaxLabelLength];
+        var offset = 0;
+        foreach (var label in labels)
         {
-            var label = labels[i];
-            var labelBytes = Encoding.UTF8.GetBytes(label);
-            if (labelBytes.Length > 63)
-                throw new InvalidOperationException($"Label '{label}' cannot exceed 63 octets.");
+            if (Encoding.UTF8.GetByteCount(label) > MaxLabelLength)
+                throw new InvalidOperationException($"Label '{label}' cannot exceed {MaxLabelLength} octets.");
+
+            var labelLength = Encoding.UTF8.GetBytes(label, labelBytes);
 
             // Check for qualified name already used.
-            var qn = string.Join('.', labels, i, labels.Length - i);
-            if (!uncompressed && _pointers.TryGetValue(qn, out int pointer))
+            var qn = qualifiedName.AsSpan(offset);
+            if (!uncompressed && pointers.TryGetValue(qn, out var pointer))
             {
                 WriteUInt16((ushort)(0xC000 | pointer));
                 return;
             }
 
             if (Position <= MaxPointer)
-                _pointers[qn] = Position;
+                pointers[qn] = Position;
 
             // Add the label
-            WriteByteLengthPrefixedBytes(labelBytes);
+            WriteByteLengthPrefixedBytes(labelBytes[..labelLength]);
+            offset += label.Length + 1;
         }
 
         _stream.WriteByte(0); // terminating byte
@@ -295,13 +298,18 @@ public class WireWriter
     ///   Strings are encoded with a length prefixed byte.  All strings must be
     ///   ASCII.
     /// </remarks>
-    public void WriteString(string value)
+    public void WriteString(ReadOnlySpan<char> value)
     {
         if (!Ascii.IsValid(value))
             throw new ArgumentException("Only ASCII characters are allowed.", nameof(value));
 
-        var bytes = Encoding.ASCII.GetBytes(value);
-        WriteByteLengthPrefixedBytes(bytes);
+        // ASCII is one byte per character
+        if (value.Length > byte.MaxValue)
+            throw new ArgumentException($"Length can not exceed {byte.MaxValue}.", nameof(value));
+
+        Span<byte> bytes = stackalloc byte[byte.MaxValue];
+        var length = Encoding.ASCII.GetBytes(value, bytes);
+        WriteByteLengthPrefixedBytes(bytes[..length]);
     }
 
     /// <summary>
@@ -313,10 +321,14 @@ public class WireWriter
     /// <remarks>
     ///   Strings are encoded with a length prefixed byte.  All strings must be UTF-8.
     /// </remarks>
-    public void WriteStringUTF8(string value)
+    public void WriteStringUTF8(ReadOnlySpan<char> value)
     {
-        var bytes = Encoding.UTF8.GetBytes(value);
-        WriteByteLengthPrefixedBytes(bytes);
+        if (Encoding.UTF8.GetByteCount(value) > byte.MaxValue)
+            throw new ArgumentException($"Length can not exceed {byte.MaxValue}.", nameof(value));
+
+        Span<byte> bytes = stackalloc byte[byte.MaxValue];
+        var length = Encoding.UTF8.GetBytes(value, bytes);
+        WriteByteLengthPrefixedBytes(bytes[..length]);
     }
 
     /// <summary>
@@ -325,7 +337,24 @@ public class WireWriter
     /// <remarks>
     ///   Strings are encoded in UTF8.
     /// </remarks>
-    public void WriteStringUTF8Unprefixed(string value) => WriteBytes(Encoding.UTF8.GetBytes(value));
+    public void WriteStringUTF8Unprefixed(ReadOnlySpan<char> value)
+    {
+        var byteCount = Encoding.UTF8.GetByteCount(value);
+        byte[]? rented = null;
+        var bytes = byteCount <= 256
+            ? stackalloc byte[256]
+            : rented = ArrayPool<byte>.Shared.Rent(byteCount);
+        try
+        {
+            var length = Encoding.UTF8.GetBytes(value, bytes);
+            WriteBytes(bytes[..length]);
+        }
+        finally
+        {
+            if (rented is not null)
+                ArrayPool<byte>.Shared.Return(rented);
+        }
+    }
 
     /// <summary>
     ///   Write a time span with 16-bits.

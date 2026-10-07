@@ -450,7 +450,7 @@ public class Message : DnsObject
         return s.ToString();
     }
 
-    private static void Stringify(StringWriter s, string title, List<ResourceRecord> records)
+    private static void Stringify(StringWriter s, ReadOnlySpan<char> title, List<ResourceRecord> records)
     {
         s.WriteLine();
         s.Write(";; ");

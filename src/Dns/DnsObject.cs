@@ -63,7 +63,7 @@ public abstract class DnsObject : IWireSerializer, ICloneable
     ///   A deep copy of the dns object.
     /// </returns>
     /// <remarks>
-    ///   Use serialisation to make a copy.
+    ///   Use serialization to make a copy.
     /// </remarks>
     public T Clone<T>() where T : DnsObject => (T)Clone();
 

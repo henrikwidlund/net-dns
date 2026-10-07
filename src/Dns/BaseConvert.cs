@@ -14,7 +14,7 @@ public static class BaseConvert
     /// <param name="hex"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public static byte[] FromBase16(string hex)
+    public static byte[] FromBase16(ReadOnlySpan<char> hex)
     {
         if (hex.Length % 2 == 1)
             throw new FormatException("hex cannot have an odd number of digits");
@@ -31,7 +31,7 @@ public static class BaseConvert
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static string ToBase16Lower(byte[] bytes)
+    public static string ToBase16Lower(ReadOnlySpan<byte> bytes)
     {
         var sb = new StringBuilder();
         foreach (var b in bytes)
@@ -50,9 +50,9 @@ public static class BaseConvert
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static string ToBase32Hex(byte[] bytes)
+    public static string ToBase32Hex(ReadOnlySpan<byte> bytes)
     {
-        if (bytes == null || bytes.Length == 0)
+        if (bytes.IsEmpty || bytes.Length == 0)
             throw new ArgumentNullException(nameof(bytes));
 
         var charCount = (int)Math.Ceiling(bytes.Length / 5d) * 8;
@@ -96,11 +96,12 @@ public static class BaseConvert
     /// </summary>
     /// <param name="base32"></param>
     /// <returns></returns>
-    public static byte[] FromBase32Hex(string base32)
+    public static byte[] FromBase32Hex(ReadOnlySpan<char> base32)
     {
-        ArgumentException.ThrowIfNullOrEmpty(base32);
+        if (base32.IsEmpty)
+            throw new ArgumentException("The value cannot be empty.", nameof(base32));
 
-        var base32Span = base32.AsSpan().TrimEnd('=');
+        var base32Span = base32.TrimEnd('=');
         var byteCount = base32Span.Length * 5 / 8;
 
         var returnArray = new byte[byteCount];

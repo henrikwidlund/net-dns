@@ -75,7 +75,7 @@ public class PresentationReader
     /// </returns>
     public DomainName ReadDomainName() => MakeAbsoluteDomainName(ReadToken(ignoreEscape: true));
 
-    private DomainName MakeAbsoluteDomainName(string name) =>
+    private DomainName MakeAbsoluteDomainName(ReadOnlySpan<char> name) =>
         name.EndsWith('.')
             // If an absolute name.
             ? new DomainName(name[..^1]) :

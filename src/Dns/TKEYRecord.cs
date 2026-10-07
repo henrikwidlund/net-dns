@@ -119,6 +119,6 @@ public class TKEYRecord : ResourceRecord
         writer.WriteUInt16((ushort)Mode);
         writer.WriteUInt16((ushort)Error);
         writer.WriteBase64String(Key);
-        writer.WriteBase64String(OtherData ?? [], appendSpace: false);
+        writer.WriteBase64String(OtherData, appendSpace: false);
     }
 }

@@ -361,7 +361,7 @@ public class ServiceDiscovery : IServiceDiscovery
         message.Answers.Add(ptrRecord);
 
         // Add the resource records.
-        profile.Resources.ForEach(resource =>
+        foreach (var resource in profile.Resources)
         {
             var newResource = resource.Clone() as ResourceRecord;
             if (!profile.SharedProfile && newResource != null)
@@ -371,7 +371,7 @@ public class ServiceDiscovery : IServiceDiscovery
 
             if (newResource is not null)
                 message.Answers.Add(newResource);
-        });
+        }
 
         if (Mdns is null)
             return;
