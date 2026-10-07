@@ -3,7 +3,7 @@
 /// <summary>
 ///   Contains the IPv6 address of the named resource.
 /// </summary>
-public class AAAARecord : AddressRecord
+public class AAAARecord : IPAddressRecord
 {
     /// <summary>
     ///   Creates a new instance of the <see cref="AAAARecord"/> class.

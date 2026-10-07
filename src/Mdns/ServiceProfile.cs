@@ -76,7 +76,7 @@ public class ServiceProfile
 
         foreach (var address in addresses ?? MulticastService.GetLinkLocalAddresses())
         {
-            AddressRecord ar = AddressRecord.Create(HostName, address);
+            IPAddressRecord ar = IPAddressRecord.Create(HostName, address);
             ar.TTL = MulticastService.HostRecordTTL;
             Resources.Add(ar);
         }
@@ -192,7 +192,7 @@ public class ServiceProfile
             foreach (var srvRecord in Resources.OfType<SRVRecord>())
                 srvRecord.Target = _hostName;
 
-            foreach (var addressRecord in Resources.OfType<AddressRecord>())
+            foreach (var addressRecord in Resources.OfType<IPAddressRecord>())
                 addressRecord.Name = _hostName;
         }
     }
@@ -226,7 +226,7 @@ public class ServiceProfile
     ///   <para>
     ///   At a minimum the <see cref="SRVRecord"/> and <see cref="TXTRecord"/>
     ///   records must be present.
-    ///   Typically <see cref="AddressRecord">address records</see>
+    ///   Typically <see cref="IPAddressRecord">address records</see>
     ///   are also present and are associated with <see cref="HostName"/>.
     ///   </para>
     /// </remarks>

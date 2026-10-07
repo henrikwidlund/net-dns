@@ -88,7 +88,7 @@ public class ServiceProfileTest
         var service = new ServiceProfile("x", "_sdtest._udp", 1024);
 
         await Assert.That(service.Resources.OfType<TXTRecord>().First().TTL).IsEqualTo(TimeSpan.FromMinutes(75));
-        await Assert.That(service.Resources.OfType<AddressRecord>().First().TTL).IsEqualTo(TimeSpan.FromSeconds(120));
+        await Assert.That(service.Resources.OfType<IPAddressRecord>().First().TTL).IsEqualTo(TimeSpan.FromSeconds(120));
     }
 
     [Test]

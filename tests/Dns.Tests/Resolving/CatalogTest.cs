@@ -174,8 +174,8 @@ public class CatalogTest
     [Test]
     public async Task AddResource()
     {
-        var a = AddressRecord.Create("foo", IPAddress.Loopback);
-        var aaaa = AddressRecord.Create("foo", IPAddress.IPv6Loopback);
+        var a = IPAddressRecord.Create("foo", IPAddress.Loopback);
+        var aaaa = IPAddressRecord.Create("foo", IPAddress.IPv6Loopback);
         var catalog = new Catalog();
         var n1 = catalog.Add(a, true);
         await Assert.That(n1.Authoritative).IsTrue();
@@ -191,7 +191,7 @@ public class CatalogTest
     [Test]
     public async Task AddResource_Same()
     {
-        var a = AddressRecord.Create("foo", IPAddress.Loopback);
+        var a = IPAddressRecord.Create("foo", IPAddress.Loopback);
         var catalog = new Catalog();
         var n1 = catalog.Add(a);
         await Assert.That(n1.Resources).Contains(a);
@@ -205,8 +205,8 @@ public class CatalogTest
     [Test]
     public async Task AddResource_Duplicate()
     {
-        var a = AddressRecord.Create("foo", IPAddress.Loopback);
-        var b = AddressRecord.Create("foo", IPAddress.Loopback);
+        var a = IPAddressRecord.Create("foo", IPAddress.Loopback);
+        var b = IPAddressRecord.Create("foo", IPAddress.Loopback);
         await Assert.That(a).IsEqualTo(b);
 
         var catalog = new Catalog();
@@ -223,8 +223,8 @@ public class CatalogTest
     [Test]
     public async Task AddResource_Latest()
     {
-        var a = AddressRecord.Create("foo", IPAddress.Loopback);
-        var b = AddressRecord.Create("foo", IPAddress.Loopback);
+        var a = IPAddressRecord.Create("foo", IPAddress.Loopback);
+        var b = IPAddressRecord.Create("foo", IPAddress.Loopback);
         a.TTL = TimeSpan.FromHours(2);
         b.CreationTime = a.CreationTime + TimeSpan.FromHours(1);
         b.TTL = TimeSpan.FromHours(3);
@@ -258,15 +258,15 @@ public class CatalogTest
     {
         var catalog = new Catalog
         {
-            AddressRecord.Create("*.z.example", IPAddress.Loopback),
-            AddressRecord.Create("a.example", IPAddress.Loopback),
-            AddressRecord.Create("yljkjljk.a.example", IPAddress.Loopback),
-            AddressRecord.Create("Z.a.example", IPAddress.Loopback),
-            AddressRecord.Create("zABC.a.EXAMPLE", IPAddress.Loopback),
-            AddressRecord.Create("z.example", IPAddress.Loopback),
-            AddressRecord.Create("!.z.example", IPAddress.Loopback),
-            AddressRecord.Create("~.z.example", IPAddress.Loopback),
-            AddressRecord.Create("example", IPAddress.Loopback)
+            IPAddressRecord.Create("*.z.example", IPAddress.Loopback),
+            IPAddressRecord.Create("a.example", IPAddress.Loopback),
+            IPAddressRecord.Create("yljkjljk.a.example", IPAddress.Loopback),
+            IPAddressRecord.Create("Z.a.example", IPAddress.Loopback),
+            IPAddressRecord.Create("zABC.a.EXAMPLE", IPAddress.Loopback),
+            IPAddressRecord.Create("z.example", IPAddress.Loopback),
+            IPAddressRecord.Create("!.z.example", IPAddress.Loopback),
+            IPAddressRecord.Create("~.z.example", IPAddress.Loopback),
+            IPAddressRecord.Create("example", IPAddress.Loopback)
         };
 
         var expected = new DomainName[]

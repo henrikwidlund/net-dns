@@ -221,12 +221,12 @@ public class MessageTest
     public async Task Truncation_AdditionalRecords()
     {
         var msg = new Message();
-        msg.AdditionalRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
-        msg.AuthorityRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AdditionalRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AuthorityRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
         var originalLength = msg.Length();
-        msg.AdditionalRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
-        msg.AdditionalRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
-        msg.AdditionalRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AdditionalRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AdditionalRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AdditionalRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
 
         msg.Truncate(originalLength);
 
@@ -240,11 +240,11 @@ public class MessageTest
     public async Task AuthorityRecords()
     {
         var msg = new Message();
-        msg.AuthorityRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AuthorityRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
         var originalLength = msg.Length();
-        msg.AuthorityRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
-        msg.AdditionalRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
-        msg.AdditionalRecords.Add(AddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AuthorityRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AdditionalRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
+        msg.AdditionalRecords.Add(IPAddressRecord.Create("foo", IPAddress.Loopback));
 
         msg.Truncate(originalLength);
 
