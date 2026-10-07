@@ -34,4 +34,5 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Run Unit Tests
-        run: dotnet test --no-build --no-restore --verbosity normal --coverage --coverage-output-format cobertura
+        # One test module at a time: the net10.0 and net11.0 mDNS tests interfere with each other on the network when run in parallel
+        run: dotnet test --no-build --no-restore --verbosity normal --coverage --coverage-output-format cobertura --max-parallel-test-modules 1
