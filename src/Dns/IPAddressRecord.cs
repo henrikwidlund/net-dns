@@ -6,7 +6,7 @@ namespace Makaretu.Dns;
 /// <summary>
 ///   Base class for an Internet address.
 /// </summary>
-public abstract class AddressRecord : ResourceRecord
+public abstract class IPAddressRecord : ResourceRecord
 {
     /// <summary>
     ///   The Internet address.
@@ -29,7 +29,7 @@ public abstract class AddressRecord : ResourceRecord
     ///   An <see cref="ARecord"/> or <see cref="AAAARecord"/> tha describes
     ///   the <paramref name="name"/> and <paramref name="address"/>.
     /// </returns>
-    public static AddressRecord Create(DomainName name, IPAddress address) =>
+    public static IPAddressRecord Create(DomainName name, IPAddress address) =>
         address.AddressFamily switch
         {
             AddressFamily.InterNetwork => new ARecord { Name = name, Address = address },

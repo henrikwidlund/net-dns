@@ -3,7 +3,7 @@
 /// <summary>
 ///   Contains the IPv4 address of the named resource.
 /// </summary>
-public class ARecord : AddressRecord
+public class ARecord : IPAddressRecord
 {
     /// <summary>
     ///   Creates a new instance of the <see cref="ARecord"/> class.

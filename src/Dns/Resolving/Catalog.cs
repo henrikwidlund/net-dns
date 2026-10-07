@@ -205,7 +205,7 @@ public class Catalog : ConcurrentDictionary<DomainName, Node>
     {
         var addressRecords = this.Values
             .Where(static node => node.Authoritative)
-            .SelectMany(static node => node.Resources.OfType<AddressRecord>())
+            .SelectMany(static node => node.Resources.OfType<IPAddressRecord>())
             .Where(static a => a.Address is not null);
 
         foreach (var a in addressRecords)

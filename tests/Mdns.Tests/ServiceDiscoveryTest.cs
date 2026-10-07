@@ -464,7 +464,7 @@ public class ServiceDiscoveryTest
 
         const int additionalRecordsCount = 1 + // SRVRecord
                                            1 + // TXTRecord
-                                           1; // AddressRecord
+                                           1; // IPAddressRecord
 
         const int answersCount = additionalRecordsCount +
                                  1; // PTRRecord
