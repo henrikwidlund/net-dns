@@ -215,7 +215,7 @@ public class PresentationReader
         }
         catch (InvalidOperationException e)
         {
-            throw new FormatException(e.Message);
+            throw new FormatException(e.Message, e);
         }
     }
 
