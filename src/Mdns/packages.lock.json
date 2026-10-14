@@ -4,113 +4,119 @@
     "net10.0": {
       "Meziantou.Analyzer": {
         "type": "Direct",
-        "requested": "[3.0.294, )",
-        "resolved": "3.0.294",
-        "contentHash": "j78ENG75OozcuL0OPSIjvgLaYI4F5nS8mpK02PlXCCCXj8A4CAIfpKw27ZPvG4k8TweGqParV8Dwm2VAwBBmgg=="
+        "requested": "[3.0.303, )",
+        "resolved": "3.0.303",
+        "contentHash": "IBcDi9Gq15J7F7Akw/KCVrxMsms13e7rgA6ssVhoqn+3BWDvCg3RAhzPMK8foJapDMgz5tG4cDHO/JImrnn1cw=="
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Direct",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "+24lC4plfbEDNfLAdTV/SWKS7dW+16X4HdydO3R++134kSNTzcbYA4KpR1Hdh6uWisB8Za3AzwyOn+K+NxWIug==",
+        "requested": "[10.0.13, )",
+        "resolved": "10.0.13",
+        "contentHash": "aSZEhEig4fvNiw2zs8Z6NyDlniKtq6YjcF3DyHuqTEHcZ2VKA/6itMPZ+dW+yWABWExlDcQwwdbqX1Rcb7W8WQ==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.13"
         }
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
-        "requested": "[10.0.12, )",
-        "resolved": "10.0.12",
-        "contentHash": "xi+BDjFpW+Sb+MHFHaH6Y/gV9I8BluFwRXc1QyCdoZbIK26eNiBeFuMTe/FMwc33G1wdHCyDg7CVTmb8OdQrMQ=="
+        "requested": "[10.0.13, )",
+        "resolved": "10.0.13",
+        "contentHash": "40yrBMsLEcjixBR4G+FiUaBPvxXIPSKJ2OgSrbOZcmSDBda4Sb0k7BWrfDpIvn3IvvDzwOL/tEPa6gDQfh6aRw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
-        "requested": "[11.0.100-rc.1.26425.128, )",
-        "resolved": "11.0.100-rc.1.26425.128",
-        "contentHash": "mLyW8h7J5Fp+7sEAgROP3p3AtA3BPxEBI3NuwOrtYltLl+6z6NXWVOrTv6/5v6i2UxumjjUOAHI6L3LW4cyHMQ==",
+        "requested": "[11.0.100-rc.2.26504.105, )",
+        "resolved": "11.0.100-rc.2.26504.105",
+        "contentHash": "yS9+aq7lJeZTtAElkYhc1sKMNZyNm3WMT2KRzYII6XD7H31dExdjRWX37G6u30FkJnkGUxoPdZGKgC36T4xarg==",
         "dependencies": {
-          "Microsoft.Build.Tasks.Git": "11.0.100-rc.1.26425.128",
-          "Microsoft.SourceLink.Common": "11.0.100-rc.1.26425.128",
-          "System.IO.Hashing": "11.0.0-rc.1.26425.128"
+          "Microsoft.Build.Tasks.Git": "11.0.100-rc.2.26504.105",
+          "Microsoft.SourceLink.Common": "11.0.100-rc.2.26504.105",
+          "System.IO.Hashing": "11.0.0-rc.2.26504.105"
         }
       },
       "Microsoft.Build.Tasks.Git": {
         "type": "Transitive",
-        "resolved": "11.0.100-rc.1.26425.128",
-        "contentHash": "KOcSH68Xsz91oSL/rLdR6uE3qvlUNaqEovT4N3VESeEtHVvEfRx+zrfxbUTw+8o4q14iq0E0o9NTWZpt7Es7Ng==",
+        "resolved": "11.0.100-rc.2.26504.105",
+        "contentHash": "q/znp2xblP+ADVE8xqxGHSuq9XrQjpFn41CTs7PGPoqwfYdyz5B+2FGyCU5YNVhlnrkrOO5pkosO0AzxsF4iQA==",
         "dependencies": {
-          "System.IO.Hashing": "11.0.0-rc.1.26425.128"
+          "System.IO.Hashing": "11.0.0-rc.2.26504.105"
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.12",
-        "contentHash": "9/qymSh7hVDMGTGwrLz8MRp5zRyXy9adGDOs4HwRdnLil3oZGYuWeZjbmHgCQ9BL1qBroVfgUK3U/nb61617Cw=="
+        "resolved": "10.0.13",
+        "contentHash": "G2GrGWNAPZBsii2F6AU8n+JT2tC1/I0Ml/e9ZyNCgPjf3hZqronP7o0X91aAynCmVeae8KkSIUNXXeXCNRmdVQ=="
       },
       "Microsoft.SourceLink.Common": {
         "type": "Transitive",
-        "resolved": "11.0.100-rc.1.26425.128",
-        "contentHash": "OWWnZa7aUete13zMxGLMkgseGcKTdlxUH6TWtklbhBH/hknADewRugTp+ZXYvt6eHQWJbMUStRBEdBVNbyttzg=="
+        "resolved": "11.0.100-rc.2.26504.105",
+        "contentHash": "/H56QP61P8Rjtya29eR5aHM1VGPMnMlEUnCYXNDq/Nzos4jv7YUoUV5dPx/tCrMLxTIPFoL6ETc2Ql/K6X8Gcg=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "k2EG0GriOm2mGO+V0/9tq9JBNDI/TREnc7lM1/raddxXBLtxmTy1GrcH0jh8I4PBHV8ajD/J6AVqADeivNUXLA=="
+        "resolved": "11.0.0-rc.2.26504.105",
+        "contentHash": "Q73ma37D8sFHOfHwFylgGYhl6eBb9hiYywHCE+9VZEZtFeKZsDVZhFc3k1CsPc+KxbMvAPy83zOuItj9X/1VUA=="
       },
       "Theodicean.Makaretu.Dns": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.NET.ILLink.Tasks": "[10.0.13, )"
+        }
       }
     },
     "net11.0": {
       "Meziantou.Analyzer": {
         "type": "Direct",
-        "requested": "[3.0.294, )",
-        "resolved": "3.0.294",
-        "contentHash": "j78ENG75OozcuL0OPSIjvgLaYI4F5nS8mpK02PlXCCCXj8A4CAIfpKw27ZPvG4k8TweGqParV8Dwm2VAwBBmgg=="
+        "requested": "[3.0.303, )",
+        "resolved": "3.0.303",
+        "contentHash": "IBcDi9Gq15J7F7Akw/KCVrxMsms13e7rgA6ssVhoqn+3BWDvCg3RAhzPMK8foJapDMgz5tG4cDHO/JImrnn1cw=="
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Direct",
-        "requested": "[11.0.0-rc.1.26425.128, )",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "ABKdcuSnpUli0sq7RjoknGCLDODJZoU32pAOcYiGXaH5ic6bB1WKoEdgPDPz6s1KEajjBMD0AhmghyGi7a63MA=="
+        "requested": "[11.0.0-rc.2.26504.105, )",
+        "resolved": "11.0.0-rc.2.26504.105",
+        "contentHash": "RzlxqQ1//1kNA5NcCpTDFMZb6uuzCddOtoH2reY5YaaDV+xuEexgd7YH3w+VcZ+wrvgvGlnQXmJKcWuEk+UYpw=="
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
-        "requested": "[11.0.0-rc.1.26425.128, )",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "oMgihfjNcxZpR9B/O5Ke8Qmr8CJcpdzG4PnVYtA6Ja4g41NELxLRuiqqh5ys7w+ourEBNng2IIZnrlMJXfncmQ=="
+        "requested": "[11.0.0-rc.2.26504.105, )",
+        "resolved": "11.0.0-rc.2.26504.105",
+        "contentHash": "Mkb6kHfPr4/txc4n/41yUiEBT44Haup2qnyecIO1ADo2QB4YxleZHsOvgYJT6roL1SNuFSpbeNpoe70BJ953Uw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
-        "requested": "[11.0.100-rc.1.26425.128, )",
-        "resolved": "11.0.100-rc.1.26425.128",
-        "contentHash": "mLyW8h7J5Fp+7sEAgROP3p3AtA3BPxEBI3NuwOrtYltLl+6z6NXWVOrTv6/5v6i2UxumjjUOAHI6L3LW4cyHMQ==",
+        "requested": "[11.0.100-rc.2.26504.105, )",
+        "resolved": "11.0.100-rc.2.26504.105",
+        "contentHash": "yS9+aq7lJeZTtAElkYhc1sKMNZyNm3WMT2KRzYII6XD7H31dExdjRWX37G6u30FkJnkGUxoPdZGKgC36T4xarg==",
         "dependencies": {
-          "Microsoft.Build.Tasks.Git": "11.0.100-rc.1.26425.128",
-          "Microsoft.SourceLink.Common": "11.0.100-rc.1.26425.128",
-          "System.IO.Hashing": "11.0.0-rc.1.26425.128"
+          "Microsoft.Build.Tasks.Git": "11.0.100-rc.2.26504.105",
+          "Microsoft.SourceLink.Common": "11.0.100-rc.2.26504.105",
+          "System.IO.Hashing": "11.0.0-rc.2.26504.105"
         }
       },
       "Microsoft.Build.Tasks.Git": {
         "type": "Transitive",
-        "resolved": "11.0.100-rc.1.26425.128",
-        "contentHash": "KOcSH68Xsz91oSL/rLdR6uE3qvlUNaqEovT4N3VESeEtHVvEfRx+zrfxbUTw+8o4q14iq0E0o9NTWZpt7Es7Ng==",
+        "resolved": "11.0.100-rc.2.26504.105",
+        "contentHash": "q/znp2xblP+ADVE8xqxGHSuq9XrQjpFn41CTs7PGPoqwfYdyz5B+2FGyCU5YNVhlnrkrOO5pkosO0AzxsF4iQA==",
         "dependencies": {
-          "System.IO.Hashing": "11.0.0-rc.1.26425.128"
+          "System.IO.Hashing": "11.0.0-rc.2.26504.105"
         }
       },
       "Microsoft.SourceLink.Common": {
         "type": "Transitive",
-        "resolved": "11.0.100-rc.1.26425.128",
-        "contentHash": "OWWnZa7aUete13zMxGLMkgseGcKTdlxUH6TWtklbhBH/hknADewRugTp+ZXYvt6eHQWJbMUStRBEdBVNbyttzg=="
+        "resolved": "11.0.100-rc.2.26504.105",
+        "contentHash": "/H56QP61P8Rjtya29eR5aHM1VGPMnMlEUnCYXNDq/Nzos4jv7YUoUV5dPx/tCrMLxTIPFoL6ETc2Ql/K6X8Gcg=="
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "k2EG0GriOm2mGO+V0/9tq9JBNDI/TREnc7lM1/raddxXBLtxmTy1GrcH0jh8I4PBHV8ajD/J6AVqADeivNUXLA=="
+        "resolved": "11.0.0-rc.2.26504.105",
+        "contentHash": "Q73ma37D8sFHOfHwFylgGYhl6eBb9hiYywHCE+9VZEZtFeKZsDVZhFc3k1CsPc+KxbMvAPy83zOuItj9X/1VUA=="
       },
       "Theodicean.Makaretu.Dns": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.NET.ILLink.Tasks": "[11.0.0-rc.2.26504.105, )"
+        }
       }
     }
   }
