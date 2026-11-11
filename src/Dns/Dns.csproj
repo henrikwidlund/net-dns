@@ -43,7 +43,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="11.0.0" Condition="'$(TargetFramework)' == 'net11.0'" />
-        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="11.0.0" Condition="'$(TargetFramework)' != 'net11.0'" />
+        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="10.0.15" Condition="'$(TargetFramework)' != 'net11.0'" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="11.0.100">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
