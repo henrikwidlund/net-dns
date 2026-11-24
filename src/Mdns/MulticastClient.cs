@@ -152,9 +152,9 @@ internal class MulticastClient : IDisposable
                 }
             }
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        catch (Exception) when (cancellationToken.IsCancellationRequested)
         {
-            //Ignore
+            //Ignore UdpClient exceptions when cancellation is requested
         }
         catch (Exception ex)
         {
