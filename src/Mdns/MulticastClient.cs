@@ -156,6 +156,10 @@ internal class MulticastClient : IDisposable
         {
             //Ignore
         }
+        catch (SocketException) when (cancellationToken.IsCancellationRequested)
+        {
+            //Ignore
+        }
         catch (Exception ex)
         {
             _logger?.ReceiverFailure(ex);
